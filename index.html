@@ -1,154 +1,338 @@
-// ============================================================
-// ДАНІ: СТВОРІННЯ, МОНСТРИ ТА ОСОБЛИВІ ІСТОТИ
-// Джерела: Молодша Едда (Gylfaginning), Старша Едда (Völuspá та ін.)
-// ============================================================
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Скандинавська Міфологія — Повний довідник</title>
+  <meta name="description" content="Повний довідник скандинавської (нордичної) міфології: боги, велети, руни, артефакти, Раґнарьок. Джерела: Старша та Молодша Едди.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
 
-const CREATURES_DATA = [
-  {
-    id: "fenrir",
-    name: "Фенрір",
-    oldnorse: "Fenrir / Fenrisúlfr",
-    category: "Монстр / Первісна сила",
-    parents: "Локі (батько) + Анґрбода (мати, велетка)",
-    siblings: ["Йормунґанд (Світовий Змій)", "Гель (владарка мертвих)"],
-    description: "Велетенський вовк — одна з найстрашніших сил у нордичній космології. Символ хаосу і неминучої руйнації. Боги виховували його в Асґарді, але він ріс так швидко, що налякав усіх богів.",
-    myths: [
-      {
-        title: "Зв'язання Фенріра",
-        text: "Боги двічі пробували прикутий Фенріра звичайними ланцюгами — Лаедінґ і Дромі. Він рвав їх з легкістю. Тоді замовили у гномів Ґлейпнір — шовкову стрічку з шести неможливих речей: шуму кроків кішки, бороди жінки, коренів гори, сухожиль ведмедя, дихання риби, слини птаха. Фенрір погодився тільки якщо хтось вкладе руку в пащу. Тюр вклав праву руку. Коли Фенрір відчув, що не може порватися, відкусив руку Тюра. Зв'язаний на острові Лінґві, прикутий до скелі мечем Ґельґья, поки не Раґнарьок. (Gylfaginning, Молодша Едда)"
-      }
-    ],
-    ragnarok_role: "Зривається з пут. Ковтає Одіна живцем. Вбитий Відаром, який розриває йому щелепи.",
-    source: "Gylfaginning (Молодша Едда); Völuspá, Lokasenna (Старша Едда)"
-  },
-  {
-    id: "jormungandr",
-    name: "Йормунґанд",
-    oldnorse: "Jörmungandr",
-    aliases: ["Міґард-Змій (Miðgarðsormr)", "Світовий Змій"],
-    category: "Монстр / Первісна сила",
-    parents: "Локі (батько) + Анґрбода (мати)",
-    description: "Світовий Змій — настільки величезний, що тримає весь Мідґард в кільці, кусаючи власний хвіст (уроборос). Одін кинув його в океан навколо Мідґарда. Заклятий ворог Тора.",
-    myths: [
-      {
-        title: "Рибалка Тора",
-        text: "Тор і велет Гюмір рибалили. Тор насадив голову бика на гак і закинув у глибину. Йормунґанд вкусив приманку. Тор почав тягнути і майже витяг голову змія з моря, але Гюмір перерізав ліску від страху. Змій пішов на дно. (Hymiskviða, Старша Едда)"
-      }
-    ],
-    ragnarok_role: "Виходить з океану. Вбитий Тором, але перед смертю встигає отруїти його. Тор робить дев'ять кроків і падає.",
-    source: "Gylfaginning (Молодша Едда); Hymiskviða, Völuspá (Старша Едда)"
-  },
-  {
-    id: "nidhogg",
-    name: "Нідгоґр",
-    oldnorse: "Níðhöggr",
-    aliases: ["'Той, що б'є зі злобою'", "Дракон Ніфльгейму"],
-    category: "Дракон / Первісна сила",
-    description: "Дракон або велетенський змій у Ніфльгеймі, що постійно гризе корінь Іґґдрасіля, прагнучи знищити Дерево і весь порядок буття. Уособлення ентропії і руйнації.",
-    details: [
-      "Живе в Ніфльгеймі під третім коренем Іґґдрасіля",
-      "Рататоск підтримує ворожнечу між Нідгоґром і орлом на вершині",
-      "Після Раґнарьоку злетить і летітиме над новим світом з тілами мерців у кігтях — зло не зникає повністю",
-      "На Нострандрі (березі мертвих) гризе тіла клятвопорушників і вбивць"
-    ],
-    ragnarok_role: "Виживає. Злітає і летить над новим світом з тілами мерців.",
-    source: "Gylfaginning (Молодша Едда); Völuspá (Старша Едда)"
-  },
-  {
-    id: "garm",
-    name: "Ґармр",
-    oldnorse: "Garmr",
-    aliases: ["Пес Гель", "'Найкращий зі псів'"],
-    category: "Чудовисько / Сторожовий пес",
-    description: "Величезний пес, що охороняє вхід до Гельгейму в печері Ґніпагелір. Прив'язаний там до Раґнарьоку. Найкращий і найстрашніший пес.",
-    ragnarok_role: "Звільняється. Вбиває Тюра і гине від його руки.",
-    source: "Gylfaginning (Молодша Едда); Völuspá (Старша Едда)"
-  },
-  {
-    id: "sleipnir",
-    name: "Слейпнір",
-    oldnorse: "Sleipnir",
-    aliases: ["'Плавний, що ковзає'"],
-    category: "Чарівний кінь",
-    parents: "Локі (мати, у формі кобили) + Свадільфарі (батько, кінь велета-будівельника)",
-    owner: "Одін",
-    description: "Восьминогий сірий кінь — найшвидший і найкращий серед усіх коней. Може скакати по воді, повітрю, під землею і між усіма дев'ятьма світами. Одін їздить на ньому між світами і в Гельгейм.",
-    details: [
-      "Восьминогість пов'язується дослідниками з похоронними носилками (четверо носіїв = 8 ніг)",
-      "Локі забеременів від Свадільфарі, відвівши його від роботи будівельника",
-      "Гермод їздив на Слейпнірі до Гельгейму рятувати Бальдра"
-    ],
-    source: "Gylfaginning (Молодша Едда); Völuspá (Старша Едда)"
-  },
-  {
-    id: "ratatoskr",
-    name: "Рататоск",
-    oldnorse: "Ratatoskr",
-    aliases: ["'Гризун'"],
-    category: "Містична тварина",
-    description: "Білка, що живе на стовбурі Іґґдрасіля. Бігає між вершиною (де сидить орел) і коренями (де живе Нідгоґр), передаючи образливі слова між ними — свідомо підтримуючи вічну ворожнечу.",
-    source: "Gylfaginning (Молодша Едда); Grímnismál (Старша Едда)"
-  },
-  {
-    id: "hraesvelgr",
-    name: "Хресвельґр",
-    oldnorse: "Hræsvelgr",
-    aliases: ["'Пожирач трупів'"],
-    category: "Велетенський орел",
-    description: "Велетенський орел у людській подобі, що сидить на краю неба на півночі. Коли розправляє крила — здіймається вітер по всіх світах.",
-    source: "Gylfaginning (Молодша Едда); Vafþrúðnismál (Старша Едда)"
-  },
-  {
-    id: "surt",
-    name: "Сурт",
-    oldnorse: "Surtr",
-    aliases: ["'Чорний'"],
-    category: "Вогняний велет / Страж Муспельгейму",
-    description: "Первісна вогняна істота, що охороняє Муспельгейм з мечем, що горить яскравіше за сонце. Стоїть там від початку часів і стоятиме до Раґнарьоку.",
-    ragnarok_role: "Очолює синів Муспелля. Вбиває Фрейра. Спалює весь світ своїм вогняним мечем.",
-    source: "Gylfaginning (Молодша Едда); Völuspá (Старша Едда)"
-  },
-  {
-    id: "naglfar",
-    name: "Нагльфар",
-    oldnorse: "Naglfar",
-    category: "Корабель смерті",
-    description: "Величезний корабель, виготовлений з нігтів і пазурів мерців. Тому скандинави не стригли нігтів мерцям — щоб не прискорювати будівництво Нагльфара. У Раґнарьок відпливе з армією мертвих.",
-    ragnarok_role: "Відпливає з армією мертвих під командуванням Локі (або велета Гюміра, за різними версіями).",
-    source: "Gylfaginning (Молодша Едда); Völuspá (Старша Едда)"
-  },
-  {
-    id: "audhumla",
-    name: "Аудумла",
-    oldnorse: "Auðhumla",
-    aliases: ["Первісна корова"],
-    category: "Первісна тварина",
-    description: "Перша корова, що з'явилася в Ґіннунґаґапі після Іміра. Годувала Іміра своїм молоком (чотири ріки молока). Сама лизала солоні крижані брили і вилизала з льоду першобога Бурі.",
-    source: "Gylfaginning (Молодша Едда)"
-  },
-  {
-    id: "ymir",
-    name: "Імір",
-    oldnorse: "Ymir / Aurgelmir",
-    aliases: ["Аурґельмір (ім'я серед велетів)"],
-    category: "Первісний велет / Першоматерія",
-    description: "Перша жива істота — первісний велет, що з'явився з крапель, коли вогонь Муспельгейму розтопив льоди Ніфльгейму. З його тіла боги Одін, Ве і Вілі створили весь фізичний світ. Праотець усіх йотунів.",
-    details: [
-      "З поту Іміра народилися перші йотуни під час сну",
-      "З його ніг народився шестиголовий велет",
-      "Після вбивства Іміра кров затопила майже всіх йотунів — вижили лише Бергельмір з дружиною",
-      "Тіло Іміра стало будівельним матеріалом для всього Всесвіту"
-    ],
-    source: "Gylfaginning (Молодша Едда); Vafþrúðnismál (Старша Едда)"
-  },
-  {
-    id: "heidrun",
-    name: "Хейдрун",
-    oldnorse: "Heiðrún",
-    category: "Чарівна тварина",
-    description: "Коза на вершині Вальгалли, що жує листя Іґґдрасіля і дає мед замість молока. Цим медом напувають ейнгеріїв (героїв Вальгалли) — і його ніколи не меншає.",
-    source: "Gylfaginning (Молодша Едда); Grímnismál (Старша Едда)"
-  }
-];
+<!-- ─── HEADER ──────────────────────────────────────────────── -->
+<header id="site-header">
+  <div class="header-inner">
+    <a class="site-logo" onclick="navigate('home')" href="#home">
+      <span class="rune-icon">ᚨ</span>
+      <span>Нордична Міфологія</span>
+    </a>
 
-if (typeof module !== 'undefined') module.exports = { CREATURES_DATA };
+    <nav id="main-nav">
+      <div class="nav-item">
+        <button class="nav-btn" data-page="worlds" onclick="navigate('worlds')">🌍 Світи</button>
+      </div>
+
+      <div class="nav-item">
+        <button class="nav-btn" data-page="gods" onclick="navigate('gods')">⚡ Боги ▾</button>
+        <div class="nav-dropdown">
+          <a class="dropdown-link" onclick="navigate('gods')"><span class="icon">⚡</span> Боги-Аси</a>
+          <a class="dropdown-link" onclick="navigate('gods')"><span class="icon">🌿</span> Вани</a>
+          <a class="dropdown-link" onclick="navigate('gods')"><span class="icon">🌸</span> Богині</a>
+          <a class="dropdown-link" onclick="navigate('gods')"><span class="icon">⚔</span> Валькірії</a>
+          <a class="dropdown-link" onclick="navigate('gods')"><span class="icon">🕰</span> Норни</a>
+        </div>
+      </div>
+
+      <div class="nav-item">
+        <button class="nav-btn" data-page="creatures" onclick="navigate('creatures')">🐉 Створіння</button>
+      </div>
+
+      <div class="nav-item">
+        <button class="nav-btn" data-page="runes" onclick="navigate('runes')">ᚱ Руни</button>
+      </div>
+
+      <div class="nav-item">
+        <button class="nav-btn" data-page="artifacts" onclick="navigate('artifacts')">🔨 Артефакти</button>
+      </div>
+
+      <div class="nav-item">
+        <button class="nav-btn" data-page="events" onclick="navigate('events')">📜 Події</button>
+      </div>
+
+      <div class="nav-item">
+        <button class="nav-btn" data-page="ragnarok" onclick="navigate('ragnarok')" style="color:var(--fire)">🔥 Раґнарьок</button>
+      </div>
+
+      <div class="nav-item">
+        <button class="nav-btn" data-page="genealogy" onclick="navigate('genealogy')">🌳 Генеалогія</button>
+      </div>
+    </nav>
+
+    <div id="search-wrapper">
+      <span class="search-icon">🔍</span>
+      <input id="search-input" type="search" placeholder="Пошук…" autocomplete="off">
+      <div id="search-results"></div>
+    </div>
+  </div>
+</header>
+
+<!-- ─── MAIN CONTENT ─────────────────────────────────────────── -->
+<main id="main-content">
+
+  <!-- HOME -->
+  <div id="page-home" class="page-view active">
+    <div class="home-hero">
+      <h1>Нордична Міфологія</h1>
+      <p>Повний довідник на основі Старшої та Молодшої Едди, Саг про Інґлінґів та давніх скандинавських текстів.</p>
+      <div class="home-divider">ᚨ ᛋ ᚷ ᚨ ᚱ ᛞ</div>
+    </div>
+    <div id="home-nav-grid" class="home-nav-grid"></div>
+
+    <div style="max-width:800px;margin:3rem auto 0">
+      <div class="sources-block">
+        <strong>Первинні джерела</strong>
+        <strong style="color:var(--gold-light);font-size:0.95rem">Старша Едда (Poetic Edda)</strong>
+        Збірка давньоісландських поем, записана близько 1270 р. (Codex Regius, AM 748). Містить: Völuspá (Пророцтво Провидиці), Hávamál (Слова Високого), Grímnismál, Vafþrúðnismál, Skírnismál, Lokasenna, Þrymskviða та ін.
+        <br><br>
+        <strong style="color:var(--gold-light);font-size:0.95rem">Молодша Едда (Prose Edda)</strong>
+        Написана Сноррі Стурлусоном бл. 1220 р. Складається з: Gylfaginning (Омана Ґюльфі), Skáldskaparmál (Мова поезії), Háttatal.
+        <br><br>
+        <strong style="color:var(--gold-light);font-size:0.95rem">Ynglinga saga (Саги про Інґлінґів)</strong>
+        Частина Heimskringla Сноррі Стурлусона бл. 1230 р. Євгемеристична (раціоналізована) версія нордичної mythології.
+        <br><br>
+        <span style="color:var(--text-muted)">Онлайн-джерела: <a href="https://www.gutenberg.org/ebooks/author/7785" target="_blank">Project Gutenberg — Norse texts</a> · <a href="https://www.sacred-texts.com/neu/norse/" target="_blank">Sacred Texts — Norse mythology</a></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- WORLDS -->
+  <div id="page-worlds" class="page-view">
+    <div class="page-header">
+      <span class="page-icon">🌍</span>
+      <h1>Дев'ять Світів</h1>
+      <p class="subtitle">Níu Heimar — на гілках і коренях Іґґдрасіля</p>
+      <p class="source-note">Джерела: Gylfaginning (Молодша Едда) · Völuspá, Grímnismál (Старша Едда)</p>
+    </div>
+
+    <!-- Yggdrasil section -->
+    <div id="yggdrasil-section" class="mb-2">
+      <h2 style="text-align:center">ᛇ Іґґдрасіль — Світове Дерево</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1rem">
+        <div>
+          <p><strong>Іґґдрасіль</strong> (Yggdrasill) — Вічнозелений ясен у центрі Всесвіту. Назва: «Кінь Жахливого» — шибениця, на якій Одін висів 9 ночей заради пізнання рун.</p>
+          <br>
+          <h4 style="margin-bottom:0.6rem">Три Кореня:</h4>
+          <div class="step-item"><div class="step-title">Асґард — Криниця Урд</div><div class="step-text">Місце зборів богів. Норни поливають тут Іґґдрасіль щодня.</div></div>
+          <div class="step-item"><div class="step-title">Йотунгейм — Мімірсбрунн</div><div class="step-text">Криниця мудрості. Одін пожертвував oko заради одного ковтка.</div></div>
+          <div class="step-item"><div class="step-title">Ніфльгейм — Хвергельмір</div><div class="step-text">Дракон Нідгоґр гризе тут корінь. Джерело 11 рік Елівагар.</div></div>
+        </div>
+        <div>
+          <h4 style="margin-bottom:0.6rem">Мешканці Іґґдрасіля:</h4>
+          <div id="ygd-inhabitants"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">Дев'ять Світів</div>
+    <div id="worlds-grid" class="worlds-grid"></div>
+  </div>
+
+  <!-- GODS -->
+  <div id="page-gods" class="page-view">
+    <div class="page-header">
+      <span class="page-icon">⚡</span>
+      <h1>Боги</h1>
+      <p class="subtitle">Æsir · Vanir · Ásynjur — три групи нордичного пантеону</p>
+      <p class="source-note">Джерела: Gylfaginning, Skáldskaparmál (Молодша Едда) · Völuspá, Lokasenna та ін. (Старша Едда)</p>
+    </div>
+
+    <div class="section-title">⚡ Боги-Аси (Æsir)</div>
+    <div id="aesir-grid" class="cards-grid mb-2"></div>
+
+    <div class="section-title">🌸 Богині (Ásynjur)</div>
+    <div id="goddess-grid" class="cards-grid mb-2"></div>
+
+    <div class="section-title">🌿 Вани (Vanir)</div>
+    <div id="vanir-grid" class="cards-grid mb-2"></div>
+
+    <!-- Valkyries -->
+    <div class="section-title">⚔ Валькірії</div>
+    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:1.5rem;margin-bottom:2rem">
+      <p style="color:var(--text-secondary);margin-bottom:1rem">Valkyrjur — «ті, хто обирає полеглих». Бойові діви Одіна, що летять над полями битв і вирішують долі воїнів.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:0.5rem">
+        <script>document.currentScript.insertAdjacentHTML('afterend',
+          (typeof VALKYRIES_DATA !== 'undefined' ? VALKYRIES_DATA.names : []).map(v=>
+            `<span class="tag" title="${v.note||''}">${v.name}</span>`
+          ).join(''))
+        </script>
+      </div>
+    </div>
+
+    <!-- Norns -->
+    <div class="section-title">🕰 Норни</div>
+    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:1.5rem;margin-bottom:2rem">
+      <p style="color:var(--text-secondary);margin-bottom:1rem">Nornir — три богині долі, що прядуть нитки всіх доль. Навіть боги підвладні їм.</p>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1rem">
+        <script>document.currentScript.insertAdjacentHTML('afterend',
+          (typeof NORNS_DATA !== 'undefined' ? NORNS_DATA.norns : []).map(n=>
+            `<div class="info-item"><div class="info-label">${n.name}</div><div class="info-value" style="font-size:0.85rem">${n.meaning}</div></div>`
+          ).join(''))
+        </script>
+      </div>
+    </div>
+  </div>
+
+  <!-- CREATURES -->
+  <div id="page-creatures" class="page-view">
+    <div class="page-header">
+      <span class="page-icon">🐉</span>
+      <h1>Створіння</h1>
+      <p class="subtitle">Монстри, чудовиська і містичні істоти дев'яти світів</p>
+      <p class="source-note">Джерела: Gylfaginning (Молодша Едда) · Völuspá та ін. (Старша Едда)</p>
+    </div>
+    <div id="creatures-grid" class="cards-grid"></div>
+  </div>
+
+  <!-- RUNES -->
+  <div id="page-runes" class="page-view">
+    <div class="page-header">
+      <span class="page-icon">ᚠ</span>
+      <h1>24 Руни Старшого Футарку</h1>
+      <p class="subtitle">Elder Futhark — найдавніша рунічна система (бл. 150–800 н.е.)</p>
+      <p class="source-note">Джерела: Норвезька, Ісландська, Англосакська рунічні поеми · Hávamál (Старша Едда)</p>
+    </div>
+
+    <div style="background:var(--bg-card);border:1px solid var(--border);border-left:3px solid var(--gold-dim);border-radius:8px;padding:1.2rem 1.5rem;margin-bottom:1.5rem;font-size:0.88rem;color:var(--text-secondary)">
+      <strong style="color:var(--gold-dim);display:block;margin-bottom:0.3rem">📖 Як Одін відкрив руни</strong>
+      Одін повісив себе на Іґґдрасілі, пронизаний власним списом Ґунґніром, без їжі і пиття — 9 днів і ночей. На дев'ятий день побачив руни і підняв їх. <em>(Hávamál 138–139)</em>
+    </div>
+
+    <div class="runes-filter">
+      <button class="aett-btn active" data-aett="all"    onclick="filterRunes('all')">Всі 24</button>
+      <button class="aett-btn"        data-aett="Фрейра" onclick="filterRunes('Фрейра')">Фрейра (1–8)</button>
+      <button class="aett-btn"        data-aett="Гаґалля" onclick="filterRunes('Гаґалля')">Гаґалля (9–16)</button>
+      <button class="aett-btn"        data-aett="Тюра"   onclick="filterRunes('Тюра')">Тюра (17–24)</button>
+    </div>
+
+    <div id="runes-grid" class="runes-grid"></div>
+  </div>
+
+  <!-- ARTIFACTS -->
+  <div id="page-artifacts" class="page-view">
+    <div class="page-header">
+      <span class="page-icon">🔨</span>
+      <h1>Артефакти та Чарівні Предмети</h1>
+      <p class="subtitle">Священні предмети богів і героїв</p>
+      <p class="source-note">Джерела: Skáldskaparmál, Gylfaginning (Молодша Едда)</p>
+    </div>
+    <div id="artifacts-grid"></div>
+  </div>
+
+  <!-- EVENTS -->
+  <div id="page-events" class="page-view">
+    <div class="page-header">
+      <span class="page-icon">📜</span>
+      <h1>Ключові Події</h1>
+      <p class="subtitle">Найважливіші міти і легенди нордичного космосу</p>
+      <p class="source-note">Джерела: Старша та Молодша Едда</p>
+    </div>
+    <div id="events-timeline" class="events-timeline"></div>
+  </div>
+
+  <!-- RAGNAROK -->
+  <div id="page-ragnarok" class="page-view">
+    <div class="ragnarok-header">
+      <span style="font-size:4rem;display:block;margin-bottom:0.5rem">🔥</span>
+      <h1>Раґнарьок</h1>
+      <p style="color:var(--text-secondary);font-style:italic;max-width:600px;margin:0.8rem auto 0">
+        Ragnarök — «Доля богів». Кінець існуючого світу і народження нового.<br>
+        <span style="font-size:0.85rem;color:var(--text-muted)">Völuspá (Старша Едда) · Gylfaginning (Молодша Едда)</span>
+      </p>
+    </div>
+    <div id="ragnarok-content" style="max-width:960px;margin:0 auto;padding:0 1rem"></div>
+  </div>
+
+  <!-- GENEALOGY -->
+  <div id="page-genealogy" class="page-view">
+    <div class="page-header">
+      <span class="page-icon">🌳</span>
+      <h1>Генеалогія Богів</h1>
+      <p class="subtitle">Від Першоістот до Раґнарьоку — інтерактивне дерево</p>
+      <p class="source-note">Джерела: Gylfaginning (Молодша Едда) · Völuspá (Старша Едда)</p>
+    </div>
+
+    <div id="genealogy-container">
+      <svg id="genealogy-svg" width="100%" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div id="gen-legend" class="gen-legend"></div>
+    </div>
+
+    <!-- Text genealogy summary -->
+    <div style="margin-top:2rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem">
+      <div class="artifact-detail-card">
+        <div class="artifact-header"><span class="artifact-icon-display">🌟</span>
+          <div class="artifact-header-info"><h3>Першоістоти → Аси</h3></div>
+        </div>
+        <div class="artifact-body" style="font-size:0.88rem;color:var(--text-secondary)">
+          Ґіннунґаґап → Імір (першовелет) + Аудумбла (перша корова)<br>
+          Аудумбла вилизала Бурі → Бор → <strong style="color:var(--gold-light)">Одін + Ве + Вілі</strong><br>
+          Вони вбили Іміра і створили світ з його тіла.
+        </div>
+      </div>
+      <div class="artifact-detail-card">
+        <div class="artifact-header"><span class="artifact-icon-display">⚡</span>
+          <div class="artifact-header-info"><h3>Рід Одіна</h3></div>
+        </div>
+        <div class="artifact-body" style="font-size:0.88rem;color:var(--text-secondary)">
+          Одін + Фріґґ → <strong style="color:var(--gold-light)">Бальдр, Хьод, Гермод</strong><br>
+          Одін + Йорд → <strong style="color:var(--gold-light)">Тор</strong><br>
+          Одін + Рінд → Валі · Одін + Ґрід → Відар<br>
+          Тор + Сів → Труд · Тор + Ярнсакса → Маґні, Моді<br>
+          Бальдр + Нанна → Форсеті
+        </div>
+      </div>
+      <div class="artifact-detail-card">
+        <div class="artifact-header"><span class="artifact-icon-display">🌿</span>
+          <div class="artifact-header-info"><h3>Рід Ньорда (Вани)</h3></div>
+        </div>
+        <div class="artifact-body" style="font-size:0.88rem;color:var(--text-secondary)">
+          Ньорд (+ сестра-ваніня) → <strong style="color:var(--forest)">Фрейр + Фрейя</strong><br>
+          Ньорд + Скаді (шлюб, розлучились)<br>
+          Фрейя + Одур → Хносс, Ґерсемі
+        </div>
+      </div>
+      <div class="artifact-detail-card">
+        <div class="artifact-header"><span class="artifact-icon-display">🔥</span>
+          <div class="artifact-header-info"><h3>Рід Локі</h3></div>
+        </div>
+        <div class="artifact-body" style="font-size:0.88rem;color:var(--text-secondary)">
+          Фарбауті + Лаувей → <strong style="color:var(--fire)">Локі</strong><br>
+          Локі + Анґрбода → <strong style="color:var(--fire)">Фенрір, Йормунґанд, Гель</strong><br>
+          Локі + Сіґюн → Нарві, Валі<br>
+          Локі (кобила) + Свадільфарі → Слейпнір
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ─── DETAIL OVERLAY ────────────────────────────────────────── -->
+<div id="detail-overlay">
+  <div id="detail-panel"></div>
+</div>
+
+<!-- ─── FOOTER ───────────────────────────────────────────────── -->
+<footer id="site-footer">
+  <p>Скандинавська Міфологія — довідник на основі Едд і давніх текстів</p>
+  <p style="margin-top:0.5rem">
+    <a href="https://www.gutenberg.org/ebooks/author/7785" target="_blank">Project Gutenberg</a> ·
+    <a href="https://www.sacred-texts.com/neu/norse/" target="_blank">Sacred Texts</a> ·
+    <a href="https://github.com" target="_blank">GitHub</a>
+  </p>
+</footer>
+
+<!-- ─── DATA FILES ────────────────────────────────────────────── -->
+<script src="data/worlds.js"></script>
+<script src="data/aesir.js"></script>
+<script src="data/vanir.js"></script>
+<script src="data/creatures.js"></script>
+<script src="data/artifacts.js"></script>
+<script src="data/runes.js"></script>
+<script src="data/events.js"></script>
+<script src="data/genealogy.js"></script>
+
+<!-- ─── APP JS ───────────────────────────────────────────────── -->
+<script src="js/main.js"></script>
+
+</body>
+</html>
