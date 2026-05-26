@@ -2,326 +2,279 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Скандинавська Міфологія — Повний довідник</title>
-  <meta name="description" content="Повний довідник скандинавської (нордичної) міфології: боги, велети, руни, артефакти, Раґнарьок. Джерела: Старша та Молодша Едди.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Scandia Mythos — Скандинавська Міфологія</title>
+  <meta name="description" content="Повний довідник скандинавської міфології на основі Старшої та Молодшої Едди.">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/worldmap.css">
+  <link rel="stylesheet" href="css/genealogy.css">
 </head>
 <body>
 
-<!-- ─── HEADER ──────────────────────────────────────────────── -->
+<!-- ═══════════════════════════════════════════════════════
+     HEADER — тільки логотип, клік → головна
+     ═══════════════════════════════════════════════════════ -->
 <header id="site-header">
   <div class="header-inner">
-    <a class="site-logo" onclick="navigate('home')" href="#home">
-      <span class="rune-icon">ᚨ</span>
-      <span>Нордична Міфологія</span>
-    </a>
-
-    <nav id="main-nav">
-      <div class="nav-item">
-        <button class="nav-btn" data-page="worlds" onclick="navigate('worlds')">🌍 Світи</button>
-      </div>
-
-      <div class="nav-item">
-        <button class="nav-btn" data-page="gods" onclick="navigate('gods')">⚡ Боги ▾</button>
-        <div class="nav-dropdown">
-          <a class="dropdown-link" onclick="navigate('gods')"><span class="icon">⚡</span> Боги-Аси</a>
-          <a class="dropdown-link" onclick="navigate('gods')"><span class="icon">🌿</span> Вани</a>
-          <a class="dropdown-link" onclick="navigate('gods')"><span class="icon">🌸</span> Богині</a>
-          <a class="dropdown-link" onclick="navigate('gods')"><span class="icon">⚔</span> Валькірії</a>
-          <a class="dropdown-link" onclick="navigate('gods')"><span class="icon">🕰</span> Норни</a>
-        </div>
-      </div>
-
-      <div class="nav-item">
-        <button class="nav-btn" data-page="creatures" onclick="navigate('creatures')">🐉 Створіння</button>
-      </div>
-
-      <div class="nav-item">
-        <button class="nav-btn" data-page="runes" onclick="navigate('runes')">ᚱ Руни</button>
-      </div>
-
-      <div class="nav-item">
-        <button class="nav-btn" data-page="artifacts" onclick="navigate('artifacts')">🔨 Артефакти</button>
-      </div>
-
-      <div class="nav-item">
-        <button class="nav-btn" data-page="events" onclick="navigate('events')">📜 Події</button>
-      </div>
-
-      <div class="nav-item">
-        <button class="nav-btn" data-page="ragnarok" onclick="navigate('ragnarok')" style="color:var(--fire)">🔥 Раґнарьок</button>
-      </div>
-
-      <div class="nav-item">
-        <button class="nav-btn" data-page="genealogy" onclick="navigate('genealogy')">🌳 Генеалогія</button>
-      </div>
-    </nav>
-
-    <div id="search-wrapper">
-      <span class="search-icon">🔍</span>
-      <input id="search-input" type="search" placeholder="Пошук…" autocomplete="off">
-      <div id="search-results"></div>
-    </div>
+    <button class="site-logo" onclick="navigate('home')">
+      <span class="logo-mark">
+        <svg viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="6" y="6" width="18" height="9" rx="0.5" stroke="currentColor" stroke-width="1.2"/>
+          <rect x="11" y="15" width="8" height="11" rx="0.5" stroke="currentColor" stroke-width="1.2"/>
+          <rect x="9" y="14" width="12" height="2" stroke="currentColor" stroke-width="0.8"/>
+          <circle cx="15" cy="10.5" r="2" stroke="currentColor" stroke-width="0.7" fill="none"/>
+        </svg>
+      </span>
+      <span class="logo-text">Scandia Mythos</span>
+    </button>
   </div>
 </header>
 
-<!-- ─── MAIN CONTENT ─────────────────────────────────────────── -->
+<!-- BACK BAR — окрема смужка під шапкою -->
+<div id="back-bar">
+  <div class="back-bar-inner">
+    <button class="back-btn" onclick="navigate('home')">← Головна</button>
+  </div>
+</div>
+
+<!-- SEARCH BAR — теж окрема смужка під шапкою -->
+<div id="search-bar">
+  <div class="search-bar-inner">
+    <svg class="search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+      <circle cx="9" cy="9" r="6"/>
+      <path d="m16 16-3.5-3.5"/>
+    </svg>
+    <input id="search-input" type="search" placeholder="Пошук богів, рун, артефактів..." autocomplete="off" inputmode="search">
+    <div id="search-results"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     MAIN
+     ═══════════════════════════════════════════════════════ -->
 <main id="main-content">
 
-  <!-- HOME -->
+  <!-- ── HOME ────────────────────────────────────────── -->
   <div id="page-home" class="page-view active">
-    <div class="home-hero">
-      <h1>Нордична Міфологія</h1>
-      <p>Повний довідник на основі Старшої та Молодшої Едди, Саг про Інґлінґів та давніх скандинавських текстів.</p>
-      <div class="home-divider">ᚨ ᛋ ᚷ ᚨ ᚱ ᛞ</div>
-    </div>
-    <div id="home-nav-grid" class="home-nav-grid"></div>
+    <div class="container">
+      <section class="home-hero">
+        <span class="hero-eyebrow">Scandia Mythos · Довідник</span>
+        <div class="hero-art" id="hero-art"></div>
+        <h1>Скандинавська<br>Міфологія</h1>
+        <p class="hero-lead">
+          «Дев'ять світів я знаю — дев'ять вмістищ дерева,<br>
+          що славне коренями глибокими в землі».
+        </p>
+        <p class="hero-source">VÖLUSPÁ · ПРОРОЦТВО ПРОВИДИЦІ</p>
+      </section>
 
-    <div style="max-width:800px;margin:3rem auto 0">
-      <div class="sources-block">
-        <strong>Первинні джерела</strong>
-        <strong style="color:var(--gold-light);font-size:0.95rem">Старша Едда (Poetic Edda)</strong>
-        Збірка давньоісландських поем, записана близько 1270 р. (Codex Regius, AM 748). Містить: Völuspá (Пророцтво Провидиці), Hávamál (Слова Високого), Grímnismál, Vafþrúðnismál, Skírnismál, Lokasenna, Þrymskviða та ін.
-        <br><br>
-        <strong style="color:var(--gold-light);font-size:0.95rem">Молодша Едда (Prose Edda)</strong>
-        Написана Сноррі Стурлусоном бл. 1220 р. Складається з: Gylfaginning (Омана Ґюльфі), Skáldskaparmál (Мова поезії), Háttatal.
-        <br><br>
-        <strong style="color:var(--gold-light);font-size:0.95rem">Ynglinga saga (Саги про Інґлінґів)</strong>
-        Частина Heimskringla Сноррі Стурлусона бл. 1230 р. Євгемеристична (раціоналізована) версія нордичної mythології.
-        <br><br>
-        <span style="color:var(--text-muted)">Онлайн-джерела: <a href="https://www.gutenberg.org/ebooks/author/7785" target="_blank">Project Gutenberg — Norse texts</a> · <a href="https://www.sacred-texts.com/neu/norse/" target="_blank">Sacred Texts — Norse mythology</a></span>
-      </div>
+      <div class="home-grid-label">Розділи</div>
+      <div class="home-sections" id="home-sections"></div>
     </div>
   </div>
 
-  <!-- WORLDS -->
+  <!-- ── WORLDS ──────────────────────────────────────── -->
   <div id="page-worlds" class="page-view">
-    <div class="page-header">
-      <span class="page-icon">🌍</span>
-      <h1>Дев'ять Світів</h1>
-      <p class="subtitle">Níu Heimar — на гілках і коренях Іґґдрасіля</p>
-      <p class="source-note">Джерела: Gylfaginning (Молодша Едда) · Völuspá, Grímnismál (Старша Едда)</p>
-    </div>
+    <div class="container">
 
-    <!-- Yggdrasil section -->
-    <div id="yggdrasil-section" class="mb-2">
-      <h2 style="text-align:center">ᛇ Іґґдрасіль — Світове Дерево</h2>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1rem">
-        <div>
-          <p><strong>Іґґдрасіль</strong> (Yggdrasill) — Вічнозелений ясен у центрі Всесвіту. Назва: «Кінь Жахливого» — шибениця, на якій Одін висів 9 ночей заради пізнання рун.</p>
-          <br>
-          <h4 style="margin-bottom:0.6rem">Три Кореня:</h4>
-          <div class="step-item"><div class="step-title">Асґард — Криниця Урд</div><div class="step-text">Місце зборів богів. Норни поливають тут Іґґдрасіль щодня.</div></div>
-          <div class="step-item"><div class="step-title">Йотунгейм — Мімірсбрунн</div><div class="step-text">Криниця мудрості. Одін пожертвував oko заради одного ковтка.</div></div>
-          <div class="step-item"><div class="step-title">Ніфльгейм — Хвергельмір</div><div class="step-text">Дракон Нідгоґр гризе тут корінь. Джерело 11 рік Елівагар.</div></div>
-        </div>
-        <div>
-          <h4 style="margin-bottom:0.6rem">Мешканці Іґґдрасіля:</h4>
-          <div id="ygd-inhabitants"></div>
-        </div>
+      <div class="page-header">
+        <div class="ph-art"></div>
+        <h1>Дев'ять Світів</h1>
+        <p class="subtitle">Níu Heimar — на гілках і коренях Іґґдрасіля</p>
+        <p class="source-note">GYLFAGINNING · VÖLUSPÁ · GRÍMNISMÁL</p>
       </div>
-    </div>
 
-    <div class="section-title">Дев'ять Світів</div>
-    <div id="worlds-grid" class="worlds-grid"></div>
+      <!-- Yggdrasil intro -->
+      <div style="background:var(--bg-card);border:1px solid var(--border);padding:1.3rem;margin-bottom:2rem">
+        <h2 style="font-size:1rem;margin-bottom:0.6rem;letter-spacing:0.08em">Іґґдрасіль — Світове Дерево</h2>
+        <p style="color:var(--text-dim);font-size:0.97rem;font-style:italic;line-height:1.65;margin-bottom:1rem">
+          Велетенський вічнозелений ясен у центрі Всесвіту. Назва: «Кінь Жахливого» — шибениця, на якій Одін висів дев'ять ночей заради рун.
+        </p>
+        <h4 style="margin-bottom:0.5rem">Три Кореня</h4>
+        <div id="ygd-roots"></div>
+      </div>
+
+      <!-- Interactive map -->
+      <p class="worldmap-hint">Натисни на світ для опису</p>
+      <div id="worldmap-container" class="worldmap-container"></div>
+      <p class="worldmap-caption">Map of the Nine Worlds · Иґґдрасіль</p>
+
+    </div>
   </div>
 
-  <!-- GODS -->
+  <!-- ── GODS ────────────────────────────────────────── -->
   <div id="page-gods" class="page-view">
-    <div class="page-header">
-      <span class="page-icon">⚡</span>
-      <h1>Боги</h1>
-      <p class="subtitle">Æsir · Vanir · Ásynjur — три групи нордичного пантеону</p>
-      <p class="source-note">Джерела: Gylfaginning, Skáldskaparmál (Молодша Едда) · Völuspá, Lokasenna та ін. (Старша Едда)</p>
-    </div>
+    <div class="container">
 
-    <div class="section-title">⚡ Боги-Аси (Æsir)</div>
-    <div id="aesir-grid" class="cards-grid mb-2"></div>
-
-    <div class="section-title">🌸 Богині (Ásynjur)</div>
-    <div id="goddess-grid" class="cards-grid mb-2"></div>
-
-    <div class="section-title">🌿 Вани (Vanir)</div>
-    <div id="vanir-grid" class="cards-grid mb-2"></div>
-
-    <!-- Valkyries -->
-    <div class="section-title">⚔ Валькірії</div>
-    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:1.5rem;margin-bottom:2rem">
-      <p style="color:var(--text-secondary);margin-bottom:1rem">Valkyrjur — «ті, хто обирає полеглих». Бойові діви Одіна, що летять над полями битв і вирішують долі воїнів.</p>
-      <div style="display:flex;flex-wrap:wrap;gap:0.5rem">
-        <script>document.currentScript.insertAdjacentHTML('afterend',
-          (typeof VALKYRIES_DATA !== 'undefined' ? VALKYRIES_DATA.names : []).map(v=>
-            `<span class="tag" title="${v.note||''}">${v.name}</span>`
-          ).join(''))
-        </script>
+      <div class="page-header">
+        <div class="ph-art"></div>
+        <h1>Пантеон</h1>
+        <p class="subtitle">Æsir · Vanir · Ásynjur</p>
+        <p class="source-note">GYLFAGINNING · SKÁLDSKAPARMÁL · LOKASENNA</p>
       </div>
-    </div>
 
-    <!-- Norns -->
-    <div class="section-title">🕰 Норни</div>
-    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:1.5rem;margin-bottom:2rem">
-      <p style="color:var(--text-secondary);margin-bottom:1rem">Nornir — три богині долі, що прядуть нитки всіх доль. Навіть боги підвладні їм.</p>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1rem">
-        <script>document.currentScript.insertAdjacentHTML('afterend',
-          (typeof NORNS_DATA !== 'undefined' ? NORNS_DATA.norns : []).map(n=>
-            `<div class="info-item"><div class="info-label">${n.name}</div><div class="info-value" style="font-size:0.85rem">${n.meaning}</div></div>`
-          ).join(''))
-        </script>
+      <div class="section-heading">
+        <h2>Боги-Аси</h2>
+        <span class="sh-count" id="aesir-count"></span>
       </div>
+      <div id="aesir-grid" class="cards-grid"></div>
+
+      <div class="section-heading">
+        <h2>Богині</h2>
+        <span class="sh-count" id="goddess-count"></span>
+      </div>
+      <div id="goddess-grid" class="cards-grid"></div>
+
+      <div class="section-heading">
+        <h2>Вани</h2>
+        <span class="sh-count" id="vanir-count"></span>
+      </div>
+      <div id="vanir-grid" class="cards-grid"></div>
+
+      <div class="section-heading"><h2>Валькірії</h2><span class="sh-count">XIII</span></div>
+      <div style="background:var(--bg-card);border:1px solid var(--border);padding:1.3rem;margin-bottom:1.5rem">
+        <p style="color:var(--text-dim);font-size:0.95rem;line-height:1.65;margin-bottom:0.9rem"><em>Valkyrjur</em> — «ті, хто обирає полеглих». Бойові діви Одіна.</p>
+        <div id="valkyries-tags" style="display:flex;flex-wrap:wrap;gap:0.4rem"></div>
+      </div>
+
+      <div class="section-heading"><h2>Норни</h2><span class="sh-count">III</span></div>
+      <div id="norns-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:2.5rem"></div>
+
     </div>
   </div>
 
-  <!-- CREATURES -->
+  <!-- ── CREATURES ───────────────────────────────────── -->
   <div id="page-creatures" class="page-view">
-    <div class="page-header">
-      <span class="page-icon">🐉</span>
-      <h1>Створіння</h1>
-      <p class="subtitle">Монстри, чудовиська і містичні істоти дев'яти світів</p>
-      <p class="source-note">Джерела: Gylfaginning (Молодша Едда) · Völuspá та ін. (Старша Едда)</p>
+    <div class="container">
+      <div class="page-header">
+        <div class="ph-art"></div>
+        <h1>Створіння</h1>
+        <p class="subtitle">Монстри і містичні істоти дев'яти світів</p>
+        <p class="source-note">GYLFAGINNING · VÖLUSPÁ · HYMISKVIÐA</p>
+      </div>
+      <div id="creatures-grid" class="cards-grid"></div>
     </div>
-    <div id="creatures-grid" class="cards-grid"></div>
   </div>
 
-  <!-- RUNES -->
+  <!-- ── RUNES ───────────────────────────────────────── -->
   <div id="page-runes" class="page-view">
-    <div class="page-header">
-      <span class="page-icon">ᚠ</span>
-      <h1>24 Руни Старшого Футарку</h1>
-      <p class="subtitle">Elder Futhark — найдавніша рунічна система (бл. 150–800 н.е.)</p>
-      <p class="source-note">Джерела: Норвезька, Ісландська, Англосакська рунічні поеми · Hávamál (Старша Едда)</p>
-    </div>
+    <div class="container">
+      <div class="page-header">
+        <div class="ph-art"></div>
+        <h1>Старший Футарк</h1>
+        <p class="subtitle">24 руни · бл. 150–800 н.е.</p>
+        <p class="source-note">РУНІЧНІ ПОЕМИ · HÁVAMÁL</p>
+      </div>
 
-    <div style="background:var(--bg-card);border:1px solid var(--border);border-left:3px solid var(--gold-dim);border-radius:8px;padding:1.2rem 1.5rem;margin-bottom:1.5rem;font-size:0.88rem;color:var(--text-secondary)">
-      <strong style="color:var(--gold-dim);display:block;margin-bottom:0.3rem">📖 Як Одін відкрив руни</strong>
-      Одін повісив себе на Іґґдрасілі, пронизаний власним списом Ґунґніром, без їжі і пиття — 9 днів і ночей. На дев'ятий день побачив руни і підняв їх. <em>(Hávamál 138–139)</em>
-    </div>
+      <div class="runes-intro">
+        <h4>Як Одін відкрив руни</h4>
+        <p>«Знаю, що висів я на дереві вітряному дев'ять довгих ночей, списом пробитий, відданий Одіну, сам собі сам».</p>
+        <cite>HÁVAMÁL · ст. 138–139</cite>
+      </div>
 
-    <div class="runes-filter">
-      <button class="aett-btn active" data-aett="all"    onclick="filterRunes('all')">Всі 24</button>
-      <button class="aett-btn"        data-aett="Фрейра" onclick="filterRunes('Фрейра')">Фрейра (1–8)</button>
-      <button class="aett-btn"        data-aett="Гаґалля" onclick="filterRunes('Гаґалля')">Гаґалля (9–16)</button>
-      <button class="aett-btn"        data-aett="Тюра"   onclick="filterRunes('Тюра')">Тюра (17–24)</button>
-    </div>
+      <div class="runes-filter">
+        <button class="aett-btn active" data-aett="all" onclick="filterRunes('all')">Усі 24</button>
+        <button class="aett-btn" data-aett="Фрейра" onclick="filterRunes('Фрейра')">Фрейра</button>
+        <button class="aett-btn" data-aett="Гаґалля" onclick="filterRunes('Гаґалля')">Гаґалля</button>
+        <button class="aett-btn" data-aett="Тюра" onclick="filterRunes('Тюра')">Тюра</button>
+      </div>
 
-    <div id="runes-grid" class="runes-grid"></div>
+      <div id="runes-grid" class="runes-grid"></div>
+    </div>
   </div>
 
-  <!-- ARTIFACTS -->
+  <!-- ── ARTIFACTS ───────────────────────────────────── -->
   <div id="page-artifacts" class="page-view">
-    <div class="page-header">
-      <span class="page-icon">🔨</span>
-      <h1>Артефакти та Чарівні Предмети</h1>
-      <p class="subtitle">Священні предмети богів і героїв</p>
-      <p class="source-note">Джерела: Skáldskaparmál, Gylfaginning (Молодша Едда)</p>
+    <div class="container">
+      <div class="page-header">
+        <div class="ph-art"></div>
+        <h1>Артефакти</h1>
+        <p class="subtitle">Священні предмети богів і героїв</p>
+        <p class="source-note">SKÁLDSKAPARMÁL · GYLFAGINNING</p>
+      </div>
+      <div id="artifacts-grid" class="artifacts-grid"></div>
     </div>
-    <div id="artifacts-grid"></div>
   </div>
 
-  <!-- EVENTS -->
+  <!-- ── EVENTS (з вкладкою Раґнарьок) ─────────────────── -->
   <div id="page-events" class="page-view">
-    <div class="page-header">
-      <span class="page-icon">📜</span>
-      <h1>Ключові Події</h1>
-      <p class="subtitle">Найважливіші міти і легенди нордичного космосу</p>
-      <p class="source-note">Джерела: Старша та Молодша Едда</p>
+    <div class="container">
+      <div class="page-header">
+        <div class="ph-art"></div>
+        <h1>Хронологія</h1>
+        <p class="subtitle">Від створення світу до Раґнарьоку</p>
+        <p class="source-note">VÖLUSPÁ · GYLFAGINNING · LOKASENNA</p>
+      </div>
+
+      <div class="events-tabs">
+        <button class="events-tab active" data-tab="events" onclick="switchEventsTab('events')">Події</button>
+        <button class="events-tab" data-tab="ragnarok" onclick="switchEventsTab('ragnarok')">Раґнарьок</button>
+      </div>
+
+      <div class="events-panel active" id="panel-events">
+        <div class="events-timeline">
+          <div id="events-timeline-list"></div>
+        </div>
+      </div>
+
+      <div class="events-panel" id="panel-ragnarok">
+        <div id="ragnarok-content"></div>
+      </div>
     </div>
-    <div id="events-timeline" class="events-timeline"></div>
   </div>
 
-  <!-- RAGNAROK -->
-  <div id="page-ragnarok" class="page-view">
-    <div class="ragnarok-header">
-      <span style="font-size:4rem;display:block;margin-bottom:0.5rem">🔥</span>
-      <h1>Раґнарьок</h1>
-      <p style="color:var(--text-secondary);font-style:italic;max-width:600px;margin:0.8rem auto 0">
-        Ragnarök — «Доля богів». Кінець існуючого світу і народження нового.<br>
-        <span style="font-size:0.85rem;color:var(--text-muted)">Völuspá (Старша Едда) · Gylfaginning (Молодша Едда)</span>
-      </p>
-    </div>
-    <div id="ragnarok-content" style="max-width:960px;margin:0 auto;padding:0 1rem"></div>
-  </div>
-
-  <!-- GENEALOGY -->
+  <!-- ── GENEALOGY ────────────────────────────────────── -->
   <div id="page-genealogy" class="page-view">
-    <div class="page-header">
-      <span class="page-icon">🌳</span>
-      <h1>Генеалогія Богів</h1>
-      <p class="subtitle">Від Першоістот до Раґнарьоку — інтерактивне дерево</p>
-      <p class="source-note">Джерела: Gylfaginning (Молодша Едда) · Völuspá (Старша Едда)</p>
-    </div>
+    <div class="container">
+      <div class="page-header">
+        <div class="ph-art"></div>
+        <h1>Родовід Богів</h1>
+        <p class="subtitle">Від Першоістот до Раґнарьоку</p>
+        <p class="source-note">GYLFAGINNING · VÖLUSPÁ</p>
+      </div>
 
-    <div id="genealogy-container">
-      <svg id="genealogy-svg" width="100%" xmlns="http://www.w3.org/2000/svg"></svg>
-      <div id="gen-legend" class="gen-legend"></div>
-    </div>
+      <p class="gen-hint">Натисни на персонажа для опису</p>
 
-    <!-- Text genealogy summary -->
-    <div style="margin-top:2rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem">
-      <div class="artifact-detail-card">
-        <div class="artifact-header"><span class="artifact-icon-display">🌟</span>
-          <div class="artifact-header-info"><h3>Першоістоти → Аси</h3></div>
-        </div>
-        <div class="artifact-body" style="font-size:0.88rem;color:var(--text-secondary)">
-          Ґіннунґаґап → Імір (першовелет) + Аудумбла (перша корова)<br>
-          Аудумбла вилизала Бурі → Бор → <strong style="color:var(--gold-light)">Одін + Ве + Вілі</strong><br>
-          Вони вбили Іміра і створили світ з його тіла.
-        </div>
+      <div id="gen-container" class="gen-container">
+        <svg id="gen-svg" class="gen-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+        <div id="gen-legend" class="gen-legend"></div>
       </div>
-      <div class="artifact-detail-card">
-        <div class="artifact-header"><span class="artifact-icon-display">⚡</span>
-          <div class="artifact-header-info"><h3>Рід Одіна</h3></div>
-        </div>
-        <div class="artifact-body" style="font-size:0.88rem;color:var(--text-secondary)">
-          Одін + Фріґґ → <strong style="color:var(--gold-light)">Бальдр, Хьод, Гермод</strong><br>
-          Одін + Йорд → <strong style="color:var(--gold-light)">Тор</strong><br>
-          Одін + Рінд → Валі · Одін + Ґрід → Відар<br>
-          Тор + Сів → Труд · Тор + Ярнсакса → Маґні, Моді<br>
-          Бальдр + Нанна → Форсеті
-        </div>
+
+      <div id="gen-info-panel" style="display:none"></div>
+    </div>
+  </div>
+
+  <!-- ── SOURCES ──────────────────────────────────────── -->
+  <div id="page-sources" class="page-view">
+    <div class="container">
+      <div class="page-header">
+        <div class="ph-art"></div>
+        <h1>Першоджерела</h1>
+        <p class="subtitle">Едди, рунічні поеми і давні скандинавські тексти</p>
+        <p class="source-note">ПЕРВИННІ ДЖЕРЕЛА</p>
       </div>
-      <div class="artifact-detail-card">
-        <div class="artifact-header"><span class="artifact-icon-display">🌿</span>
-          <div class="artifact-header-info"><h3>Рід Ньорда (Вани)</h3></div>
-        </div>
-        <div class="artifact-body" style="font-size:0.88rem;color:var(--text-secondary)">
-          Ньорд (+ сестра-ваніня) → <strong style="color:var(--forest)">Фрейр + Фрейя</strong><br>
-          Ньорд + Скаді (шлюб, розлучились)<br>
-          Фрейя + Одур → Хносс, Ґерсемі
-        </div>
-      </div>
-      <div class="artifact-detail-card">
-        <div class="artifact-header"><span class="artifact-icon-display">🔥</span>
-          <div class="artifact-header-info"><h3>Рід Локі</h3></div>
-        </div>
-        <div class="artifact-body" style="font-size:0.88rem;color:var(--text-secondary)">
-          Фарбауті + Лаувей → <strong style="color:var(--fire)">Локі</strong><br>
-          Локі + Анґрбода → <strong style="color:var(--fire)">Фенрір, Йормунґанд, Гель</strong><br>
-          Локі + Сіґюн → Нарві, Валі<br>
-          Локі (кобила) + Свадільфарі → Слейпнір
-        </div>
-      </div>
+      <div id="sources-list"></div>
     </div>
   </div>
 
 </main>
 
-<!-- ─── DETAIL OVERLAY ────────────────────────────────────────── -->
+<!-- ── DETAIL OVERLAY ────────────────────────────────── -->
 <div id="detail-overlay">
   <div id="detail-panel"></div>
 </div>
 
-<!-- ─── FOOTER ───────────────────────────────────────────────── -->
+<!-- ── FOOTER ────────────────────────────────────────── -->
 <footer id="site-footer">
-  <p>Скандинавська Міфологія — довідник на основі Едд і давніх текстів</p>
-  <p style="margin-top:0.5rem">
-    <a href="https://www.gutenberg.org/ebooks/author/7785" target="_blank">Project Gutenberg</a> ·
-    <a href="https://www.sacred-texts.com/neu/norse/" target="_blank">Sacred Texts</a> ·
-    <a href="https://github.com" target="_blank">GitHub</a>
-  </p>
+  <div class="footer-art" id="footer-art"></div>
+  <p>Scandia Mythos · Довідник Скандинавської Міфології</p>
+  <div class="footer-links">
+    На основі Старшої та Молодшої Едди ·
+    <a href="https://www.gutenberg.org/ebooks/author/7785" target="_blank">Project Gutenberg</a>
+  </div>
 </footer>
 
-<!-- ─── DATA FILES ────────────────────────────────────────────── -->
+<!-- ── DATA ────────────────────────────────────────────── -->
 <script src="data/worlds.js"></script>
 <script src="data/aesir.js"></script>
 <script src="data/vanir.js"></script>
@@ -331,8 +284,31 @@
 <script src="data/events.js"></script>
 <script src="data/genealogy.js"></script>
 
-<!-- ─── APP JS ───────────────────────────────────────────────── -->
+<!-- ── APP ────────────────────────────────────────────── -->
+<script src="js/art.js"></script>
+<script src="js/worldmap.js"></script>
+<script src="js/genealogy.js"></script>
 <script src="js/main.js"></script>
+
+<script>
+// Inject page header icons after load
+document.addEventListener('DOMContentLoaded', () => {
+  const phMap = {
+    'page-worlds':    'yggdrasil',
+    'page-gods':      'aegishjalmur',
+    'page-creatures': 'serpent',
+    'page-runes':     'runestone',
+    'page-artifacts': 'artifact',
+    'page-events':    'scroll',
+    'page-genealogy': 'tree',
+    'page-sources':   'book',
+  };
+  Object.entries(phMap).forEach(([pageId, artKey]) => {
+    const phArt = document.querySelector('#' + pageId + ' .ph-art');
+    if (phArt && ART[artKey]) phArt.innerHTML = ART[artKey];
+  });
+});
+</script>
 
 </body>
 </html>

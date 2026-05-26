@@ -1,34 +1,39 @@
-// ============================================================
-// NORSE MYTHOLOGY — main.js
-// Navigation, rendering all sections, search, detail panel
-// ============================================================
+// ═══════════════════════════════════════════════════════════
+// SCANDIA MYTHOS v4 — main.js
+// ═══════════════════════════════════════════════════════════
 
-// ─── CURRENT STATE ───────────────────────────────────────────
 let currentPage = 'home';
-let currentAett  = 'all';
-let detailData   = null;
+let currentAett = 'all';
+let eventsTab   = 'events';
+let searchIndex = null;
 
-// ─── DOM REFS ─────────────────────────────────────────────────
-const mainContent   = document.getElementById('main-content');
 const detailOverlay = document.getElementById('detail-overlay');
 const detailPanel   = document.getElementById('detail-panel');
 const searchInput   = document.getElementById('search-input');
 const searchResults = document.getElementById('search-results');
+const backBar       = document.getElementById('back-bar');
+const searchBar     = document.getElementById('search-bar');
 
-// ─── ROUTER ──────────────────────────────────────────────────
+// ── ROUTER ──────────────────────────────────────────────
 function navigate(page, pushState = true) {
   currentPage = page;
   document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active'));
   const view = document.getElementById('page-' + page);
   if (view) view.classList.add('active');
 
-  document.querySelectorAll('.nav-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.page === page);
-  });
+  // Back bar visibility (only when not on home)
+  if (backBar) {
+    backBar.classList.toggle('visible', page !== 'home');
+  }
+  if (searchBar) {
+    searchBar.classList.toggle('shifted', page !== 'home');
+  }
 
   if (pushState) history.pushState({ page }, '', '#' + page);
   window.scrollTo(0, 0);
+  closeDetail();
   renderPage(page);
+  triggerScrollReveal();
 }
 
 window.addEventListener('popstate', e => {
@@ -37,173 +42,129 @@ window.addEventListener('popstate', e => {
 
 function renderPage(page) {
   switch (page) {
-    case 'worlds':    renderWorlds();    break;
+    case 'home':      renderHome();      break;
+    case 'worlds':    renderWorldsPage(); break;
     case 'gods':      renderGods();      break;
     case 'creatures': renderCreatures(); break;
     case 'runes':     renderRunes();     break;
     case 'artifacts': renderArtifacts(); break;
     case 'events':    renderEvents();    break;
-    case 'ragnarok':  renderRagnarok();  break;
-    case 'genealogy': renderGenealogy(); break;
+    case 'genealogy': if (typeof renderGenealogy === 'function') renderGenealogy(); break;
+    case 'sources':   renderSources();   break;
   }
 }
 
-// ─── HELPERS ─────────────────────────────────────────────────
-function el(tag, cls, html) {
-  const e = document.createElement(tag);
-  if (cls) e.className = cls;
-  if (html !== undefined) e.innerHTML = html;
-  return e;
+// ── SCROLL REVEAL ───────────────────────────────────────
+function triggerScrollReveal() {
+  requestAnimationFrame(() => {
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('visible'), i * 50);
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+
+    document.querySelectorAll('.home-card:not(.visible), .entity-card:not(.visible), .rune-card:not(.visible), .event-card:not(.visible), .source-entry:not(.visible)').forEach(el => obs.observe(el));
+  });
 }
 
-function badge(text, type) {
-  return `<span class="card-badge ${type}">${text}</span>`;
-}
-
-function domainTags(arr) {
-  if (!arr || !arr.length) return '';
-  return `<div class="card-domains">${arr.map(d => `<span class="domain-tag">${d}</span>`).join('')}</div>`;
-}
-
-// ─── HOME ─────────────────────────────────────────────────────
+// ── HOME ────────────────────────────────────────────────
 function renderHome() {
+  const grid = document.getElementById('home-sections');
+  if (!grid || grid.dataset.rendered) return;
+
   const sections = [
-    { id:'worlds',    icon:'🌍', title:'Дев`ять Світів',    desc:'Іґґдрасіль і всесвіт' },
-    { id:'gods',      icon:'⚡', title:'Боги',               desc:'Аси, вани і богині' },
-    { id:'creatures', icon:'🐉', title:'Створіння',          desc:'Монстри і містичні істоти' },
-    { id:'runes',     icon:'ᚱ',  title:'24 Руни',            desc:'Старший Футарк' },
-    { id:'artifacts', icon:'🔨', title:'Артефакти',           desc:'Священні предмети богів' },
-    { id:'events',    icon:'📜', title:'Події',               desc:'Ключові міти і легенди' },
-    { id:'ragnarok',  icon:'🔥', title:'Раґнарьок',           desc:'Кінець і початок' },
-    { id:'genealogy', icon:'🌳', title:'Генеалогія',          desc:'Дерево богів' },
+    { id:'worlds',    art:'yggdrasil',    title:'Дев\'ять Світів',  desc:'Іґґдрасіль і всесвіт' },
+    { id:'gods',      art:'aegishjalmur', title:'Пантеон',           desc:'Аси, вани і богині' },
+    { id:'creatures', art:'serpent',      title:'Створіння',         desc:'Монстри і містичні істоти' },
+    { id:'runes',     art:'runestone',    title:'24 Руни',           desc:'Старший Футарк' },
+    { id:'artifacts', art:'artifact',     title:'Артефакти',         desc:'Священні предмети богів' },
+    { id:'events',    art:'scroll',       title:'Хронологія',        desc:'Ключові міти і Раґнарьок' },
+    { id:'genealogy', art:'tree',         title:'Родовід',           desc:'Дерево богів' },
+    { id:'sources',   art:'book',         title:'Першоджерела',      desc:'Едди і давні тексти' },
   ];
 
-  document.getElementById('home-nav-grid').innerHTML = sections.map(s =>
-    `<div class="home-nav-card" onclick="navigate('${s.id}')">
-      <span class="hn-icon">${s.icon}</span>
-      <div class="hn-title">${s.title}</div>
-      <div class="hn-desc">${s.desc}</div>
-    </div>`
-  ).join('');
-}
-
-// ─── WORLDS ──────────────────────────────────────────────────
-function renderWorlds() {
-  const grid = document.getElementById('worlds-grid');
-  if (grid.dataset.rendered) return;
-
-  grid.innerHTML = WORLDS_DATA.map(w => `
-    <div class="world-card" onclick="openWorldDetail('${w.id}')">
-      <div class="world-card-top">
-        <span class="world-symbol">${w.symbol}</span>
-        <div>
-          <div class="world-card-name">${w.name}</div>
-          <div class="world-card-oldnorse">${w.oldnorse} — «${w.translation}»</div>
-          <div class="world-card-inhabitants">${w.inhabitants}</div>
-        </div>
-      </div>
-      <div class="world-card-body">${w.description.substring(0, 160)}…</div>
-      <div class="world-card-footer">
-        <span style="font-size:0.75rem;color:var(--text-muted)">${w.source.split('(')[0]}</span>
-        <span class="ragnarok-note" title="${w.ragnarok_fate}">🔥 Раґнарьок</span>
-      </div>
-    </div>
-  `).join('');
-
-  // Yggdrasil inhabitants
-  const inh = document.getElementById('ygd-inhabitants');
-  if (inh) {
-    inh.innerHTML = YGGDRASIL_DATA.inhabitants.map(i =>
-      `<div class="step-item"><div class="step-title">${i.name}</div><div class="step-text">${i.description}</div></div>`
-    ).join('');
-  }
+  grid.innerHTML = sections.map((s, i) => `
+    <button class="home-card" onclick="navigate('${s.id}')">
+      <div class="hc-num">0${i+1}</div>
+      <div class="hc-art">${ART[s.art] || ''}</div>
+      <div class="hc-title">${s.title}</div>
+      <div class="hc-desc">${s.desc}</div>
+    </button>`).join('');
 
   grid.dataset.rendered = '1';
+
+  // Insert hero art
+  const heroArt = document.getElementById('hero-art');
+  if (heroArt) heroArt.innerHTML = ART.heroMjolnir;
+
+  // Footer art
+  const footerArt = document.getElementById('footer-art');
+  if (footerArt) footerArt.innerHTML = ART.aegishjalmur;
 }
 
-function openWorldDetail(id) {
-  const w = WORLDS_DATA.find(x => x.id === id);
-  if (!w) return;
-
-  let html = `
-    <div class="detail-close"><button class="close-btn" onclick="closeDetail()">✕ Закрити</button></div>
-    <div style="font-size:3rem;text-align:center;margin-bottom:0.5rem">${w.symbol}</div>
-    <div class="detail-name">${w.name}</div>
-    <span class="detail-oldnorse">${w.oldnorse} — «${w.translation}»</span>
-
-    <div class="detail-section">
-      <h3>Опис</h3>
-      <p>${w.description}</p>
-    </div>
-
-    <div class="detail-section">
-      <div class="info-grid">
-        <div class="info-item"><div class="info-label">Мешканці</div><div class="info-value">${w.inhabitants}</div></div>
-        <div class="info-item"><div class="info-label">Розташування</div><div class="info-value">${w.location}</div></div>
-      </div>
-    </div>`;
-
-  if (w.details && w.details.length) {
-    html += `<div class="detail-section"><h3>Деталі</h3>
-      ${w.details.map(d => `<p style="margin-bottom:0.5rem;font-size:0.9rem;color:var(--text-secondary)">• ${d}</p>`).join('')}
-    </div>`;
-  }
-
-  if (w.halls && w.halls.length) {
-    html += `<div class="detail-section"><h3>Чертоги і зали</h3>
-      ${w.halls.map(h => `<div class="myth-block"><div class="myth-title">${h.name} <span style="color:var(--text-muted);font-size:0.8rem">(${h.owner})</span></div><div class="myth-text">${h.description}</div></div>`).join('')}
-    </div>`;
-  }
-
-  html += `
-    <div class="detail-section">
-      <div class="info-item" style="background:rgba(196,75,26,0.08);border-color:rgba(196,75,26,0.3)">
-        <div class="info-label" style="color:var(--fire)">🔥 Доля в Раґнарьок</div>
-        <div class="info-value">${w.ragnarok_fate}</div>
-      </div>
-    </div>
-    <div class="sources-block"><strong>Джерела</strong>${w.source}</div>`;
-
-  detailPanel.innerHTML = html;
-  detailOverlay.classList.add('open');
-}
-
-// ─── GODS ────────────────────────────────────────────────────
+// ── GODS ────────────────────────────────────────────────
 function renderGods() {
-  renderValkyriesNorns();
-  const aesirGrid   = document.getElementById('aesir-grid');
-  const goddessGrid = document.getElementById('goddess-grid');
-  const vanirGrid   = document.getElementById('vanir-grid');
+  const sections = [
+    { gridId:'aesir-grid',   countId:'aesir-count',   data: AESIR_DATA,      type:'aesir' },
+    { gridId:'goddess-grid', countId:'goddess-count', data: AESIR_GODDESSES, type:'aesir' },
+    { gridId:'vanir-grid',   countId:'vanir-count',   data: VANIR_DATA,      type:'vanir' },
+  ];
 
-  if (aesirGrid && !aesirGrid.dataset.rendered) {
-    aesirGrid.innerHTML = AESIR_DATA.map(g => renderGodCard(g, 'aesir')).join('');
-    aesirGrid.dataset.rendered = '1';
+  sections.forEach(({ gridId, countId, data, type }) => {
+    const grid = document.getElementById(gridId);
+    const count = document.getElementById(countId);
+    if (count) count.textContent = data.length;
+    if (!grid || grid.dataset.rendered) return;
+    grid.innerHTML = data.map((g, i) => renderEntityCard(g, type, i + 1, getGodArt(g.id))).join('');
+    grid.dataset.rendered = '1';
+  });
+
+  // Valkyries
+  const vt = document.getElementById('valkyries-tags');
+  if (vt && !vt.dataset.rendered && typeof VALKYRIES_DATA !== 'undefined') {
+    vt.innerHTML = VALKYRIES_DATA.names.map(v =>
+      `<span style="font-family:var(--f-display);font-size:0.7rem;letter-spacing:0.12em;
+       border:1px solid var(--border-md);padding:0.2rem 0.55rem;color:var(--text-dim);
+       cursor:default" title="${v.note||''}">${v.name}</span>`
+    ).join(' ');
+    vt.dataset.rendered = '1';
   }
-  if (goddessGrid && !goddessGrid.dataset.rendered) {
-    goddessGrid.innerHTML = AESIR_GODDESSES.map(g => renderGodCard(g, 'aesir')).join('');
-    goddessGrid.dataset.rendered = '1';
-  }
-  if (vanirGrid && !vanirGrid.dataset.rendered) {
-    vanirGrid.innerHTML = VANIR_DATA.map(g => renderGodCard(g, 'vanir')).join('');
-    vanirGrid.dataset.rendered = '1';
+
+  // Norns
+  const ni = document.getElementById('norns-grid');
+  if (ni && !ni.dataset.rendered && typeof NORNS_DATA !== 'undefined') {
+    ni.innerHTML = NORNS_DATA.norns.map(n => `
+      <div style="background:var(--bg-card);border:1px solid var(--border);padding:0.9rem">
+        <div style="font-family:var(--f-display);font-size:0.72rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--silver);margin-bottom:0.3rem">${n.name}</div>
+        <div style="font-style:italic;color:var(--text-dim);font-size:0.95rem;line-height:1.5">${n.meaning}</div>
+        <div style="font-size:0.85rem;color:var(--text-muted);margin-top:0.4rem">${n.role||''}</div>
+      </div>`).join('');
+    ni.dataset.rendered = '1';
   }
 }
 
-function renderGodCard(g, type) {
-  const domains = (g.domain || []).slice(0, 4);
+function getGodArt(id) {
+  return ART.cards[id] || ART.cards.godGeneric;
+}
+
+function renderEntityCard(g, type, idx, artSvg) {
+  const typeBadge = type === 'vanir' ? 'Ван' : (g.type && g.type.startsWith('Богиня') ? 'Богиня' : 'Ас');
+  const domain = (g.domain || []).slice(0,3).join(' · ') || '—';
+
   return `
-    <div class="entity-card" style="--card-accent:${type === 'vanir' ? 'var(--forest)' : 'var(--gold)'}"
-         onclick="openGodDetail('${g.id}', '${type}')">
-      <div class="card-header">
-        <div>
-          <div class="card-name">${g.name}</div>
-          <div class="card-oldnorse">${g.oldnorse || ''}</div>
-        </div>
-        ${badge(g.type || type, type)}
+    <button class="entity-card" onclick="openGodDetail('${g.id}','${type}')">
+      <div class="ec-art">${artSvg || ART.cards.godGeneric}</div>
+      <div class="ec-type-badge">${typeBadge}</div>
+      <div class="ec-body">
+        <div class="ec-num">№ ${String(idx).padStart(2,'0')}</div>
+        <div class="ec-name">${g.name}</div>
+        <div class="ec-oldnorse">${g.oldnorse || ''}</div>
+        <div class="ec-domain">${domain}</div>
       </div>
-      <div class="card-desc">${(g.description || '').substring(0, 130)}…</div>
-      ${domainTags(domains)}
-    </div>`;
+    </button>`;
 }
 
 function openGodDetail(id, type) {
@@ -211,89 +172,87 @@ function openGodDetail(id, type) {
   const g = list.find(x => x.id === id);
   if (!g) return;
 
-  let html = `
-    <div class="detail-close"><button class="close-btn" onclick="closeDetail()">✕ Закрити</button></div>
-    <div class="detail-name">${g.name}</div>
-    <span class="detail-oldnorse">${g.oldnorse || ''}${g.aliases ? ' · ' + g.aliases.slice(0,2).join(', ') : ''}</span>
-    <div class="tags-row" style="margin-bottom:1.2rem">${(g.domain||[]).map(d=>`<span class="tag">${d}</span>`).join('')}</div>
+  const typeBadge = type === 'vanir' ? 'Ван' : (g.type && g.type.startsWith('Богиня') ? 'Богиня' : 'Ас');
+  const artSvg = getGodArt(g.id);
 
-    <div class="detail-section"><h3>Опис</h3><p>${g.description || ''}</p></div>`;
+  let html = `
+    <div class="detail-close-bar"><button class="close-btn" onclick="closeDetail()">Закрити ×</button></div>
+    <div class="dp-art">${artSvg}</div>
+    <div class="detail-body">
+      <div class="dp-eyebrow">Пантеон · ${typeBadge}</div>
+      <h1 class="dp-name">${g.name}</h1>
+      <span class="dp-oldnorse">${g.oldnorse || ''}${g.aliases && g.aliases.length ? ' · ' + g.aliases.slice(0,2).join(' · ') : ''}</span>
+
+      <div class="dp-section"><h3>Опис</h3><p>${g.description || ''}</p></div>`;
 
   const infoItems = [
     ['Тип', g.type],
     ['Батьки', g.parents],
-    ['Чоловік/Дружина', Array.isArray(g.consorts) ? g.consorts.join(', ') : g.consorts],
-    ['Діти', Array.isArray(g.children) ? g.children.join(', ') : g.children],
+    ['Дружина/Чоловік', Array.isArray(g.consorts) ? g.consorts.join(' · ') : g.consorts],
+    ['Діти', Array.isArray(g.children) ? g.children.slice(0,4).join(' · ') : g.children],
     ['Домівка', g.home],
     ['День тижня', g.weekday],
     ['Рим. відповідник', g.roman_equivalent],
   ].filter(([,v]) => v);
 
   if (infoItems.length) {
-    html += `<div class="detail-section"><h3>Дані</h3><div class="info-grid">
-      ${infoItems.map(([l,v]) => `<div class="info-item"><div class="info-label">${l}</div><div class="info-value" style="font-size:0.85rem">${v}</div></div>`).join('')}
-    </div></div>`;
-  }
-
-  if (g.companions && g.companions.length) {
-    html += `<div class="detail-section"><h3>Супутники</h3>
-      ${g.companions.map(c=>`<div class="myth-block"><div class="myth-title">${c.name}</div><div class="myth-text">${c.description}</div></div>`).join('')}
-    </div>`;
-  }
-
-  if (g.myths && g.myths.length) {
-    html += `<div class="detail-section"><h3>Міти</h3>
-      ${g.myths.map(m=>`<div class="myth-block"><div class="myth-title">${m.title}</div><div class="myth-text">${m.text}</div></div>`).join('')}
-    </div>`;
-  }
-
-  const artList = Array.isArray(g.artifacts) && g.artifacts.length
-    ? g.artifacts.filter(a => a)
-    : [];
-  if (artList.length) {
-    const isObj = typeof artList[0] === 'object';
-    html += `<div class="detail-section"><h3>Артефакти</h3><ul class="artifact-list">
-      ${artList.map(a => isObj
-        ? `<li><strong>${a.name}</strong>${a.description}</li>`
-        : `<li>${a}</li>`
-      ).join('')}
-    </ul></div>`;
-  }
-
-  if (g.ragnarok_fate) {
-    html += `<div class="detail-section">
-      <div class="info-item" style="background:rgba(196,75,26,0.08);border-color:rgba(196,75,26,0.3)">
-        <div class="info-label" style="color:var(--fire)">🔥 Доля в Раґнарьок</div>
-        <div class="info-value">${g.ragnarok_fate}</div>
+    html += `<div class="dp-section"><h3>Атрибути</h3>
+      <div class="dp-info-grid">
+        ${infoItems.map(([l,v]) => `<div class="dp-info-item"><div class="dp-info-label">${l}</div><div class="dp-info-value">${v}</div></div>`).join('')}
       </div>
     </div>`;
   }
 
-  html += `<div class="sources-block"><strong>Джерела</strong>${g.source || ''}</div>`;
+  if (g.companions && g.companions.length) {
+    html += `<div class="dp-section"><h3>Супутники</h3>
+      ${g.companions.map(c => `<div class="dp-myth"><div class="dp-myth-title">${c.name}</div><div class="dp-myth-text">${c.description}</div></div>`).join('')}
+    </div>`;
+  }
+
+  if (g.myths && g.myths.length) {
+    html += `<div class="dp-section"><h3>Міти</h3>
+      ${g.myths.map(m => `<div class="dp-myth"><div class="dp-myth-title">${m.title}</div><div class="dp-myth-text">${m.text}</div></div>`).join('')}
+    </div>`;
+  }
+
+  const artList = (Array.isArray(g.artifacts) ? g.artifacts : []).filter(a => a);
+  if (artList.length) {
+    const isObj = typeof artList[0] === 'object';
+    html += `<div class="dp-section"><h3>Артефакти</h3><ul class="dp-list">
+      ${artList.map(a => isObj ? `<li><strong>${a.name}.</strong> ${a.description}</li>` : `<li>${a}</li>`).join('')}
+    </ul></div>`;
+  }
+
+  if (g.ragnarok_fate) {
+    html += `<div class="dp-ragnarok"><div class="dp-ragnarok-label">Доля в Раґнарьок</div><div class="dp-ragnarok-text">${g.ragnarok_fate}</div></div>`;
+  }
+
+  html += `<div class="dp-sources"><span class="dp-sources-label">Джерела</span>${g.source || ''}</div>
+    </div>`;
 
   detailPanel.innerHTML = html;
   detailOverlay.classList.add('open');
 }
 
-// ─── CREATURES ───────────────────────────────────────────────
+// ── CREATURES ───────────────────────────────────────────
 function renderCreatures() {
   const grid = document.getElementById('creatures-grid');
-  if (grid.dataset.rendered) return;
+  if (!grid || grid.dataset.rendered) return;
 
-  grid.innerHTML = CREATURES_DATA.map(c => `
-    <div class="entity-card" style="--card-accent:var(--fire)" onclick="openCreatureDetail('${c.id}')">
-      <div class="card-header">
-        <div>
-          <div class="card-name">${c.name}</div>
-          <div class="card-oldnorse">${c.oldnorse || ''}</div>
+  grid.innerHTML = CREATURES_DATA.map((c, i) => {
+    const art = ART.cards[c.id] || ART.cards.creatureGeneric;
+    return `
+      <button class="entity-card" onclick="openCreatureDetail('${c.id}')">
+        <div class="ec-art">${art}</div>
+        <div class="ec-type-badge">${(c.category || '').split('/')[0].trim().substring(0,12)}</div>
+        <div class="ec-body">
+          <div class="ec-num">№ ${String(i+1).padStart(2,'0')}</div>
+          <div class="ec-name">${c.name}</div>
+          <div class="ec-oldnorse">${c.oldnorse || ''}</div>
+          <div class="ec-domain">${(c.category || '—').toUpperCase()}</div>
         </div>
-        ${badge(c.category, c.category.includes('Монстр') || c.category.includes('Дракон') ? 'monster' : 'creature')}
-      </div>
-      <div class="card-desc">${(c.description||'').substring(0,130)}…</div>
-      ${c.ragnarok_role ? `<div class="card-footer">🔥 ${c.ragnarok_role.substring(0,80)}…</div>` : ''}
-    </div>`
-  ).join('');
-
+      </button>`;
+  }).join('');
   grid.dataset.rendered = '1';
 }
 
@@ -301,70 +260,129 @@ function openCreatureDetail(id) {
   const c = CREATURES_DATA.find(x => x.id === id);
   if (!c) return;
 
+  const art = ART.cards[c.id] || ART.cards.creatureGeneric;
+
   let html = `
-    <div class="detail-close"><button class="close-btn" onclick="closeDetail()">✕ Закрити</button></div>
-    <div class="detail-name">${c.name}</div>
-    <span class="detail-oldnorse">${c.oldnorse || ''}${c.aliases ? ' · ' + (Array.isArray(c.aliases) ? c.aliases.join(', ') : c.aliases) : ''}</span>
-    <div class="detail-section"><h3>Опис</h3><p>${c.description||''}</p></div>`;
+    <div class="detail-close-bar"><button class="close-btn" onclick="closeDetail()">Закрити ×</button></div>
+    <div class="dp-art">${art}</div>
+    <div class="detail-body">
+      <div class="dp-eyebrow">Створіння · ${c.category || ''}</div>
+      <h1 class="dp-name">${c.name}</h1>
+      <span class="dp-oldnorse">${c.oldnorse || ''}${c.aliases ? ' · ' + (Array.isArray(c.aliases) ? c.aliases.join(' · ') : c.aliases) : ''}</span>
+      <div class="dp-section"><h3>Опис</h3><p>${c.description || ''}</p></div>`;
 
-  const infoItems = [
-    ['Категорія', c.category],
-    ['Батьки', c.parents],
-    ['Брати/Сестри', Array.isArray(c.siblings) ? c.siblings.join(', ') : c.siblings],
-    ['Власник', c.owner],
-  ].filter(([,v]) => v);
-
-  if (infoItems.length) {
-    html += `<div class="detail-section"><h3>Дані</h3><div class="info-grid">
-      ${infoItems.map(([l,v]) => `<div class="info-item"><div class="info-label">${l}</div><div class="info-value" style="font-size:0.85rem">${v}</div></div>`).join('')}
-    </div></div>`;
+  const info = [['Батьки', c.parents], ['Брати/Сестри', Array.isArray(c.siblings) ? c.siblings.join(' · ') : c.siblings], ['Власник', c.owner]].filter(([,v]) => v);
+  if (info.length) {
+    html += `<div class="dp-section"><h3>Атрибути</h3>
+      <div class="dp-info-grid">${info.map(([l,v]) => `<div class="dp-info-item"><div class="dp-info-label">${l}</div><div class="dp-info-value">${v}</div></div>`).join('')}</div>
+    </div>`;
   }
 
   if (c.details && c.details.length) {
-    html += `<div class="detail-section"><h3>Деталі</h3>
-      ${c.details.map(d=>`<p style="margin-bottom:0.5rem;font-size:0.9rem;color:var(--text-secondary)">• ${d}</p>`).join('')}
-    </div>`;
+    html += `<div class="dp-section"><h3>Деталі</h3><ul class="dp-list">${c.details.map(d => `<li>${d}</li>`).join('')}</ul></div>`;
   }
 
   if (c.myths && c.myths.length) {
-    html += `<div class="detail-section"><h3>Міти</h3>
-      ${c.myths.map(m=>`<div class="myth-block"><div class="myth-title">${m.title}</div><div class="myth-text">${m.text}</div></div>`).join('')}
-    </div>`;
+    html += `<div class="dp-section"><h3>Міти</h3>${c.myths.map(m => `<div class="dp-myth"><div class="dp-myth-title">${m.title}</div><div class="dp-myth-text">${m.text}</div></div>`).join('')}</div>`;
   }
 
   if (c.ragnarok_role) {
-    html += `<div class="detail-section">
-      <div class="info-item" style="background:rgba(196,75,26,0.08);border-color:rgba(196,75,26,0.3)">
-        <div class="info-label" style="color:var(--fire)">🔥 Роль у Раґнарьок</div>
-        <div class="info-value">${c.ragnarok_role}</div>
-      </div>
-    </div>`;
+    html += `<div class="dp-ragnarok"><div class="dp-ragnarok-label">Роль у Раґнарьок</div><div class="dp-ragnarok-text">${c.ragnarok_role}</div></div>`;
   }
 
-  html += `<div class="sources-block"><strong>Джерела</strong>${c.source||''}</div>`;
+  html += `<div class="dp-sources"><span class="dp-sources-label">Джерела</span>${c.source || ''}</div></div>`;
+
   detailPanel.innerHTML = html;
   detailOverlay.classList.add('open');
 }
 
-// ─── RUNES ───────────────────────────────────────────────────
+// ── ARTIFACTS ───────────────────────────────────────────
+function renderArtifacts() {
+  const grid = document.getElementById('artifacts-grid');
+  if (!grid || grid.dataset.rendered) return;
+
+  grid.innerHTML = ARTIFACTS_DATA.map((a, i) => {
+    const art = ART.cards[a.id] || ART.cards.artifactGeneric;
+    return `
+      <button class="entity-card" onclick="openArtifactDetail('${a.id}')">
+        <div class="ec-art">${art}</div>
+        <div class="ec-type-badge">${(a.type || '').substring(0,14)}</div>
+        <div class="ec-body">
+          <div class="ec-num">№ ${String(i+1).padStart(2,'0')}</div>
+          <div class="ec-name">${a.name}</div>
+          <div class="ec-oldnorse">${a.oldnorse || ''}${a.translation ? ' · «' + a.translation + '»' : ''}</div>
+          <div class="ec-domain">${(a.owner || a.type || '—').toUpperCase()}</div>
+        </div>
+      </button>`;
+  }).join('');
+  grid.dataset.rendered = '1';
+}
+
+function openArtifactDetail(id) {
+  const a = ARTIFACTS_DATA.find(x => x.id === id);
+  if (!a) return;
+
+  const art = ART.cards[a.id] || ART.cards.artifactGeneric;
+
+  let html = `
+    <div class="detail-close-bar"><button class="close-btn" onclick="closeDetail()">Закрити ×</button></div>
+    <div class="dp-art">${art}</div>
+    <div class="detail-body">
+      <div class="dp-eyebrow">Артефакт · ${a.type}</div>
+      <h1 class="dp-name">${a.name}</h1>
+      <span class="dp-oldnorse">${a.oldnorse}${a.translation ? ' · «' + a.translation + '»' : ''}</span>
+      <div class="dp-section"><h3>Опис</h3><p>${a.description}</p></div>`;
+
+  const info = [['Власник', a.owner], ['Тип', a.type], ['Виготовили', a.makers]].filter(([,v]) => v);
+  if (info.length) {
+    html += `<div class="dp-section"><h3>Атрибути</h3>
+      <div class="dp-info-grid">${info.map(([l,v]) => `<div class="dp-info-item"><div class="dp-info-label">${l}</div><div class="dp-info-value">${v}</div></div>`).join('')}</div>
+    </div>`;
+  }
+
+  if (a.properties && a.properties.length) {
+    html += `<div class="dp-section"><h3>Властивості</h3><ul class="dp-list">${a.properties.map(p => `<li>${p}</li>`).join('')}</ul></div>`;
+  }
+
+  if (a.composition) {
+    html += `<div class="dp-section"><h3>Склад</h3><ul class="dp-list">${a.composition.map(c => `<li>${c}</li>`).join('')}</ul></div>`;
+  }
+
+  if (a.myths && a.myths.length) {
+    html += `<div class="dp-section"><h3>Міти</h3>${a.myths.map(m => `<div class="dp-myth"><div class="dp-myth-title">${m.title}</div><div class="dp-myth-text">${m.text}</div></div>`).join('')}</div>`;
+  }
+
+  if (a.flaw) {
+    html += `<div class="dp-section"><h3>Вада</h3><p style="font-style:italic">${a.flaw}</p></div>`;
+  }
+
+  if (a.cultural_significance) {
+    html += `<div class="dp-section"><h3>Культурне значення</h3><p>${a.cultural_significance}</p></div>`;
+  }
+
+  html += `<div class="dp-sources"><span class="dp-sources-label">Джерела</span>${a.source || ''}</div></div>`;
+
+  detailPanel.innerHTML = html;
+  detailOverlay.classList.add('open');
+}
+
+// ── RUNES ───────────────────────────────────────────────
 function renderRunes() {
   const grid = document.getElementById('runes-grid');
+  if (!grid) return;
   if (grid.dataset.rendered && currentAett === grid.dataset.aett) return;
 
-  const filtered = currentAett === 'all'
-    ? RUNES_DATA
-    : RUNES_DATA.filter(r => r.aett === currentAett);
+  const filtered = currentAett === 'all' ? RUNES_DATA : RUNES_DATA.filter(r => r.aett === currentAett);
 
   grid.innerHTML = filtered.map(r => `
-    <div class="rune-card" onclick="openRuneDetail('${r.id}')">
-      <span class="rune-translit">${r.transliteration}</span>
-      <div class="rune-symbol-display">${r.symbol}</div>
-      <div class="rune-name-display">${r.name}</div>
-      <div class="rune-oldnorse-display">${r.oldnorse}</div>
-      <div class="rune-meaning-display">${r.meaning}</div>
-      <div class="rune-aett-badge">Етт: ${r.aett}</div>
-    </div>`
-  ).join('');
+    <button class="rune-card" onclick="openRuneDetail('${r.id}')">
+      <span class="rune-pos">${String(r.position).padStart(2,'0')}</span>
+      <span class="rune-tl">${r.transliteration}</span>
+      <span class="rune-symbol">${r.symbol}</span>
+      <div class="rune-name">${r.name}</div>
+      <div class="rune-oldnorse">${r.oldnorse}</div>
+      <div class="rune-meaning">${r.meaning}</div>
+    </button>`).join('');
 
   grid.dataset.rendered = '1';
   grid.dataset.aett = currentAett;
@@ -373,8 +391,10 @@ function renderRunes() {
 function filterRunes(aett) {
   currentAett = aett;
   document.querySelectorAll('.aett-btn').forEach(b => b.classList.toggle('active', b.dataset.aett === aett));
-  document.getElementById('runes-grid').dataset.rendered = '';
+  const grid = document.getElementById('runes-grid');
+  if (grid) grid.dataset.rendered = '';
   renderRunes();
+  triggerScrollReveal();
 }
 
 function openRuneDetail(id) {
@@ -382,154 +402,58 @@ function openRuneDetail(id) {
   if (!r) return;
 
   let html = `
-    <div class="detail-close"><button class="close-btn" onclick="closeDetail()">✕ Закрити</button></div>
-    <div style="text-align:center;margin-bottom:1rem">
-      <span style="font-size:6rem;color:var(--gold-light);text-shadow:0 0 30px rgba(201,168,76,0.5)">${r.symbol}</span>
+    <div class="detail-close-bar"><button class="close-btn" onclick="closeDetail()">Закрити ×</button></div>
+    <div class="dp-art" style="background:var(--bg-page2)">
+      <span style="font-family:var(--f-display);font-size:8rem;color:var(--ink);line-height:1">${r.symbol}</span>
     </div>
-    <div class="detail-name">${r.name}</div>
-    <span class="detail-oldnorse">${r.oldnorse} · Прото-герм.: ${r.proto_germanic}</span>
+    <div class="detail-body">
+      <div class="dp-eyebrow">Старший Футарк · ${String(r.position).padStart(2,'0')}/24 · Етт ${r.aett}</div>
+      <h1 class="dp-name" style="text-align:center">${r.name}</h1>
+      <span class="dp-oldnorse" style="text-align:center;display:block">${r.oldnorse} · ${r.proto_germanic}</span>
 
-    <div class="detail-section">
-      <div class="info-grid">
-        <div class="info-item"><div class="info-label">Транслітерація</div><div class="info-value" style="font-size:1.5rem;font-family:var(--font-heading);color:var(--gold)">${r.transliteration}</div></div>
-        <div class="info-item"><div class="info-label">Позиція в Футарку</div><div class="info-value">${r.position} / 24 · Етт: ${r.aett}</div></div>
-      </div>
-    </div>
+      <div class="dp-section"><div class="dp-info-grid">
+        <div class="dp-info-item"><div class="dp-info-label">Транслітерація</div><div class="dp-info-value" style="font-size:1.8rem;font-family:var(--f-display);color:var(--ink)">${r.transliteration}</div></div>
+        <div class="dp-info-item"><div class="dp-info-label">Значення</div><div class="dp-info-value">${r.meaning}</div></div>
+      </div></div>
 
-    <div class="detail-section"><h3>Значення</h3><p style="font-size:1.05rem;color:var(--gold-light)">${r.meaning}</p></div>
-    <div class="detail-section"><h3>Опис</h3><p>${r.description}</p></div>`;
+      <div class="dp-section"><h3>Опис</h3><p>${r.description}</p></div>`;
 
-  if (r.norwegian_poem) {
-    html += `<div class="detail-section"><h3>Норвезька рунічна поема</h3>
-      <div class="myth-block"><div class="myth-text" style="font-style:italic">${r.norwegian_poem}</div></div>
-    </div>`;
-  }
-  if (r.icelandic_poem) {
-    html += `<div class="detail-section"><h3>Ісландська рунічна поема</h3>
-      <div class="myth-block"><div class="myth-text" style="font-style:italic">${r.icelandic_poem}</div></div>
-    </div>`;
-  }
-  if (r.anglo_saxon_poem) {
-    html += `<div class="detail-section"><h3>Англосакська рунічна поема</h3>
-      <div class="myth-block"><div class="myth-text" style="font-style:italic">${r.anglo_saxon_poem}</div></div>
-    </div>`;
-  }
-  if (r.god_connection) {
-    html += `<div class="detail-section">
-      <div class="info-item"><div class="info-label">Пов'язаний бог</div><div class="info-value">${r.god_connection}</div></div>
-    </div>`;
-  }
+  if (r.norwegian_poem) html += `<div class="dp-section"><h3>Норвезька поема</h3><div class="dp-myth"><div class="dp-myth-text">${r.norwegian_poem}</div></div></div>`;
+  if (r.icelandic_poem) html += `<div class="dp-section"><h3>Ісландська поема</h3><div class="dp-myth"><div class="dp-myth-text">${r.icelandic_poem}</div></div></div>`;
+  if (r.anglo_saxon_poem) html += `<div class="dp-section"><h3>Англосакська поема</h3><div class="dp-myth"><div class="dp-myth-text">${r.anglo_saxon_poem}</div></div></div>`;
+  if (r.god_connection) html += `<div class="dp-section"><div class="dp-info-item"><div class="dp-info-label">Пов'язаний бог</div><div class="dp-info-value">${r.god_connection}</div></div></div>`;
+
+  html += `</div>`;
 
   detailPanel.innerHTML = html;
   detailOverlay.classList.add('open');
 }
 
-// ─── ARTIFACTS ───────────────────────────────────────────────
-function renderArtifacts() {
-  const grid = document.getElementById('artifacts-grid');
-  if (grid.dataset.rendered) return;
-
-  const icons = { mjolnir:'🔨', gungnir:'🗡️', draupnir:'💍', gleipnir:'🪢',
-                  brisingamen:'📿', skidbladnir:'⛵', gullinbursti:'🐗',
-                  bifrost:'🌈', hlidskjalf:'👑', gjallhorn:'📯', mead_of_poetry:'🍯' };
-
-  grid.innerHTML = ARTIFACTS_DATA.map(a => `
-    <div class="artifact-detail-card" style="cursor:pointer" onclick="openArtifactDetail('${a.id}')">
-      <div class="artifact-header">
-        <span class="artifact-icon-display">${icons[a.id]||'✦'}</span>
-        <div class="artifact-header-info">
-          <h3>${a.name}</h3>
-          <div class="owner">Власник: ${a.owner || '—'} · ${a.type}</div>
-          ${a.makers ? `<div style="font-size:0.78rem;color:var(--text-muted);margin-top:0.2rem">Виготовили: ${a.makers}</div>` : ''}
-        </div>
-      </div>
-      <div class="artifact-body">
-        <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:0.8rem">${a.description}</p>
-        ${a.properties ? `<ul class="artifact-props">${a.properties.map(p=>`<li>${p}</li>`).join('')}</ul>` : ''}
-      </div>
-    </div>`
-  ).join('');
-
-  grid.dataset.rendered = '1';
-}
-
-function openArtifactDetail(id) {
-  const a = ARTIFACTS_DATA.find(x => x.id === id);
-  if (!a) return;
-
-  const icons = { mjolnir:'🔨', gungnir:'🗡️', draupnir:'💍', gleipnir:'🪢',
-                  brisingamen:'📿', skidbladnir:'⛵', gullinbursti:'🐗',
-                  bifrost:'🌈', hlidskjalf:'👑', gjallhorn:'📯', mead_of_poetry:'🍯' };
-
-  let html = `
-    <div class="detail-close"><button class="close-btn" onclick="closeDetail()">✕ Закрити</button></div>
-    <div style="text-align:center;font-size:4rem;margin-bottom:0.5rem">${icons[a.id]||'✦'}</div>
-    <div class="detail-name">${a.name}</div>
-    <span class="detail-oldnorse">${a.oldnorse}${a.translation ? ' — «' + a.translation + '»' : ''}</span>
-
-    <div class="detail-section"><div class="info-grid">
-      ${a.owner ? `<div class="info-item"><div class="info-label">Власник</div><div class="info-value">${a.owner}</div></div>` : ''}
-      <div class="info-item"><div class="info-label">Тип</div><div class="info-value">${a.type}</div></div>
-      ${a.makers ? `<div class="info-item" style="grid-column:1/-1"><div class="info-label">Виготовили</div><div class="info-value">${a.makers}</div></div>` : ''}
-    </div></div>
-
-    <div class="detail-section"><h3>Опис</h3><p>${a.description}</p></div>`;
-
-  if (a.properties && a.properties.length) {
-    html += `<div class="detail-section"><h3>Властивості</h3>
-      <ul class="artifact-props">${a.properties.map(p=>`<li>${p}</li>`).join('')}</ul>
-    </div>`;
-  }
-  if (a.composition) {
-    html += `<div class="detail-section"><h3>Склад (${a.name})</h3>
-      <ul class="artifact-props">${a.composition.map(c=>`<li>${c}</li>`).join('')}</ul>
-    </div>`;
-  }
-  if (a.vessels) {
-    html += `<div class="detail-section"><h3>Три посудини</h3>
-      ${a.vessels.map(v=>`<div class="myth-block"><div class="myth-title">${v.name}</div><div class="myth-text">${v.meaning}</div></div>`).join('')}
-    </div>`;
-  }
-  if (a.myths && a.myths.length) {
-    html += `<div class="detail-section"><h3>Міти</h3>
-      ${a.myths.map(m=>`<div class="myth-block"><div class="myth-title">${m.title}</div><div class="myth-text">${m.text}</div></div>`).join('')}
-    </div>`;
-  }
-  if (a.logic) {
-    html += `<div class="detail-section"><h3>Пояснення</h3><p>${a.logic}</p></div>`;
-  }
-  if (a.flaw) {
-    html += `<div class="detail-section">
-      <div class="info-item" style="border-color:rgba(196,75,26,0.3)">
-        <div class="info-label" style="color:var(--fire)">Вада</div>
-        <div class="info-value">${a.flaw}</div>
-      </div>
-    </div>`;
-  }
-  if (a.cultural_significance) {
-    html += `<div class="detail-section"><h3>Культурне значення</h3><p>${a.cultural_significance}</p></div>`;
-  }
-
-  html += `<div class="sources-block"><strong>Джерела</strong>${a.source||''}</div>`;
-  detailPanel.innerHTML = html;
-  detailOverlay.classList.add('open');
-}
-
-// ─── EVENTS ──────────────────────────────────────────────────
+// ── EVENTS (with Ragnarok tab) ──────────────────────────
 function renderEvents() {
-  const timeline = document.getElementById('events-timeline');
-  if (timeline.dataset.rendered) return;
+  renderEventsTimeline();
+  renderRagnarokContent();
+}
 
-  timeline.innerHTML = EVENTS_DATA.map(e => `
-    <div class="event-card" onclick="openEventDetail('${e.id}')">
-      <div class="event-era">${e.era}</div>
-      <div class="event-title">${e.title} <span class="oldnorse">${e.oldnorse}</span></div>
-      <div class="event-desc">${e.description}</div>
-      <div style="margin-top:0.7rem;font-size:0.78rem;color:var(--text-muted)">${e.sources[0]}</div>
-    </div>`
-  ).join('');
+function switchEventsTab(tab) {
+  eventsTab = tab;
+  document.querySelectorAll('.events-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.querySelectorAll('.events-panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + tab));
+  triggerScrollReveal();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
-  timeline.dataset.rendered = '1';
+function renderEventsTimeline() {
+  const tl = document.getElementById('events-timeline-list');
+  if (!tl || tl.dataset.rendered) return;
+  tl.innerHTML = EVENTS_DATA.map((e, i) => `
+    <button class="event-card" onclick="openEventDetail('${e.id}')">
+      <div class="ev-era">${String(i+1).padStart(2,'0')} · ${e.era}</div>
+      <div class="ev-title">${e.title}</div>
+      <div class="ev-desc">${e.description}</div>
+      <div class="ev-source">${e.sources[0]}</div>
+    </button>`).join('');
+  tl.dataset.rendered = '1';
 }
 
 function openEventDetail(id) {
@@ -537,254 +461,265 @@ function openEventDetail(id) {
   if (!e) return;
 
   let html = `
-    <div class="detail-close"><button class="close-btn" onclick="closeDetail()">✕ Закрити</button></div>
-    <div class="detail-name">${e.title}</div>
-    <span class="detail-oldnorse">${e.oldnorse}</span>
-    <div class="detail-section">
-      <div class="info-item"><div class="info-label">Ера</div><div class="info-value">${e.era}</div></div>
-    </div>
-    <div class="detail-section"><h3>Опис</h3><p>${e.description}</p></div>
-    <div class="detail-section"><h3>Послідовність подій</h3>
-      <div class="step-list">
-        ${e.sequence.map(s=>`<div class="step-item"><div class="step-title">${s.title}</div><div class="step-text">${s.text}</div></div>`).join('')}
+    <div class="detail-close-bar"><button class="close-btn" onclick="closeDetail()">Закрити ×</button></div>
+    <div class="dp-art">${ART.scroll}</div>
+    <div class="detail-body">
+      <div class="dp-eyebrow">Подія · ${e.era}</div>
+      <h1 class="dp-name">${e.title}</h1>
+      <span class="dp-oldnorse">${e.oldnorse}</span>
+      <div class="dp-section"><h3>Опис</h3><p>${e.description}</p></div>
+      <div class="dp-section"><h3>Послідовність</h3>
+        <div class="step-list">${e.sequence.map(s => `
+          <div class="step-item" style="background:var(--bg-page2);border-left-color:var(--silver-dim)">
+            <div class="step-title" style="color:var(--ink)">${s.title}</div>
+            <div class="step-text" style="color:var(--ink-mid)">${s.text}</div>
+          </div>`).join('')}
+        </div>
       </div>
-    </div>
-    <div class="sources-block"><strong>Джерела</strong>${e.sources.join(', ')}</div>`;
+      <div class="dp-sources"><span class="dp-sources-label">Джерела</span>${e.sources.join(' · ')}</div>
+    </div>`;
 
   detailPanel.innerHTML = html;
   detailOverlay.classList.add('open');
 }
 
-// ─── RAGNAROK ─────────────────────────────────────────────────
-function renderRagnarok() {
+function renderRagnarokContent() {
   const container = document.getElementById('ragnarok-content');
-  if (container.dataset.rendered) return;
-
+  if (!container || container.dataset.rendered) return;
   const R = RAGNAROK_DATA;
 
   let html = `
-    <div class="detail-section mb-2">
-      <h2>Знаки Раґнарьоку</h2>
-      ${R.signs.map(s=>`<div class="myth-block"><div class="myth-title">${s.title}</div><div class="myth-text">${s.description}</div></div>`).join('')}
+    <div class="ragnarok-block">
+      <div class="ragnarok-art">${ART.flame}</div>
+      <h2>Доля Богів</h2>
+      <p style="font-style:italic;color:var(--text-dim);max-width:540px;margin:0.7rem auto;font-size:1rem;line-height:1.7">
+        «Сонце чорніє, тоне земля в океані, з небес падають зірки сяючі...»
+      </p>
+      <p style="font-family:var(--f-mono);font-size:0.7rem;color:var(--text-muted);letter-spacing:0.08em">
+        VÖLUSPÁ · СТАРША ЕДДА
+      </p>
     </div>
 
-    <div class="detail-section mb-2">
-      <h2>Послідовність</h2>
-      <div class="step-list">
-        ${R.sequence.map(s=>`<div class="step-item"><div class="step-title">${s.title}</div><div class="step-text">${s.description}</div></div>`).join('')}
+    <div style="margin-bottom:1.5rem">
+      <div class="section-heading"><h2>Знаки Раґнарьоку</h2></div>
+      <div class="events-timeline" style="padding-left:0">
+      ${R.signs.map(s => `
+        <div class="event-card visible" style="margin-bottom:0.8rem;padding-left:1.1rem">
+          <div class="ev-era">${s.title}</div>
+          <div class="ev-desc">${s.description}</div>
+        </div>`).join('').replace(/class="event-card visible"/g, 'class="event-card visible" style="margin-bottom:0.8rem"')}
       </div>
     </div>
 
-    <div class="detail-section mb-2">
-      <h2>П'ять поєдинків</h2>
-      <div class="duel-grid">
-        ${R.duels.map(d=>`
-          <div class="duel-card">
-            <div class="duel-hero">⚡ ${d.hero}</div>
-            <div class="vs">⚔</div>
-            <div class="duel-enemy">💀 ${d.enemy}</div>
-            <div class="duel-outcome">${d.outcome}</div>
-            ${d.avenger ? `<div style="margin-top:0.5rem;font-size:0.82rem;color:var(--rune-green)">↩ ${d.avenger}</div>` : ''}
-          </div>`).join('')}
+    <div style="margin-bottom:1.5rem">
+      <div class="section-heading"><h2>Послідовність</h2></div>
+      <div class="step-list">${R.sequence.map(s => `
+        <div class="step-item">
+          <div class="step-title">${s.title}</div>
+          <div class="step-text">${s.description}</div>
+        </div>`).join('')}
       </div>
     </div>
 
-    <div class="detail-section mb-2">
-      <h2>Новий світ</h2>
-      <p>${R.aftermath.description}</p>
-      <div style="margin-top:1rem;display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-        <div>
-          <h4 style="margin-bottom:0.6rem">Боги, що вижили</h4>
-          ${R.aftermath.survivors_gods.map(s=>`<div style="padding:0.4rem 0;border-bottom:1px solid var(--border);font-size:0.88rem"><strong style="color:var(--gold-light)">${s.name}</strong> — ${s.note}</div>`).join('')}
+    <div style="margin-bottom:1.5rem">
+      <div class="section-heading"><h2>П'ять Поєдинків</h2><span class="sh-count">V</span></div>
+      <div class="duel-grid">${R.duels.map(d => `
+        <div class="duel-card">
+          <div class="duel-hero">${d.hero}</div>
+          <span class="duel-vs">vs</span>
+          <div class="duel-enemy">${d.enemy}</div>
+          <div class="duel-outcome">${d.outcome}</div>
+          ${d.avenger ? `<div class="duel-avenger">→ ${d.avenger}</div>` : ''}
+        </div>`).join('')}
+      </div>
+    </div>
+
+    <div style="margin-bottom:1.5rem">
+      <div class="section-heading"><h2>Новий Світ</h2></div>
+      <p style="color:var(--text-dim);line-height:1.75;margin-bottom:1rem">${R.aftermath.description}</p>
+      <div class="survivors-grid">
+        <div class="survivors-col">
+          <h4>Боги</h4>
+          ${R.aftermath.survivors_gods.map(s => `<div class="survivor-item"><strong>${s.name}</strong>${s.note}</div>`).join('')}
         </div>
-        <div>
-          <h4 style="margin-bottom:0.6rem">Люди, що вижили</h4>
-          ${R.aftermath.survivors_humans.map(s=>`<div style="padding:0.4rem 0;border-bottom:1px solid var(--border);font-size:0.88rem"><strong style="color:var(--gold-light)">${s.name}</strong> (${s.meaning}) — ${s.note}</div>`).join('')}
+        <div class="survivors-col">
+          <h4>Люди</h4>
+          ${R.aftermath.survivors_humans.map(s => `<div class="survivor-item"><strong>${s.name}</strong><em>${s.meaning}</em></div>`).join('')}
         </div>
       </div>
-      <p style="margin-top:1rem;font-size:0.9rem;color:var(--text-secondary)">${R.aftermath.new_world}</p>
+      <p style="margin-top:1.5rem;font-style:italic;color:var(--text-dim);line-height:1.75">${R.aftermath.new_world}</p>
     </div>
 
-    <div class="sources-block"><strong>Джерела</strong>${R.sources.join(', ')}</div>`;
+    <div style="background:var(--bg-card);border:1px solid var(--border);padding:1rem;margin-top:2rem">
+      <div style="font-family:var(--f-display);font-size:0.62rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--silver-dim);margin-bottom:0.4rem">Джерела</div>
+      <div style="font-family:var(--f-mono);font-size:0.78rem;color:var(--text-muted);line-height:1.6">${R.sources.join(' · ')}</div>
+    </div>`;
 
   container.innerHTML = html;
   container.dataset.rendered = '1';
 }
 
-// ─── GENEALOGY ───────────────────────────────────────────────
-function renderGenealogy() {
-  const svg = document.getElementById('genealogy-svg');
-  if (svg.dataset.rendered) return;
+// ── SOURCES ─────────────────────────────────────────────
+function renderSources() {
+  const list = document.getElementById('sources-list');
+  if (!list || list.dataset.rendered) return;
 
-  const nodes = FAMILY_TREE_NODES;
-  const edges = FAMILY_TREE_EDGES;
+  const sources = [
+    {
+      title: 'Старша Едда (Poetic Edda)',
+      date: 'Записана бл. 1270 р. · Codex Regius (AM 748 I 4to)',
+      desc: 'Збірка давньоісландських поем — головне джерело нордичної міфології. Включає пророцтва, мудрість Одіна, героїчні пісні. Оригінальна мова — давньоісландська.',
+      poems: ['Völuspá — Пророцтво Провидиці', 'Hávamál — Слова Високого', 'Grímnismál — Слова Ґрімніра', 'Vafþrúðnismál — Змагання мудрості', 'Skírnismál — Поїздка Скірніра', 'Lokasenna — Перебранка Локі', 'Þrymskviða — Пісня про Трюма'],
+      url: 'https://www.gutenberg.org/ebooks/1220',
+      urlLabel: 'Project Gutenberg',
+    },
+    {
+      title: 'Молодша Едда (Prose Edda)',
+      date: 'Сноррі Стурлусон · бл. 1220 р.',
+      desc: 'Написана як посібник для скальдів. Містить детальний виклад нордичної космології, генеалогії богів і технік поетичного мистецтва.',
+      poems: ['Gylfaginning — Омана Ґюльфі (космологія)', 'Skáldskaparmál — Мова поезії', 'Háttatal — Перелік розмірів'],
+      url: 'https://www.gutenberg.org/ebooks/18947',
+      urlLabel: 'Project Gutenberg',
+    },
+    {
+      title: 'Ynglinga saga',
+      date: 'Сноррі Стурлусон · бл. 1230 р. · Частина Heimskringla',
+      desc: 'Євгемеристична версія нордичної mythології — трактує богів як обожнених давніх правителів Скандинавії.',
+      poems: ['Частина циклу Heimskringla — «Коло Земне»'],
+      url: 'https://www.gutenberg.org/ebooks/598',
+      urlLabel: 'Project Gutenberg',
+    },
+    {
+      title: 'Рунічні поеми',
+      date: 'Норвезька (бл. 1100), Ісландська (бл. 1400), Англосакська (бл. 750–1000)',
+      desc: 'Три незалежні поеми що описують значення рун. Основа для інтерпретації Старшого Футарку.',
+      poems: ['Норвезька рунічна поема (Runaljod)', 'Ісландська рунічна поема', 'Англосакська рунічна поема (Rune Poem)'],
+      url: 'https://www.sacred-texts.com/neu/norse/runes.htm',
+      urlLabel: 'Sacred Texts',
+    },
+    {
+      title: 'Українське видання',
+      date: 'Старша Едда · переклад В. Кривоноса',
+      desc: 'Сучасний український переклад Старшої Едди з коментарями. Видавництво «Астролябія», Львів.',
+      poems: ['Усі ключові пісні Codex Regius', 'Розгорнутий науковий апарат', 'Українська транслітерація імен'],
+      url: 'http://www.voluspa.org',
+      urlLabel: 'Voluspa.org · оригінальні тексти',
+    },
+  ];
 
-  // offset so min coords are positive
-  const minX = Math.min(...nodes.map(n => n.x)) - 60;
-  const minY = Math.min(...nodes.map(n => n.y)) - 40;
-  const maxX = Math.max(...nodes.map(n => n.x)) + 60;
-  const maxY = Math.max(...nodes.map(n => n.y)) + 60;
-  const W = maxX - minX;
-  const H = maxY - minY;
-
-  svg.setAttribute('viewBox', `${minX} ${minY} ${W} ${H}`);
-  svg.setAttribute('height', Math.max(H, 500));
-
-  const typeColors = {
-    primordial: '#5aad6e', god: '#c9a84c', aesir_main: '#e8c96a',
-    aesir: '#a89050', vanir_main: '#4a7c59', giant: '#5c7a8c',
-    giantess: '#7a9aac', trickster: '#c44b1a', monster: '#8a2a10',
-    creature: '#7a68b0', deity: '#9a5aad'
-  };
-
-  // Draw edges
-  let edgeSVG = '';
-  edges.forEach(edge => {
-    const from = nodes.find(n => n.id === edge.from);
-    const to   = nodes.find(n => n.id === edge.to);
-    if (!from || !to) return;
-    edgeSVG += `<path class="gen-edge ${edge.type}"
-      d="M${from.x},${from.y + 18} C${from.x},${(from.y + to.y) / 2} ${to.x},${(from.y + to.y) / 2} ${to.x},${to.y - 18}"
-      stroke="${edge.type === 'created' ? '#3a6a88' : '#4a3a20'}"
-      stroke-dasharray="${edge.type === 'created' ? '4 3' : 'none'}"/>`;
-  });
-
-  // Draw nodes
-  let nodeSVG = '';
-  nodes.forEach(n => {
-    const color = typeColors[n.type] || '#888';
-    nodeSVG += `
-      <g class="gen-node" onclick="showGenInfo('${n.id}')" transform="translate(${n.x},${n.y})">
-        <circle r="18" fill="${color}22" stroke="${color}" stroke-width="1.5"/>
-        <text class="gen-text" text-anchor="middle" dy="-24" font-size="10"
-          fill="${color}" font-family="Cinzel, serif">${n.label}</text>
-      </g>`;
-  });
-
-  svg.innerHTML = `<defs>
-    <filter id="glow"><feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-  </defs>
-  <g id="edges">${edgeSVG}</g>
-  <g id="nodes">${nodeSVG}</g>`;
-
-  svg.dataset.rendered = '1';
-
-  // Legend
-  const legend = document.getElementById('gen-legend');
-  if (legend) {
-    const items = [
-      ['#e8c96a','Аси (головні)'], ['#a89050','Аси'], ['#4a7c59','Вани'],
-      ['#5c7a8c','Велети'], ['#c44b1a','Трікстер'], ['#8a2a10','Монстри'],
-      ['#5aad6e','Першоістоти'], ['#9a5aad','Інші']
-    ];
-    legend.innerHTML = items.map(([c,l]) =>
-      `<div class="gen-legend-item"><div class="gen-legend-dot" style="background:${c}"></div>${l}</div>`
-    ).join('');
-  }
+  list.innerHTML = sources.map(s => `
+    <div class="source-entry">
+      <div class="se-title">${s.title}</div>
+      <div class="se-date">${s.date}</div>
+      <p class="se-desc">${s.desc}</p>
+      <ul class="se-poems">${s.poems.map(p => `<li>${p}</li>`).join('')}</ul>
+      <a class="se-link" href="${s.url}" target="_blank">${s.urlLabel} →</a>
+    </div>`).join('');
+  list.dataset.rendered = '1';
 }
 
-function showGenInfo(id) {
-  const allEntities = [...AESIR_DATA, ...AESIR_GODDESSES, ...VANIR_DATA, ...CREATURES_DATA];
-  const found = allEntities.find(e => e.id === id);
-  if (found) {
-    const type = VANIR_DATA.find(e => e.id === id) ? 'vanir' : 'other';
-    openGodDetail(id, type);
+// ── WORLDS PAGE ─────────────────────────────────────────
+function renderWorldsPage() {
+  // Render Yggdrasil intro roots
+  const rootsEl = document.getElementById('ygd-roots');
+  if (rootsEl && !rootsEl.dataset.rendered) {
+    rootsEl.innerHTML = YGGDRASIL_DATA.roots.map(r => `
+      <div style="padding:0.6rem 0;border-bottom:1px solid var(--border)">
+        <div style="font-family:var(--f-display);font-size:0.75rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--silver);margin-bottom:0.25rem">${r.world}</div>
+        <div style="font-size:0.92rem;color:var(--text-dim);line-height:1.55">${r.description}</div>
+      </div>`).join('');
+    rootsEl.dataset.rendered = '1';
   }
+
+  // Render world map
+  if (typeof renderWorldMap === 'function') renderWorldMap();
 }
 
-// ─── SEARCH ──────────────────────────────────────────────────
+function openWorldDetail(id) {
+  const w = WORLDS_DATA.find(x => x.id === id);
+  if (!w) return;
+
+  let html = `
+    <div class="detail-close-bar"><button class="close-btn" onclick="closeDetail()">Закрити ×</button></div>
+    <div class="dp-art">${ART.yggdrasil}</div>
+    <div class="detail-body">
+      <div class="dp-eyebrow">Дев'ять Світів</div>
+      <h1 class="dp-name">${w.name}</h1>
+      <span class="dp-oldnorse">${w.oldnorse} · «${w.translation}»</span>
+      <div class="dp-section"><h3>Опис</h3><p>${w.description}</p></div>
+      <div class="dp-section"><h3>Атрибути</h3>
+        <div class="dp-info-grid">
+          <div class="dp-info-item"><div class="dp-info-label">Мешканці</div><div class="dp-info-value">${w.inhabitants}</div></div>
+          <div class="dp-info-item"><div class="dp-info-label">Розташування</div><div class="dp-info-value">${w.location}</div></div>
+        </div>
+      </div>`;
+
+  if (w.details && w.details.length) {
+    html += `<div class="dp-section"><h3>Деталі</h3><ul class="dp-list">${w.details.map(d => `<li>${d}</li>`).join('')}</ul></div>`;
+  }
+
+  if (w.halls && w.halls.length) {
+    html += `<div class="dp-section"><h3>Чертоги</h3>${w.halls.map(h => `<div class="dp-myth"><div class="dp-myth-title">${h.name} · ${h.owner}</div><div class="dp-myth-text">${h.description}</div></div>`).join('')}</div>`;
+  }
+
+  if (w.ragnarok_fate) {
+    html += `<div class="dp-ragnarok"><div class="dp-ragnarok-label">Доля в Раґнарьок</div><div class="dp-ragnarok-text">${w.ragnarok_fate}</div></div>`;
+  }
+
+  html += `<div class="dp-sources"><span class="dp-sources-label">Джерела</span>${w.source || ''}</div></div>`;
+
+  detailPanel.innerHTML = html;
+  detailOverlay.classList.add('open');
+}
+
+// ── SEARCH ──────────────────────────────────────────────
 function buildSearchIndex() {
-  const index = [];
-
-  AESIR_DATA.forEach(g => index.push({ type:'Ас', name:g.name, desc:g.description, action:()=>{ navigate('gods'); openGodDetail(g.id,'aesir'); } }));
-  AESIR_GODDESSES.forEach(g => index.push({ type:'Богиня', name:g.name, desc:g.description, action:()=>{ navigate('gods'); openGodDetail(g.id,'aesir'); } }));
-  VANIR_DATA.forEach(g => index.push({ type:'Ван', name:g.name, desc:g.description, action:()=>{ navigate('gods'); openGodDetail(g.id,'vanir'); } }));
-  CREATURES_DATA.forEach(c => index.push({ type:'Створіння', name:c.name, desc:c.description, action:()=>{ navigate('creatures'); openCreatureDetail(c.id); } }));
-  ARTIFACTS_DATA.forEach(a => index.push({ type:'Артефакт', name:a.name, desc:a.description, action:()=>{ navigate('artifacts'); openArtifactDetail(a.id); } }));
-  RUNES_DATA.forEach(r => index.push({ type:'Руна', name:`${r.symbol} ${r.name}`, desc:r.meaning, action:()=>{ navigate('runes'); openRuneDetail(r.id); } }));
-  WORLDS_DATA.forEach(w => index.push({ type:'Світ', name:w.name, desc:w.description, action:()=>{ navigate('worlds'); openWorldDetail(w.id); } }));
-  EVENTS_DATA.forEach(e => index.push({ type:'Подія', name:e.title, desc:e.description, action:()=>{ navigate('events'); openEventDetail(e.id); } }));
-
-  return index;
+  const idx = [];
+  AESIR_DATA.forEach(g => idx.push({ type:'Ас', name:g.name, desc:g.description, action:()=>{ navigate('gods'); setTimeout(()=>openGodDetail(g.id,'aesir'),80); } }));
+  AESIR_GODDESSES.forEach(g => idx.push({ type:'Богиня', name:g.name, desc:g.description, action:()=>{ navigate('gods'); setTimeout(()=>openGodDetail(g.id,'aesir'),80); } }));
+  VANIR_DATA.forEach(g => idx.push({ type:'Ван', name:g.name, desc:g.description, action:()=>{ navigate('gods'); setTimeout(()=>openGodDetail(g.id,'vanir'),80); } }));
+  CREATURES_DATA.forEach(c => idx.push({ type:'Створіння', name:c.name, desc:c.description, action:()=>{ navigate('creatures'); setTimeout(()=>openCreatureDetail(c.id),80); } }));
+  ARTIFACTS_DATA.forEach(a => idx.push({ type:'Артефакт', name:a.name, desc:a.description, action:()=>{ navigate('artifacts'); setTimeout(()=>openArtifactDetail(a.id),80); } }));
+  RUNES_DATA.forEach(r => idx.push({ type:'Руна', name:`${r.symbol} ${r.name}`, desc:r.meaning, action:()=>{ navigate('runes'); setTimeout(()=>openRuneDetail(r.id),80); } }));
+  WORLDS_DATA.forEach(w => idx.push({ type:'Світ', name:w.name, desc:w.description, action:()=>{ navigate('worlds'); setTimeout(()=>openWorldDetail(w.id),200); } }));
+  EVENTS_DATA.forEach(e => idx.push({ type:'Подія', name:e.title, desc:e.description, action:()=>{ navigate('events'); setTimeout(()=>openEventDetail(e.id),80); } }));
+  return idx;
 }
 
-let searchIndex = null;
-
-searchInput.addEventListener('input', () => {
-  const q = searchInput.value.trim().toLowerCase();
-  if (!q || q.length < 2) { searchResults.classList.remove('visible'); return; }
-
-  if (!searchIndex) searchIndex = buildSearchIndex();
-
-  const hits = searchIndex.filter(item =>
-    item.name.toLowerCase().includes(q) ||
-    (item.desc||'').toLowerCase().includes(q)
-  ).slice(0, 8);
-
-  if (!hits.length) { searchResults.classList.remove('visible'); return; }
-
-  searchResults.innerHTML = hits.map((h, i) => `
-    <div class="search-result-item" data-idx="${i}">
-      <div>
+if (searchInput) {
+  searchInput.addEventListener('input', () => {
+    const q = searchInput.value.trim().toLowerCase();
+    if (!q || q.length < 2) { searchResults.classList.remove('visible'); return; }
+    if (!searchIndex) searchIndex = buildSearchIndex();
+    const hits = searchIndex.filter(x => x.name.toLowerCase().includes(q) || (x.desc||'').toLowerCase().includes(q)).slice(0, 8);
+    if (!hits.length) { searchResults.classList.remove('visible'); return; }
+    searchResults.innerHTML = hits.map((h,i) => `
+      <div class="search-result-item" data-idx="${i}">
         <div class="search-result-type">${h.type}</div>
         <div class="search-result-name">${h.name}</div>
-        <div class="search-result-desc">${(h.desc||'').substring(0,80)}…</div>
-      </div>
-    </div>`).join('');
-
-  searchResults.querySelectorAll('.search-result-item').forEach((el, i) => {
-    el.addEventListener('click', () => {
-      hits[i].action();
-      searchInput.value = '';
-      searchResults.classList.remove('visible');
+        <div class="search-result-desc">${(h.desc||'').substring(0,90)}…</div>
+      </div>`).join('');
+    searchResults.querySelectorAll('.search-result-item').forEach((el,i) => {
+      el.addEventListener('click', () => { hits[i].action(); searchInput.value=''; searchResults.classList.remove('visible'); });
     });
+    searchResults.classList.add('visible');
   });
 
-  searchResults.classList.add('visible');
-});
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#search-bar')) searchResults.classList.remove('visible');
+  });
+}
 
-document.addEventListener('click', e => {
-  if (!e.target.closest('#search-wrapper')) searchResults.classList.remove('visible');
-});
-
-// ─── DETAIL PANEL ────────────────────────────────────────────
+// ── DETAIL ──────────────────────────────────────────────
 function closeDetail() {
   detailOverlay.classList.remove('open');
 }
+detailOverlay.addEventListener('click', e => { if (e.target === detailOverlay) closeDetail(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetail(); });
 
-detailOverlay.addEventListener('click', e => {
-  if (e.target === detailOverlay) closeDetail();
-});
-
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeDetail();
-});
-
-// ─── INIT ─────────────────────────────────────────────────────
+// ── INIT ────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   renderHome();
-  const hash = location.hash.replace('#', '') || 'home';
+  const hash = location.hash.replace('#','') || 'home';
   navigate(hash, false);
 });
-
-// ─── VALKYRIES & NORNS (rendered inside renderGods) ────────────
-function renderValkyriesNorns() {
-  const vt = document.getElementById('valkyries-tags');
-  if (vt && typeof VALKYRIES_DATA !== 'undefined') {
-    vt.innerHTML = VALKYRIES_DATA.names.map(v =>
-      `<span class="tag" title="${v.note||''}">${v.name}</span>`
-    ).join(' ');
-  }
-  const ni = document.getElementById('norns-info');
-  if (ni && typeof NORNS_DATA !== 'undefined') {
-    ni.innerHTML = NORNS_DATA.norns.map(n =>
-      `<div class="info-item"><div class="info-label">${n.name}</div><div class="info-value" style="font-size:0.85rem">${n.meaning}</div></div>`
-    ).join('');
-    ni.style.display = 'grid';
-    ni.style.gridTemplateColumns = 'repeat(3,1fr)';
-    ni.style.gap = '1rem';
-    ni.style.marginBottom = '1rem';
-  }
-}

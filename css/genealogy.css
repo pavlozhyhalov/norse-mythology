@@ -1,0 +1,191 @@
+/* ═══════════════════════════════════════════════════════
+   GENEALOGY — Norse runic tree style
+   ═══════════════════════════════════════════════════════ */
+
+.genealogy-section { margin-bottom: 2rem; }
+
+.gen-hint {
+  font-family: var(--f-display);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--silver-dim);
+  text-align: center;
+  margin-bottom: 0.8rem;
+}
+
+.gen-container {
+  background: var(--bg-card);
+  background-image:
+    radial-gradient(ellipse at 50% 0%, rgba(200,195,185,0.04) 0%, transparent 60%);
+  border: 1px solid var(--border);
+  padding: 1.5rem 0.5rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  position: relative;
+}
+
+.gen-svg {
+  display: block;
+  min-width: 700px;
+  margin: 0 auto;
+}
+
+.gen-node-card {
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.gen-node-card:hover .gen-card-bg,
+.gen-node-card:active .gen-card-bg {
+  fill-opacity: 1;
+}
+.gen-node-card:hover .gen-card-border,
+.gen-node-card:active .gen-card-border {
+  stroke-width: 2;
+}
+
+.gen-card-bg {
+  fill: #1e2128;
+  fill-opacity: 0.95;
+  transition: fill-opacity 0.25s;
+}
+.gen-card-border {
+  fill: none;
+  stroke-width: 1.2;
+  transition: stroke-width 0.25s;
+}
+.gen-card-label {
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-anchor: middle;
+  pointer-events: none;
+}
+.gen-card-sub {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+.gen-edge {
+  fill: none;
+  stroke-width: 1.2;
+  opacity: 0.5;
+}
+
+.gen-tier-label {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  fill: var(--text-muted);
+  text-anchor: start;
+}
+
+/* Info panel below */
+#gen-info-panel {
+  margin-top: 1rem;
+  padding: 1.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--silver);
+  animation: rise 0.3s ease;
+}
+
+.gen-info-eyebrow {
+  font-family: var(--f-display);
+  font-size: 0.65rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--silver-dim);
+  margin-bottom: 0.5rem;
+}
+
+.gen-info-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.gen-info-name {
+  font-family: var(--f-display);
+  font-size: 1.4rem;
+  letter-spacing: 0.05em;
+  color: var(--text-bright);
+  margin-bottom: 0.2rem;
+  font-weight: 500;
+}
+
+.gen-info-oldnorse {
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--text-dim);
+}
+
+.gen-info-cta {
+  background: none;
+  border: 1px solid var(--border-md);
+  color: var(--text-dim);
+  font-family: var(--f-display);
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--tr);
+  flex-shrink: 0;
+}
+.gen-info-cta:hover, .gen-info-cta:active {
+  color: var(--text-bright);
+  border-color: var(--silver-dim);
+}
+
+.gen-info-domains {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-bottom: 0.8rem;
+}
+.gen-info-domain {
+  font-family: var(--f-display);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  border: 1px solid var(--border-md);
+  padding: 0.15rem 0.5rem;
+}
+
+.gen-info-text {
+  color: var(--text-dim);
+  font-size: 0.97rem;
+  line-height: 1.75;
+}
+
+/* Legend */
+.gen-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem 1.5rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+.gen-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--f-display);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.gen-legend-swatch {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
