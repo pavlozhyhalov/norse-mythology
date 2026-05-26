@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════
 // PREMIUM 3D WORLD MAP — Three.js cinematic atlas
-// No build step. GitHub Pages friendly. Uses CDN ESM modules.
+// No build step. GitHub Pages friendly. Uses GitHub Pages-safe CDN ESM modules with graceful fallback.
 // ═══════════════════════════════════════════════════════════
 
 let __WM3D = null;
@@ -62,15 +62,22 @@ function renderWorldMap() {
   });
 
   initWorldMap3D(container).catch(err => {
-    console.error(err);
-    container.innerHTML += `<div class="wm-fallback">3D-модуль не завантажився. Перевір інтернет-зʼєднання або CDN Three.js.</div>`;
+    console.error('WorldMap 3D boot failed:', err);
+    const loading = container.querySelector('#wm-loading');
+    if (loading) loading.classList.add('hidden');
+    container.insertAdjacentHTML('beforeend', `<div class="wm-fallback">
+      <strong>3D-сцена не стартувала.</strong><br>
+      Причина: ${wmEscape(err?.message || err)}<br>
+      Зроби Ctrl+F5. Якщо лишиться — скинь скрін Console.
+    </div>`);
   });
 }
 
 async function initWorldMap3D(container) {
-  const THREE = await import('https://unpkg.com/three@0.160.0/build/three.module.js');
-  const { OrbitControls } = await import('https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js');
-  const { CSS2DRenderer, CSS2DObject } = await import('https://unpkg.com/three@0.160.0/examples/jsm/renderers/CSS2DRenderer.js');
+  // esm.sh rewrites Three.js internal bare imports, so this works on plain GitHub Pages.
+  const THREE = await import('https://esm.sh/three@0.160.0');
+  const { OrbitControls } = await import('https://esm.sh/three@0.160.0/examples/jsm/controls/OrbitControls.js');
+  const { CSS2DRenderer, CSS2DObject } = await import('https://esm.sh/three@0.160.0/examples/jsm/renderers/CSS2DRenderer.js');
 
   const canvasWrap = document.createElement('div');
   canvasWrap.className = 'wm-3d-canvas';
