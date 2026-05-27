@@ -390,10 +390,12 @@ function init3D() {
 
 // ═══════════════ MOBILE SVG ═══════════════
 function initMobileMap() {
-  const root = document.getElementById('wm-root');
-  root.style.height = 'auto';
-  root.innerHTML = `<div id="wm-mobile">` + buildSVGMap() + `</div>`;
-  document.getElementById('wm-loading') && (document.getElementById('wm-loading').style.display = 'none');
+  injectPanelStyles();
+  const style = document.createElement('style');
+  style.textContent = '#wm-mobile{width:100%;background:#0a0612;overflow:hidden}.wz{cursor:pointer}.wz-bg{opacity:.85;transition:opacity .15s}.wz:active .wz-bg{opacity:1}';
+  document.head.appendChild(style);
+  const container = document.getElementById('worldmap-container');
+  container.innerHTML = '<div id="wm-mobile">' + buildSVGMap() + '</div>' + panelHTML();
 }
 
 function buildSVGMap() {
