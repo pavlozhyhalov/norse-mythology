@@ -16,7 +16,7 @@ const WORLDS_CONFIG = {
 };
 
 function isMobile() { // force mobile for all devices temporarily
-  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 900;
+  return ('ontouchstart' in window) || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 900;
 }
 
 function initWorldMap3D() {
