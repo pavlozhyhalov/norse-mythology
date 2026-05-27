@@ -15,8 +15,8 @@ const WORLDS_CONFIG = {
   niflheim:    { file:'asgard.glb',      n:'Ніфльгейм',     no:'Niflheimr',     s:'Світ Туману',           inh:'Нідгоґр, змії',         emissive:0x2255aa, pos:[3.0,-3.2, 0.5],  scale:0.45, desc:'Найстаріший зі світів — первозданний світ льоду і темряви. В центрі Хвергельмір — джерело 11 первісних рік.', det:['Хвергельмір — джерело всіх рік всесвіту','Нідгоґр гризе корінь Іґґдрасіля','Після Раґнарьоку дракон виживе'] },
 };
 
-function isMobile() {
-  return /iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent) || window.innerWidth < 1024;
+function isMobile() { // force mobile for all devices temporarily
+  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 900;
 }
 
 function initWorldMap3D() {
