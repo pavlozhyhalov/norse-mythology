@@ -24,10 +24,10 @@ function initWorldMap3D() {
   if (!container) return;
   container.innerHTML = '';
   injectStyles();
-  container.innerHTML = buildHTML();
   if (isMobile()) {
-    initMobileMap();
+    initMobileMap(container);
   } else {
+    container.innerHTML = buildHTML();
     load3DScripts();
   }
 }
@@ -389,12 +389,12 @@ function init3D() {
 }
 
 // ═══════════════ MOBILE SVG ═══════════════
-function initMobileMap() {
+function initMobileMap(container) {
   injectPanelStyles();
   const style = document.createElement('style');
   style.textContent = '#wm-mobile{width:100%;background:#0a0612;overflow:hidden}.wz{cursor:pointer}.wz-bg{opacity:.85;transition:opacity .15s}.wz:active .wz-bg{opacity:1}';
   document.head.appendChild(style);
-  const container = document.getElementById('worldmap-container');
+  if (!container) container = document.getElementById('worldmap-container');
   container.innerHTML = '<div id="wm-mobile">' + buildSVGMap() + '</div>' + panelHTML();
 }
 
