@@ -632,7 +632,7 @@ function renderWorldsPage() {
   }
 
   // Render world map
-  if (typeof renderWorldMap === 'function') renderWorldMap();
+  if (typeof initWorldMap3D === 'function') initWorldMap3D(); else if (typeof renderWorldMap === 'function') renderWorldMap();
 }
 
 function openWorldDetail(id) {
