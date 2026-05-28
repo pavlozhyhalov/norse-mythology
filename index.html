@@ -227,7 +227,7 @@ const WM_CFG={
   alfheim:     {f:'alfheim.glb',     p:[-3.2,  4.8,  1.0], sc:2.8, c:'#ccbbff'},
   vanaheim:    {f:'vanaheim.glb',    p:[ 3.2,  4.8,  1.0], sc:2.8, c:'#66cc44'},
   midgard:     {f:'midgard.glb',     p:[ 0,    0.5,  1.8], sc:3.5, c:'#44cc44'},
-  jotunheim:   {f:'jotunheim.glb',   p:[ 3.0,  0.5, -0.5], sc:2.8, c:'#4488cc'},
+  jotunheim:   {f:'jotunheim.glb',   p:[ 2.2,  0.8,  1.5], sc:2.8, c:'#4488cc'},
   muspelheim:  {f:'muspelheim.glb',  p:[-3.0,  0.5, -0.5], sc:2.8, c:'#cc4422'},
   svartalfheim:{f:'svartalfheim.glb',p:[-2.2, -4.0,  1.0], sc:2.5, c:'#cc7733'},
   helheim:     {f:'helheim.glb',     p:[ 0,   -5.5,  0  ], sc:3.0, c:'#8844cc'},
@@ -327,15 +327,64 @@ function startScene(container,canvas,panel,loader,modelsPath){
     },null,function(e){console.warn(cfg.f+':',e);onLoad();});
   });
 
-  // Orbit drag
-  var drag=false,pm={x:0,y:0};
-  canvas.addEventListener('mousedown',function(e){drag=true;pm={x:e.clientX,y:e.clientY};});
-  window.addEventListener('mouseup',function(){drag=false;});
-  canvas.addEventListener('mousemove',function(e){if(!drag)return;sph.theta-=(e.clientX-pm.x)*0.008;sph.phi=Math.max(0.3,Math.min(2.5,sph.phi-(e.clientY-pm.y)*0.008));pm={x:e.clientX,y:e.clientY};camUpdate();});
+  // Orbit drag (left button) + Pan (right button)
+  var drag=false,panning=false,pm={x:0,y:0};
+  canvas.addEventListener('mousedown',function(e){
+    e.preventDefault();
+    pm={x:e.clientX,y:e.clientY};
+    if(e.button===2){panning=true;}else{drag=true;}
+  });
+  canvas.addEventListener('contextmenu',function(e){e.preventDefault();});
+  window.addEventListener('mouseup',function(){drag=false;panning=false;});
+  canvas.addEventListener('mousemove',function(e){
+    var dx=e.clientX-pm.x, dy=e.clientY-pm.y;
+    if(drag){
+      sph.theta-=dx*0.008;
+      sph.phi=Math.max(0.3,Math.min(2.5,sph.phi-dy*0.008));
+    }
+    if(panning){
+      // Pan target in camera-space
+      var right=new T.Vector3();
+      var up=new T.Vector3();
+      camera.getWorldDirection(new T.Vector3());
+      right.crossVectors(camera.getWorldDirection(new T.Vector3()),camera.up).normalize();
+      up.copy(camera.up).normalize();
+      var panSpeed=sph.r*0.0012;
+      tgt.addScaledVector(right,-dx*panSpeed);
+      tgt.addScaledVector(up,dy*panSpeed);
+    }
+    pm={x:e.clientX,y:e.clientY};
+    camUpdate();
+  });
   canvas.addEventListener('wheel',function(e){sph.r=Math.max(5,Math.min(38,sph.r+e.deltaY*0.02));camUpdate();e.preventDefault();},{passive:false});
   var lt=null,lpd=0;
   canvas.addEventListener('touchstart',function(e){if(e.touches.length===1)lt={x:e.touches[0].clientX,y:e.touches[0].clientY};if(e.touches.length===2)lpd=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);e.preventDefault();},{passive:false});
-  canvas.addEventListener('touchmove',function(e){if(e.touches.length===1&&lt){sph.theta-=(e.touches[0].clientX-lt.x)*0.01;sph.phi=Math.max(0.3,Math.min(2.5,sph.phi-(e.touches[0].clientY-lt.y)*0.01));lt={x:e.touches[0].clientX,y:e.touches[0].clientY};camUpdate();}if(e.touches.length===2){var d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);sph.r=Math.max(5,Math.min(38,sph.r-(d-lpd)*0.05));lpd=d;camUpdate();}e.preventDefault();},{passive:false});
+  var ltCenter={x:0,y:0};
+  canvas.addEventListener('touchmove',function(e){
+    if(e.touches.length===1&&lt){
+      sph.theta-=(e.touches[0].clientX-lt.x)*0.01;
+      sph.phi=Math.max(0.3,Math.min(2.5,sph.phi-(e.touches[0].clientY-lt.y)*0.01));
+      lt={x:e.touches[0].clientX,y:e.touches[0].clientY};
+      camUpdate();
+    }
+    if(e.touches.length===2){
+      var d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+      sph.r=Math.max(5,Math.min(38,sph.r-(d-lpd)*0.05));
+      // Two-finger pan
+      var cx=(e.touches[0].clientX+e.touches[1].clientX)/2;
+      var cy=(e.touches[0].clientY+e.touches[1].clientY)/2;
+      if(ltCenter.x){
+        var right=new T.Vector3();
+        right.crossVectors(camera.getWorldDirection(new T.Vector3()),camera.up).normalize();
+        var panSpeed=sph.r*0.002;
+        tgt.addScaledVector(right,-(cx-ltCenter.x)*panSpeed);
+        tgt.y+=(cy-ltCenter.y)*panSpeed;
+      }
+      ltCenter={x:cx,y:cy};
+      lpd=d;camUpdate();
+    }
+    e.preventDefault();
+  },{passive:false});
 
   // Click
   var ray=new T.Raycaster(),mv=new T.Vector2(),clicking=false;
