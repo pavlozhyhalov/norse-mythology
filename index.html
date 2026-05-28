@@ -216,6 +216,9 @@
 <script src="js/events.js"></script>
 <script src="js/genealogy.js"></script>
 <script src="js/art.js"></script>
+
+<script src="js/genealogy_render.js"></script>
+<script src="js/main.js">
 <script>
 // ═══════════════════════════════════════════════════════════
 // WORLDMAP 3D — Three.js + GLB meshes (inline, v3)
@@ -412,12 +415,9 @@ function tryInitMap(){
   var c=document.getElementById('worldmap-container');
   if(c&&!c.dataset.rendered){initWorldMap3D();}
 }
-// main.js calls initWorldMap3D via renderWorldsPage() - no need for extra listeners
 window.initWorldMap3D = initWorldMap3D;
 window.renderWorldMap = initWorldMap3D;
-</script>
-<script src="js/genealogy_render.js"></script>
-<script src="js/main.js"></script>
+</script></script>
 
 <script>
 // Inject page header icons after load
