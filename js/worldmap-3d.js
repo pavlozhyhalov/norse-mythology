@@ -1,17 +1,17 @@
-// WORLDMAP — Simple SVG for mobile, 3D for desktop
-// Mobile: SVG illustrated map
-// Desktop: Three.js 3D with GLB models
+// ═══════════════════════════════════════════════════════════
+// WORLDMAP — SVG illustrated map of Nine Worlds
+// ═══════════════════════════════════════════════════════════
 
 const WM_WORLDS = {
-  asgard:      { n:'Асґард',        no:'Ásgarðr',       s:'Обитель Асів',          inh:'Боги-аси',             desc:'Небесна фортеця богів-асів на вершині Іґґдрасіля. З\'єднана з Мідґардом веселковим мостом Біфрост. Тут Одін спостерігає всі дев\'ять світів зі срібного трону Ґлідскьяльф.', det:['Вальгалла — зала 540 дверей, кожна для 800 воїнів','Ґлідскьяльф — трон з якого видно всі дев\'ять світів','Стіни зведені велетом-будівельником і конем Свадільфарі'] },
-  alfheim:     { n:'Альфгейм',      no:'Álfheimr',      s:'Домівка Ельфів',        inh:'Світлі ельфи',         desc:'Світ світлих ельфів — істот прекрасніших за сонце. Подарований Фрейру як зубний подарунок.', det:['Ljósálfar — прекрасніші за сонце','Dökkálfar живуть під землею'] },
-  vanaheim:    { n:'Ванагейм',      no:'Vanaheimr',     s:'Домівка Ванів',         inh:'Боги-вани',            desc:'Прадавній світ богів-ванів, пов\'язаних з морем, родючістю і магією.', det:['Вани — найстаріший пантеон','Принесли асам магію сейд через Фрейю'] },
-  midgard:     { n:'Мідґард',       no:'Miðgarðr',      s:'Світ Людей',            inh:'Люди',                 desc:'Світ людей у центрі Всесвіту, створений з тіла першовелета Іміра. Оточений океаном де живе Йормунґанд.', det:['Земля = плоть Іміра, море = кров','Перші люди Аскр і Ембля'] },
-  jotunheim:   { n:'Йотунгейм',     no:'Jötunheimr',    s:'Домівка Велетів',       inh:'Йотуни',               desc:'Царство йотунів — первісних сил природи. Столиця Утґард.', det:['Утґард-Локі обдурив Тора','Мімірсбрунн — криниця мудрості'] },
-  muspelheim:  { n:'Муспельгейм',   no:'Múspellsheimr', s:'Світ Вогню',            inh:'Сурт і сини Муспелля', desc:'Первозданний світ вогню. Охороняється Суртом з мечем яскравішим за сонце.', det:['Іскри стали зірками','Сурт спалить весь світ у Раґнарьок'] },
-  svartalfheim:{ n:'Свартальфгейм', no:'Svartálfaheimr', s:'Домівка Гномів',       inh:'Дверги-ковалі',        desc:'Підземний світ гномів-двергів — найкращих ковалів всіх дев\'яти світів.', det:['Мйольнір, Ґунґнір виковані тут','Брісінґамен Фрейї'] },
-  helheim:     { n:'Гельгейм',      no:'Helheimr',      s:'Царство Мертвих',       inh:'Мертві, Гель',         desc:'Царство для тих хто помер не в бою. Правителька Гель — донька Локі.', det:['Гель — наполовину жива','Бальдр потрапив сюди після загибелі'] },
-  niflheim:    { n:'Ніфльгейм',     no:'Niflheimr',     s:'Світ Туману',           inh:'Нідгоґр, змії',        desc:'Найстаріший зі світів — первозданний світ льоду і темряви. В центрі Хвергельмір.', det:['Хвергельмір — джерело всіх рік','Нідгоґр гризе корінь Іґґдрасіля'] },
+  asgard:      { n:'Асґард',        no:'Ásgarðr',        s:'Обитель Асів',          inh:'Боги-аси',             desc:'Небесна фортеця богів-асів на вершині Іґґдрасіля. З\'єднана з Мідґардом веселковим мостом Біфрост. Тут Одін спостерігає всі дев\'ять світів зі срібного трону Ґлідскьяльф.', det:['Вальгалла — зала 540 дверей, кожна для 800 воїнів','Ґлідскьяльф — трон з якого видно всі дев\'ять світів','Стіни зведені велетом-будівельником і конем Свадільфарі'] },
+  alfheim:     { n:'Альфгейм',      no:'Álfheimr',       s:'Домівка Ельфів',        inh:'Світлі ельфи',         desc:'Світ світлих ельфів — істот прекрасніших за сонце. Подарований Фрейру як зубний подарунок.', det:['Ljósálfar — прекрасніші за сонце','Dökkálfar живуть під землею'] },
+  vanaheim:    { n:'Ванагейм',      no:'Vanaheimr',      s:'Домівка Ванів',         inh:'Боги-вани',            desc:'Прадавній світ богів-ванів, пов\'язаних з морем, родючістю і магією. Вани принесли асам магію сейд через Фрейю.', det:['Вани — найстаріший пантеон','Принесли асам магію сейд через Фрейю'] },
+  midgard:     { n:'Мідґард',       no:'Miðgarðr',       s:'Світ Людей',            inh:'Люди',                 desc:'Світ людей у центрі Всесвіту, створений з тіла першовелета Іміра. Оточений океаном де живе Йормунґанд.', det:['Земля = плоть Іміра, море = кров','Перші люди Аскр і Ембля'] },
+  jotunheim:   { n:'Йотунгейм',     no:'Jötunheimr',     s:'Домівка Велетів',       inh:'Йотуни',               desc:'Царство йотунів — первісних сил природи. Столиця Утґард. Тут знаходиться криниця мудрості Міміра.', det:['Утґард-Локі обдурив Тора','Мімірсбрунн — криниця мудрості'] },
+  muspelheim:  { n:'Муспельгейм',   no:'Múspellsheimr',  s:'Світ Вогню',            inh:'Сурт і сини Муспелля', desc:'Первозданний світ вогню. Охороняється Суртом з мечем яскравішим за сонце. Іскри стали зірками.', det:['Іскри стали зірками','Сурт спалить весь світ у Раґнарьок'] },
+  svartalfheim:{ n:'Свартальфагейм',no:'Svartálfaheimr',  s:'Домівка Гномів',        inh:'Дверги-ковалі',        desc:'Підземний світ гномів-двергів — найкращих ковалів всіх дев\'яти світів. Тут виготовлені всі священні артефакти.', det:['Мйольнір, Ґунґнір виковані тут','Брісінґамен Фрейї'] },
+  helheim:     { n:'Гельгейм',      no:'Helheimr',       s:'Царство Мертвих',       inh:'Мертві, Гель',         desc:'Царство для тих хто помер не в бою. Правителька Гель — донька Локі. Сюди потрапив Бальдр після загибелі.', det:['Гель — наполовину жива наполовину мертва','Бальдр потрапив сюди після загибелі'] },
+  niflheim:    { n:'Ніфльгейм',     no:'Niflheimr',      s:'Світ Туману',           inh:'Нідгоґр, змії',        desc:'Найстаріший зі світів — первозданний світ льоду і темряви. В центрі джерело Хвергельмір, звідки течуть усі ріки.', det:['Хвергельмір — джерело всіх рік','Нідгоґр гризе корінь Іґґдрасіля'] },
 };
 
 function wmOpenPanel(id) {
@@ -20,38 +20,34 @@ function wmOpenPanel(id) {
   var panel = document.getElementById('wm-info-panel');
   if (!panel) return;
   panel.innerHTML =
-    '<div style="font-family:Cinzel,serif;font-size:.5rem;letter-spacing:.25em;color:#5a4a18;text-transform:uppercase;margin-bottom:5px">' + w.inh + ' · ' + w.no + '</div>' +
+    '<div style="font-family:Cinzel,serif;font-size:.5rem;letter-spacing:.25em;color:var(--silver-dim,#8a7a5a);text-transform:uppercase;margin-bottom:5px">' + w.inh + ' · ' + w.no + '</div>' +
     '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px;flex-wrap:wrap">' +
       '<div>' +
-        '<div style="font-family:Cinzel,serif;font-size:1.15rem;color:#e0b850;font-weight:600">' + w.n + '</div>' +
-        '<div style="font-family:Georgia,serif;font-style:italic;font-size:.82rem;color:#6a5020;margin-top:2px">' + w.s + '</div>' +
+        '<div style="font-family:Cinzel,serif;font-size:1.15rem;color:var(--gold,#e0b850);font-weight:600">' + w.n + '</div>' +
+        '<div style="font-family:Georgia,serif;font-style:italic;font-size:.82rem;color:var(--text-dim,#8a7040);margin-top:2px">' + w.s + '</div>' +
       '</div>' +
-      '<button onclick="document.getElementById(\'wm-info-panel\').style.display=\'none\'" style="background:none;border:1px solid rgba(180,140,40,.3);color:#7a5a20;font-family:Cinzel,serif;font-size:.5rem;letter-spacing:.14em;text-transform:uppercase;padding:5px 12px;cursor:pointer;flex-shrink:0">✕</button>' +
+      '<button onclick="document.getElementById(\'wm-info-panel\').style.display=\'none\'" style="background:none;border:1px solid rgba(180,140,40,.3);color:var(--text-dim,#7a5a20);font-family:Cinzel,serif;font-size:.5rem;letter-spacing:.14em;text-transform:uppercase;padding:5px 12px;cursor:pointer;flex-shrink:0">✕</button>' +
     '</div>' +
-    '<p style="font-family:Georgia,serif;font-size:.92rem;color:#8a7040;line-height:1.7;margin-bottom:6px">' + w.desc + '</p>' +
-    '<ul style="list-style:none;padding:0;border-top:1px solid rgba(200,160,60,.1);padding-top:8px;margin-top:4px">' +
-    w.det.map(function(d){ return '<li style="font-family:Georgia,serif;font-size:.88rem;color:#6a5530;line-height:1.6;padding:3px 0 3px 16px;position:relative"><span style="position:absolute;left:0;color:#3a2a10;font-size:.65rem">ᚱ</span>' + d + '</li>'; }).join('') +
+    '<p style="font-family:Georgia,serif;font-size:.92rem;color:var(--text-dim,#8a7040);line-height:1.7;margin-bottom:6px">' + w.desc + '</p>' +
+    '<ul style="list-style:none;padding:0;border-top:1px solid rgba(200,160,60,.15);padding-top:8px;margin-top:4px">' +
+    w.det.map(function(d){ return '<li style="font-family:Georgia,serif;font-size:.88rem;color:var(--text-dim,#6a5530);line-height:1.6;padding:3px 0 3px 16px;position:relative"><span style="position:absolute;left:0;color:var(--silver-dim,#8a7a5a);font-size:.65rem">ᚱ</span>' + d + '</li>'; }).join('') +
     '</ul>';
   panel.style.display = 'block';
   panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
-function initWorldMap3D() {
-  var container = document.getElementById('worldmap-container');
-  if (!container) return;
-
-  // Inject styles
-  var style = document.createElement('style');
-  style.textContent = '#wm-svg-wrap{background:#08050f;border:1px solid #2a1a3a;width:100%;overflow:hidden}#wm-svg-wrap svg{width:100%;display:block}.wmz{cursor:pointer}.wmz rect.bg{opacity:.88;transition:opacity .15s}.wmz:active rect.bg{opacity:1}#wm-info-panel{display:none;background:rgba(5,3,10,.97);border-top:1px solid rgba(200,160,60,.2);padding:14px 16px 18px}';
-  document.head.appendChild(style);
-
-  container.innerHTML =
-    '<div id="wm-svg-wrap">' + buildWMSVG() + '</div>' +
-    '<div id="wm-info-panel"></div>';
+function wmZone(id, x, y, w, label, stroke, fill) {
+  var cx = x + w / 2;
+  var fs = label.length > 10 ? 7.5 : 9;
+  return '<g class="wmz" onclick="wmOpenPanel(\'' + id + '\')" style="cursor:pointer">' +
+    '<rect class="bg" x="' + x + '" y="' + y + '" width="' + w + '" height="22" rx="2" fill="#04020a" opacity=".88" style="transition:opacity .15s"/>' +
+    '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="22" rx="2" fill="none" stroke="' + stroke + '" stroke-width="1"/>' +
+    '<text x="' + cx + '" y="' + (y + 14) + '" font-family="Cinzel,serif" font-size="' + fs + '" font-weight="600" fill="' + fill + '" text-anchor="middle" letter-spacing=".8">' + label + '</text>' +
+    '</g>';
 }
 
 function buildWMSVG() {
-  return '<svg viewBox="0 0 500 820" xmlns="http://www.w3.org/2000/svg">' +
+  return '<svg viewBox="0 0 500 820" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">' +
   '<defs>' +
     '<radialGradient id="wmgS" cx="50%" cy="30%" r="70%"><stop offset="0%" stop-color="#0e0a1a"/><stop offset="100%" stop-color="#040208"/></radialGradient>' +
     '<radialGradient id="wmgU" cx="50%" cy="80%" r="60%"><stop offset="0%" stop-color="#06040e"/><stop offset="100%" stop-color="#020106"/></radialGradient>' +
@@ -83,36 +79,52 @@ function buildWMSVG() {
   '<ellipse cx="145" cy="738" rx="62" ry="28" fill="#0c0818" opacity=".95"/>' +
   '<ellipse cx="355" cy="738" rx="62" ry="28" fill="#0c0818" opacity=".95"/>' +
   '<ellipse cx="250" cy="785" rx="85" ry="26" fill="#080610" opacity=".95"/>' +
-  wmZone('asgard',   278, 268, 134, 'АСҐАРД',        '#c89030', '#e8c060') +
-  wmZone('alfheim',  52,  250, 120, 'АЛЬФГЕЙМ',      '#9988cc', '#ccbbff') +
-  wmZone('vanaheim', 358, 218, 110, 'ВАНАГЕЙМ',      '#448830', '#66cc44') +
-  wmZone('midgard',  168, 376, 118, 'МІДҐАРД',       '#338830', '#44cc44') +
-  wmZone('jotunheim',322, 358, 124, 'ЙОТУНГЕЙМ',     '#224488', '#4488cc') +
-  wmZone('muspelheim',28, 376, 120, 'МУСПЕЛЬГЕЙМ',   '#882210', '#cc4422') +
-  wmZone('svartalfheim',28,716,122, 'СВАРТАЛЬФГЕЙМ', '#884422', '#cc7733') +
-  wmZone('helheim',  180, 746, 94,  'ГЕЛЬГЕЙМ',      '#552288', '#8844cc') +
-  wmZone('niflheim', 298, 716, 110, 'НІФЛЬГЕЙМ',     '#224488', '#4466aa') +
+  wmZone('asgard',      278, 268, 134, 'АСҐАРД',         '#c89030', '#e8c060') +
+  wmZone('alfheim',      52, 250, 120, 'АЛЬФГЕЙМ',       '#9988cc', '#ccbbff') +
+  wmZone('vanaheim',    358, 218, 110, 'ВАНАГЕЙМ',       '#448830', '#66cc44') +
+  wmZone('midgard',     168, 376, 118, 'МІДҐАРД',        '#338830', '#44cc44') +
+  wmZone('jotunheim',   322, 358, 124, 'ЙОТУНГЕЙМ',      '#224488', '#4488cc') +
+  wmZone('muspelheim',   28, 376, 120, 'МУСПЕЛЬГЕЙМ',    '#882210', '#cc4422') +
+  wmZone('svartalfheim', 28, 716, 122, 'СВАРТАЛЬФАГЕЙМ', '#884422', '#cc7733') +
+  wmZone('helheim',     180, 746,  94, 'ГЕЛЬГЕЙМ',       '#552288', '#8844cc') +
+  wmZone('niflheim',    298, 716, 110, 'НІФЛЬГЕЙМ',      '#224488', '#4466aa') +
   '<text x="470" y="340" font-family="Cinzel,serif" font-size="7" fill="#2a2040" text-anchor="end" letter-spacing="2" opacity=".5">НЕБЕСНІ</text>' +
   '<text x="470" y="460" font-family="Cinzel,serif" font-size="7" fill="#1a2010" text-anchor="end" letter-spacing="2" opacity=".5">СЕРЕДНІ</text>' +
   '<text x="470" y="720" font-family="Cinzel,serif" font-size="7" fill="#181018" text-anchor="end" letter-spacing="2" opacity=".5">ПІДЗЕМНІ</text>' +
   '</svg>';
 }
 
-function wmZone(id, x, y, w, label, stroke, fill) {
-  var cx = x + w/2;
-  var fs = label.length > 10 ? 7.5 : 9;
-  return '<g class="wmz" onclick="wmOpenPanel(\'' + id + '\')">' +
-    '<rect class="bg" x="' + x + '" y="' + y + '" width="' + w + '" height="22" rx="2" fill="#04020a"/>' +
-    '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="22" rx="2" fill="none" stroke="' + stroke + '" stroke-width="1"/>' +
-    '<text x="' + cx + '" y="' + (y+14) + '" font-family="Cinzel,serif" font-size="' + fs + '" font-weight="600" fill="' + fill + '" text-anchor="middle" letter-spacing=".8">' + label + '</text>' +
-    '</g>';
+function initWorldMap3D() {
+  var container = document.getElementById('worldmap-container');
+  if (!container) return;
+  if (container.dataset.rendered) return;
+
+  container.innerHTML =
+    '<div id="wm-svg-wrap" style="background:#08050f;border:0;width:100%;overflow:hidden">' +
+      buildWMSVG() +
+    '</div>' +
+    '<div id="wm-info-panel" style="display:none;background:var(--bg-card,#0e0c14);border-top:1px solid rgba(200,160,60,.2);padding:14px 16px 18px"></div>';
+
+  // Hover effect on zones
+  container.querySelectorAll('.wmz').forEach(function(g) {
+    g.addEventListener('mouseenter', function() {
+      var bg = g.querySelector('.bg');
+      if (bg) bg.setAttribute('opacity', '1');
+    });
+    g.addEventListener('mouseleave', function() {
+      var bg = g.querySelector('.bg');
+      if (bg) bg.setAttribute('opacity', '.88');
+    });
+  });
+
+  container.dataset.rendered = '1';
 }
+
+// Aliases for compatibility
+var renderWorldMap = initWorldMap3D;
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initWorldMap3D);
 } else {
   initWorldMap3D();
 }
-
-// Alias for main.js compatibility
-var renderWorldMap = initWorldMap3D;

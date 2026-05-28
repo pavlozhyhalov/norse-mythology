@@ -1,11 +1,6 @@
 /* ═══════════════════════════════════════════════════════════
-   WORLD MAP — Medieval-style cartography
-   Light parchment background with illustrated regions
+   WORLD MAP — Nine Worlds SVG map
    ═══════════════════════════════════════════════════════════ */
-
-.worldmap-section {
-  margin-bottom: 2.5rem;
-}
 
 .worldmap-hint {
   font-family: var(--f-display);
@@ -18,96 +13,41 @@
 }
 
 .worldmap-container {
-  background: #e8dfc8;
-  background-image:
-    radial-gradient(ellipse at 30% 30%, rgba(180,150,100,0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 70% 70%, rgba(100,80,50,0.1) 0%, transparent 50%);
-  border: 1px solid #8a7858;
+  background: #08050f;
+  border: 1px solid var(--border, #2a1a3a);
   position: relative;
   overflow: hidden;
-  /* paper texture */
-  box-shadow:
-    inset 0 0 60px rgba(120,90,50,0.15),
-    inset 0 0 20px rgba(0,0,0,0.1);
 }
 
-/* Aged paper edge effect */
-.worldmap-container::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at 0% 0%, rgba(60,40,20,0.3) 0%, transparent 8%),
-    radial-gradient(circle at 100% 0%, rgba(60,40,20,0.3) 0%, transparent 8%),
-    radial-gradient(circle at 0% 100%, rgba(60,40,20,0.3) 0%, transparent 8%),
-    radial-gradient(circle at 100% 100%, rgba(60,40,20,0.3) 0%, transparent 8%);
-  pointer-events: none;
-  z-index: 1;
-}
-
-.worldmap-svg {
+#wm-svg-wrap {
+  background: #08050f;
   width: 100%;
-  height: auto;
+  overflow: hidden;
+}
+
+#wm-svg-wrap svg {
+  width: 100%;
   display: block;
-  position: relative;
-  z-index: 2;
 }
 
-/* World region styling */
-.wm-region {
+/* Zone hover */
+.wmz {
   cursor: pointer;
-  transition: all 0.25s ease;
 }
-.wm-region:hover .wm-region-bg,
-.wm-region:active .wm-region-bg {
-  fill-opacity: 0.55;
+.wmz rect.bg {
+  transition: opacity 0.15s;
 }
-.wm-region:hover .wm-region-border,
-.wm-region:active .wm-region-border {
-  stroke-width: 2.5;
+.wmz:hover rect.bg,
+.wmz:active rect.bg {
+  opacity: 1 !important;
 }
 
-.wm-region-bg {
-  fill-opacity: 0.3;
-  transition: fill-opacity 0.25s ease;
-}
-.wm-region-border {
-  fill: none;
-  stroke-width: 1.5;
-  transition: stroke-width 0.25s ease;
-}
-
-.wm-label {
-  font-family: 'Cinzel', serif;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  fill: #3a2a10;
-  pointer-events: none;
-  text-anchor: middle;
-}
-.wm-sublabel {
-  font-family: 'Cormorant Garamond', serif;
-  font-style: italic;
-  fill: #5a4520;
-  pointer-events: none;
-  text-anchor: middle;
-}
-
-.wm-landmark {
-  pointer-events: none;
-}
-
-/* Compass rose in corner */
-.wm-compass {
-  pointer-events: none;
-}
-
-/* Decorative border */
-.wm-border-deco {
-  fill: none;
-  stroke: #8a7858;
-  stroke-width: 1;
-  opacity: 0.6;
+/* Info panel */
+#wm-info-panel {
+  display: none;
+  background: var(--bg-card, #0e0c14);
+  border-top: 1px solid rgba(200, 160, 60, 0.2);
+  padding: 14px 16px 18px;
 }
 
 /* Caption below map */
