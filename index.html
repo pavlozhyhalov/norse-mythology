@@ -403,7 +403,7 @@ function startScene(container,canvas,panel,loader,modelsPath){
 
   // Animate
   var clk=new T.Clock();
-  (function loop(){requestAnimationFrame(loop);// auto-rotation offcamUpdate();fireLight.intensity=0.6+Math.sin(clk.getElapsedTime()*2.5)*0.2;renderer.render(scene,camera);})();
+  (function loop(){requestAnimationFrame(loop);camUpdate();fireLight.intensity=0.6+Math.sin(clk.getElapsedTime()*2.5)*0.2;renderer.render(scene,camera);})();
 }
 
 var renderWorldMap=initWorldMap3D;
