@@ -216,7 +216,136 @@
 <script src="js/events.js"></script>
 <script src="js/genealogy.js"></script>
 <script src="js/art.js"></script>
-<script src="js/worldmap-3d.js"></script>
+<script>
+// ═══════════════════════════════════════════════════════════
+// WORLDMAP 3D — Three.js + GLB meshes (inline, v3)
+// ═══════════════════════════════════════════════════════════
+const WM_WORLDS={asgard:{n:'Асґард',no:'Ásgarðr',s:'Обитель Асів',inh:'Боги-аси',desc:'Небесна фортеця богів-асів на вершині Іґґдрасіля. З\'єднана з Мідґардом веселковим мостом Біфрост.',det:['Вальгалла — зала 540 дверей','Ґлідскьяльф — трон Одіна']},alfheim:{n:'Альфгейм',no:'Álfheimr',s:'Домівка Ельфів',inh:'Світлі ельфи',desc:'Світ світлих ельфів — прекрасніших за сонце. Подарований Фрейру як зубний подарунок.',det:['Ljósálfar — прекрасніші за сонце','Dökkálfar живуть під землею']},vanaheim:{n:'Ванагейм',no:'Vanaheimr',s:'Домівка Ванів',inh:'Боги-вани',desc:'Прадавній світ богів-ванів, пов\'язаних з морем, родючістю і магією.',det:['Вани — найстаріший пантеон','Принесли асам магію сейд']},midgard:{n:'Мідґард',no:'Miðgarðr',s:'Світ Людей',inh:'Люди',desc:'Світ людей у центрі Всесвіту, створений з тіла першовелета Іміра.',det:['Земля = плоть Іміра','Перші люди Аскр і Ембля']},jotunheim:{n:'Йотунгейм',no:'Jötunheimr',s:'Домівка Велетів',inh:'Йотуни',desc:'Царство йотунів — первісних сил природи. Столиця Утґард.',det:['Утґард-Локі обдурив Тора','Мімірсбрунн — криниця мудрості']},muspelheim:{n:'Муспельгейм',no:'Múspellsheimr',s:'Світ Вогню',inh:'Сурт і сини Муспелля',desc:'Первозданний світ вогню. Охороняється Суртом з мечем яскравішим за сонце.',det:['Іскри стали зірками','Сурт спалить світ у Раґнарьок']},svartalfheim:{n:'Свартальфагейм',no:'Svartálfaheimr',s:'Домівка Гномів',inh:'Дверги-ковалі',desc:'Підземний світ гномів-двергів — найкращих ковалів всіх дев\'яти світів.',det:['Мйольнір і Ґунґнір виковані тут','Брісінґамен Фрейї']},helheim:{n:'Гельгейм',no:'Helheimr',s:'Царство Мертвих',inh:'Мертві, Гель',desc:'Царство для тих хто помер не в бою. Правителька Гель — донька Локі.',det:['Гель — наполовину жива','Бальдр потрапив сюди після загибелі']},niflheim:{n:'Ніфльгейм',no:'Niflheimr',s:'Світ Туману',inh:'Нідгоґр, змії',desc:'Найстаріший зі світів — первозданний світ льоду і темряви.',det:['Хвергельмір — джерело всіх рік','Нідгоґр гризе корінь Іґґдрасіля']}};
+
+const WM_CFG={asgard:{f:'asgard.glb',p:[0,6.5,0],sc:0.55,c:'#e8c060'},alfheim:{f:'alfheim.glb',p:[-5,4,3],sc:0.45,c:'#ccbbff'},vanaheim:{f:'vanaheim.glb',p:[5,4,3],sc:0.45,c:'#66cc44'},midgard:{f:'midgard.glb',p:[0,1,0],sc:0.55,c:'#44cc44'},jotunheim:{f:'jotunheim.glb',p:[6,1,-2],sc:0.45,c:'#4488cc'},muspelheim:{f:'muspelheim.glb',p:[-6,1,-2],sc:0.45,c:'#cc4422'},svartalfheim:{f:'svartalfheim.glb',p:[-4,-3.5,2],sc:0.42,c:'#cc7733'},helheim:{f:'helheim.glb',p:[0,-5,0],sc:0.50,c:'#8844cc'},niflheim:{f:'niflheim.glb',p:[4,-3.5,2],sc:0.42,c:'#4466aa'}};
+
+function wmShowPanel(id){var w=WM_WORLDS[id];if(!w)return;var p=document.getElementById('wm-info-panel');if(!p)return;p.innerHTML='<div style="font-family:Cinzel,serif;font-size:.48rem;letter-spacing:.28em;color:#6a5a3a;text-transform:uppercase;margin-bottom:4px">'+w.inh+' · '+w.no+'</div><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px"><div><div style="font-family:Cinzel,serif;font-size:1.1rem;color:#e0b850;font-weight:600">'+w.n+'</div><div style="font-style:italic;font-size:.8rem;color:#7a6030;margin-top:1px">'+w.s+'</div></div><button onclick="document.getElementById(\'wm-info-panel\').style.display=\'none\'" style="background:none;border:1px solid rgba(180,140,40,.3);color:#7a5a20;font-family:Cinzel,serif;font-size:.48rem;padding:4px 10px;cursor:pointer">✕</button></div><p style="font-size:.9rem;color:#8a7040;line-height:1.65;margin-bottom:5px">'+w.desc+'</p><ul style="list-style:none;padding:0;border-top:1px solid rgba(200,160,60,.12);padding-top:6px">'+w.det.map(function(d){return'<li style="font-size:.85rem;color:#6a5530;line-height:1.55;padding:2px 0 2px 14px;position:relative"><span style="position:absolute;left:0;color:#5a4a28;font-size:.6rem">ᚱ</span>'+d+'</li>';}).join('')+'</ul>';p.style.display='block';}
+
+function initWorldMap3D(){
+  var container=document.getElementById('worldmap-container');
+  if(!container||container.dataset.rendered)return;
+  container.dataset.rendered='1';
+  container.style.cssText='position:relative;width:100%;background:#06040e;border:1px solid #2a1a3a;overflow:hidden;';
+  var h=Math.min(Math.max(window.innerWidth*0.7,320),580);
+  container.style.height=h+'px';
+
+  var canvas=document.createElement('canvas');
+  canvas.style.cssText='width:100%;height:100%;display:block;touch-action:none;';
+  container.appendChild(canvas);
+
+  var panel=document.createElement('div');
+  panel.id='wm-info-panel';
+  panel.style.cssText='display:none;position:absolute;bottom:0;left:0;right:0;background:rgba(4,2,10,.96);border-top:1px solid rgba(200,160,60,.25);padding:12px 16px 14px;z-index:10;max-height:45%;overflow-y:auto;font-family:Georgia,serif;';
+  container.appendChild(panel);
+
+  var loader=document.createElement('div');
+  loader.style.cssText='position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#06040e;z-index:20;transition:opacity .4s;';
+  loader.innerHTML='<div style="font-family:Cinzel,serif;font-size:.6rem;letter-spacing:.3em;color:#4a3a6a;text-transform:uppercase;margin-bottom:12px">Завантаження світів…</div><div style="width:140px;height:1px;background:#1a1228"><div id="wm-bar" style="height:1px;background:#8866bb;width:0%;transition:width .3s"></div></div>';
+  container.appendChild(loader);
+
+  // Detect base URL for models/
+  var loc=window.location.href.split('#')[0];
+  var base=loc.substring(0,loc.lastIndexOf('/')+1);
+  var modelsPath=base+'models/';
+
+  function loadScript(url,cb){var s=document.createElement('script');s.src=url;s.onload=cb;s.onerror=function(){console.error('Load failed:'+url);cb();};document.head.appendChild(s);}
+
+  loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',function(){
+    loadScript('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js',function(){
+      if(!window.THREE){loader.innerHTML='<div style="color:#8a3a2a;font-family:Cinzel,serif;font-size:.6rem;letter-spacing:.2em">Помилка завантаження 3D бібліотеки</div>';return;}
+      startScene(container,canvas,panel,loader,modelsPath);
+    });
+  });
+}
+
+function startScene(container,canvas,panel,loader,modelsPath){
+  var T=window.THREE;
+  var W=container.clientWidth,H=container.clientHeight;
+  var renderer=new T.WebGLRenderer({canvas:canvas,antialias:true,alpha:false});
+  renderer.setSize(W,H);renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.shadowMap.enabled=true;renderer.outputEncoding=T.sRGBEncoding;
+  var scene=new T.Scene();scene.background=new T.Color(0x06040e);scene.fog=new T.FogExp2(0x06040e,0.035);
+  var camera=new T.PerspectiveCamera(50,W/H,0.1,200);
+  var sph={theta:0,phi:1.1,r:18};var tgt=new T.Vector3(0,1,0);
+  function camUpdate(){camera.position.set(tgt.x+sph.r*Math.sin(sph.phi)*Math.sin(sph.theta),tgt.y+sph.r*Math.cos(sph.phi),tgt.z+sph.r*Math.sin(sph.phi)*Math.cos(sph.theta));camera.lookAt(tgt);}
+  camUpdate();
+
+  scene.add(new T.AmbientLight(0x9988cc,0.7));
+  var dl=new T.DirectionalLight(0xffeedd,1.2);dl.position.set(5,10,5);dl.castShadow=true;scene.add(dl);
+  scene.add(new T.DirectionalLight(0x3322aa,0.35)).position.set(-5,-2,-5);
+  var fireLight=new T.PointLight(0xff4400,0.8,16);fireLight.position.set(-6,-2,-2);scene.add(fireLight);
+
+  // Stars
+  var sv=[];for(var i=0;i<1500;i++)sv.push((Math.random()-.5)*120,(Math.random()-.5)*120,(Math.random()-.5)*120);
+  var sg=new T.BufferGeometry();sg.setAttribute('position',new T.Float32BufferAttribute(sv,3));
+  scene.add(new T.Points(sg,new T.PointsMaterial({color:0xfff8e8,size:0.07,sizeAttenuation:true})));
+
+  var clickables=[],total=10,loaded=0,bar=document.getElementById('wm-bar');
+  function onLoad(){loaded++;if(bar)bar.style.width=(loaded/total*100)+'%';if(loaded>=total){setTimeout(function(){loader.style.opacity='0';setTimeout(function(){loader.style.display='none';},400);},300);}}
+
+  var gltf=new T.GLTFLoader();
+  // Tree
+  gltf.load(modelsPath+'tree.glb',function(g){
+    var m=g.scene,b=new T.Box3().setFromObject(m),s=b.getSize(new T.Vector3());
+    var sc=14/Math.max(s.x,s.y,s.z);m.scale.setScalar(sc);
+    b.setFromObject(m);m.position.sub(b.getCenter(new T.Vector3()));m.position.y+=1;
+    scene.add(m);onLoad();
+  },null,function(e){console.warn('tree.glb:',e);onLoad();});
+
+  // World meshes
+  Object.keys(WM_CFG).forEach(function(id){
+    var cfg=WM_CFG[id];
+    gltf.load(modelsPath+cfg.f,function(g){
+      var m=g.scene,b=new T.Box3().setFromObject(m),s=b.getSize(new T.Vector3());
+      var sc=(cfg.sc*3)/Math.max(s.x,s.y,s.z);m.scale.setScalar(sc);
+      b.setFromObject(m);m.position.sub(b.getCenter(new T.Vector3()));
+      var grp=new T.Group();grp.add(m);grp.position.set(cfg.p[0],cfg.p[1],cfg.p[2]);grp.userData.wid=id;
+      m.traverse(function(c){if(c.isMesh)c.userData.wid=id;});
+      scene.add(grp);clickables.push(grp);onLoad();
+    },null,function(e){console.warn(cfg.f+':',e);onLoad();});
+  });
+
+  // Orbit drag
+  var drag=false,pm={x:0,y:0};
+  canvas.addEventListener('mousedown',function(e){drag=true;pm={x:e.clientX,y:e.clientY};});
+  window.addEventListener('mouseup',function(){drag=false;});
+  canvas.addEventListener('mousemove',function(e){if(!drag)return;sph.theta-=(e.clientX-pm.x)*0.008;sph.phi=Math.max(0.3,Math.min(2.5,sph.phi-(e.clientY-pm.y)*0.008));pm={x:e.clientX,y:e.clientY};camUpdate();});
+  canvas.addEventListener('wheel',function(e){sph.r=Math.max(5,Math.min(38,sph.r+e.deltaY*0.02));camUpdate();e.preventDefault();},{passive:false});
+  var lt=null,lpd=0;
+  canvas.addEventListener('touchstart',function(e){if(e.touches.length===1)lt={x:e.touches[0].clientX,y:e.touches[0].clientY};if(e.touches.length===2)lpd=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);e.preventDefault();},{passive:false});
+  canvas.addEventListener('touchmove',function(e){if(e.touches.length===1&&lt){sph.theta-=(e.touches[0].clientX-lt.x)*0.01;sph.phi=Math.max(0.3,Math.min(2.5,sph.phi-(e.touches[0].clientY-lt.y)*0.01));lt={x:e.touches[0].clientX,y:e.touches[0].clientY};camUpdate();}if(e.touches.length===2){var d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);sph.r=Math.max(5,Math.min(38,sph.r-(d-lpd)*0.05));lpd=d;camUpdate();}e.preventDefault();},{passive:false});
+
+  // Click
+  var ray=new T.Raycaster(),mv=new T.Vector2(),clicking=false;
+  canvas.addEventListener('mousedown',function(){clicking=true;});
+  canvas.addEventListener('mousemove',function(){clicking=false;});
+  canvas.addEventListener('mouseup',function(e){
+    if(!clicking)return;
+    var r=canvas.getBoundingClientRect();
+    mv.x=((e.clientX-r.left)/r.width)*2-1;mv.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(mv,camera);
+    var meshes=[];clickables.forEach(function(g){g.traverse(function(c){if(c.isMesh)meshes.push(c);});});
+    var hits=ray.intersectObjects(meshes);
+    if(hits.length){var wid=hits[0].object.userData.wid;if(wid)wmShowPanel(wid);}
+  });
+
+  // Resize
+  window.addEventListener('resize',function(){var W2=container.clientWidth,H2=container.clientHeight;camera.aspect=W2/H2;camera.updateProjectionMatrix();renderer.setSize(W2,H2);});
+
+  // Animate
+  var clk=new T.Clock();
+  (function loop(){requestAnimationFrame(loop);if(!drag)sph.theta+=0.0008;camUpdate();fireLight.intensity=0.6+Math.sin(clk.getElapsedTime()*2.5)*0.2;renderer.render(scene,camera);})();
+}
+
+var renderWorldMap=initWorldMap3D;
+var wmOpenPanel=wmShowPanel;
+if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',initWorldMap3D);}else{initWorldMap3D();}
+</script>
 <script src="js/genealogy_render.js"></script>
 <script src="js/main.js"></script>
 
