@@ -222,7 +222,17 @@
 // ═══════════════════════════════════════════════════════════
 const WM_WORLDS={asgard:{n:'Асґард',no:'Ásgarðr',s:'Обитель Асів',inh:'Боги-аси',desc:'Небесна фортеця богів-асів на вершині Іґґдрасіля. З\'єднана з Мідґардом веселковим мостом Біфрост.',det:['Вальгалла — зала 540 дверей','Ґлідскьяльф — трон Одіна']},alfheim:{n:'Альфгейм',no:'Álfheimr',s:'Домівка Ельфів',inh:'Світлі ельфи',desc:'Світ світлих ельфів — прекрасніших за сонце. Подарований Фрейру як зубний подарунок.',det:['Ljósálfar — прекрасніші за сонце','Dökkálfar живуть під землею']},vanaheim:{n:'Ванагейм',no:'Vanaheimr',s:'Домівка Ванів',inh:'Боги-вани',desc:'Прадавній світ богів-ванів, пов\'язаних з морем, родючістю і магією.',det:['Вани — найстаріший пантеон','Принесли асам магію сейд']},midgard:{n:'Мідґард',no:'Miðgarðr',s:'Світ Людей',inh:'Люди',desc:'Світ людей у центрі Всесвіту, створений з тіла першовелета Іміра.',det:['Земля = плоть Іміра','Перші люди Аскр і Ембля']},jotunheim:{n:'Йотунгейм',no:'Jötunheimr',s:'Домівка Велетів',inh:'Йотуни',desc:'Царство йотунів — первісних сил природи. Столиця Утґард.',det:['Утґард-Локі обдурив Тора','Мімірсбрунн — криниця мудрості']},muspelheim:{n:'Муспельгейм',no:'Múspellsheimr',s:'Світ Вогню',inh:'Сурт і сини Муспелля',desc:'Первозданний світ вогню. Охороняється Суртом з мечем яскравішим за сонце.',det:['Іскри стали зірками','Сурт спалить світ у Раґнарьок']},svartalfheim:{n:'Свартальфагейм',no:'Svartálfaheimr',s:'Домівка Гномів',inh:'Дверги-ковалі',desc:'Підземний світ гномів-двергів — найкращих ковалів всіх дев\'яти світів.',det:['Мйольнір і Ґунґнір виковані тут','Брісінґамен Фрейї']},helheim:{n:'Гельгейм',no:'Helheimr',s:'Царство Мертвих',inh:'Мертві, Гель',desc:'Царство для тих хто помер не в бою. Правителька Гель — донька Локі.',det:['Гель — наполовину жива','Бальдр потрапив сюди після загибелі']},niflheim:{n:'Ніфльгейм',no:'Niflheimr',s:'Світ Туману',inh:'Нідгоґр, змії',desc:'Найстаріший зі світів — первозданний світ льоду і темряви.',det:['Хвергельмір — джерело всіх рік','Нідгоґр гризе корінь Іґґдрасіля']}};
 
-const WM_CFG={asgard:{f:'asgard.glb',p:[0,6.5,0],sc:0.55,c:'#e8c060'},alfheim:{f:'alfheim.glb',p:[-5,4,3],sc:0.45,c:'#ccbbff'},vanaheim:{f:'vanaheim.glb',p:[5,4,3],sc:0.45,c:'#66cc44'},midgard:{f:'midgard.glb',p:[0,1,0],sc:0.55,c:'#44cc44'},jotunheim:{f:'jotunheim.glb',p:[6,1,-2],sc:0.45,c:'#4488cc'},muspelheim:{f:'muspelheim.glb',p:[-6,1,-2],sc:0.45,c:'#cc4422'},svartalfheim:{f:'svartalfheim.glb',p:[-4,-3.5,2],sc:0.42,c:'#cc7733'},helheim:{f:'helheim.glb',p:[0,-5,0],sc:0.50,c:'#8844cc'},niflheim:{f:'niflheim.glb',p:[4,-3.5,2],sc:0.42,c:'#4466aa'}};
+const WM_CFG={
+  asgard:      {f:'asgard.glb',      p:[ 0,    7.5,  0  ], sc:1.8, c:'#e8c060'}, // top crown
+  alfheim:     {f:'alfheim.glb',     p:[-3.5,  5.5,  1.5], sc:1.4, c:'#ccbbff'}, // left upper branch
+  vanaheim:    {f:'vanaheim.glb',    p:[ 3.5,  5.5,  1.5], sc:1.4, c:'#66cc44'}, // right upper branch
+  midgard:     {f:'midgard.glb',     p:[ 0,    1.5,  2  ], sc:1.8, c:'#44cc44'}, // trunk middle front
+  jotunheim:   {f:'jotunheim.glb',   p:[ 3.5,  1.0, -1  ], sc:1.4, c:'#4488cc'}, // right middle
+  muspelheim:  {f:'muspelheim.glb',  p:[-3.5,  1.0, -1  ], sc:1.4, c:'#cc4422'}, // left middle
+  svartalfheim:{f:'svartalfheim.glb',p:[-2.5, -3.5,  1.5], sc:1.3, c:'#cc7733'}, // left root
+  helheim:     {f:'helheim.glb',     p:[ 0,   -5.0,  0  ], sc:1.6, c:'#8844cc'}, // bottom center root
+  niflheim:    {f:'niflheim.glb',    p:[ 2.5, -3.5,  1.5], sc:1.3, c:'#4466aa'}  // right root
+};
 
 function wmShowPanel(id){var w=WM_WORLDS[id];if(!w)return;var p=document.getElementById('wm-info-panel');if(!p)return;p.innerHTML='<div style="font-family:Cinzel,serif;font-size:.48rem;letter-spacing:.28em;color:#6a5a3a;text-transform:uppercase;margin-bottom:4px">'+w.inh+' · '+w.no+'</div><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px"><div><div style="font-family:Cinzel,serif;font-size:1.1rem;color:#e0b850;font-weight:600">'+w.n+'</div><div style="font-style:italic;font-size:.8rem;color:#7a6030;margin-top:1px">'+w.s+'</div></div><button onclick="document.getElementById(\'wm-info-panel\').style.display=\'none\'" style="background:none;border:1px solid rgba(180,140,40,.3);color:#7a5a20;font-family:Cinzel,serif;font-size:.48rem;padding:4px 10px;cursor:pointer">✕</button></div><p style="font-size:.9rem;color:#8a7040;line-height:1.65;margin-bottom:5px">'+w.desc+'</p><ul style="list-style:none;padding:0;border-top:1px solid rgba(200,160,60,.12);padding-top:6px">'+w.det.map(function(d){return'<li style="font-size:.85rem;color:#6a5530;line-height:1.55;padding:2px 0 2px 14px;position:relative"><span style="position:absolute;left:0;color:#5a4a28;font-size:.6rem">ᚱ</span>'+d+'</li>';}).join('')+'</ul>';p.style.display='block';}
 
@@ -299,7 +309,7 @@ function startScene(container,canvas,panel,loader,modelsPath){
   // Tree
   gltf.load(modelsPath+'tree.glb',function(g){
     var m=g.scene,b=new T.Box3().setFromObject(m),s=b.getSize(new T.Vector3());
-    var sc=14/Math.max(s.x,s.y,s.z);m.scale.setScalar(sc);
+    var sc=13/Math.max(s.x,s.y,s.z);m.scale.setScalar(sc);
     b.setFromObject(m);m.position.sub(b.getCenter(new T.Vector3()));m.position.y+=1;
     scene.add(m);onLoad();
   },null,function(e){console.warn('tree.glb:',e);onLoad();});
@@ -309,7 +319,7 @@ function startScene(container,canvas,panel,loader,modelsPath){
     var cfg=WM_CFG[id];
     gltf.load(modelsPath+cfg.f,function(g){
       var m=g.scene,b=new T.Box3().setFromObject(m),s=b.getSize(new T.Vector3());
-      var sc=(cfg.sc*3)/Math.max(s.x,s.y,s.z);m.scale.setScalar(sc);
+      var sc=cfg.sc/Math.max(s.x,s.y,s.z);m.scale.setScalar(sc);
       b.setFromObject(m);m.position.sub(b.getCenter(new T.Vector3()));
       var grp=new T.Group();grp.add(m);grp.position.set(cfg.p[0],cfg.p[1],cfg.p[2]);grp.userData.wid=id;
       m.traverse(function(c){if(c.isMesh)c.userData.wid=id;});
@@ -351,7 +361,11 @@ function startScene(container,canvas,panel,loader,modelsPath){
 
 var renderWorldMap=initWorldMap3D;
 var wmOpenPanel=wmShowPanel;
-if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',initWorldMap3D);}else{initWorldMap3D();}
+function tryInitMap(){
+  var c=document.getElementById('worldmap-container');
+  if(c){initWorldMap3D();}else{setTimeout(tryInitMap,100);}
+}
+if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',tryInitMap);}else{tryInitMap();}
 </script>
 <script src="js/genealogy_render.js"></script>
 <script src="js/main.js"></script>
