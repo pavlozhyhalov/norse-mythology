@@ -223,15 +223,15 @@
 const WM_WORLDS={asgard:{n:'Асґард',no:'Ásgarðr',s:'Обитель Асів',inh:'Боги-аси',desc:'Небесна фортеця богів-асів на вершині Іґґдрасіля. З\'єднана з Мідґардом веселковим мостом Біфрост.',det:['Вальгалла — зала 540 дверей','Ґлідскьяльф — трон Одіна']},alfheim:{n:'Альфгейм',no:'Álfheimr',s:'Домівка Ельфів',inh:'Світлі ельфи',desc:'Світ світлих ельфів — прекрасніших за сонце. Подарований Фрейру як зубний подарунок.',det:['Ljósálfar — прекрасніші за сонце','Dökkálfar живуть під землею']},vanaheim:{n:'Ванагейм',no:'Vanaheimr',s:'Домівка Ванів',inh:'Боги-вани',desc:'Прадавній світ богів-ванів, пов\'язаних з морем, родючістю і магією.',det:['Вани — найстаріший пантеон','Принесли асам магію сейд']},midgard:{n:'Мідґард',no:'Miðgarðr',s:'Світ Людей',inh:'Люди',desc:'Світ людей у центрі Всесвіту, створений з тіла першовелета Іміра.',det:['Земля = плоть Іміра','Перші люди Аскр і Ембля']},jotunheim:{n:'Йотунгейм',no:'Jötunheimr',s:'Домівка Велетів',inh:'Йотуни',desc:'Царство йотунів — первісних сил природи. Столиця Утґард.',det:['Утґард-Локі обдурив Тора','Мімірсбрунн — криниця мудрості']},muspelheim:{n:'Муспельгейм',no:'Múspellsheimr',s:'Світ Вогню',inh:'Сурт і сини Муспелля',desc:'Первозданний світ вогню. Охороняється Суртом з мечем яскравішим за сонце.',det:['Іскри стали зірками','Сурт спалить світ у Раґнарьок']},svartalfheim:{n:'Свартальфагейм',no:'Svartálfaheimr',s:'Домівка Гномів',inh:'Дверги-ковалі',desc:'Підземний світ гномів-двергів — найкращих ковалів всіх дев\'яти світів.',det:['Мйольнір і Ґунґнір виковані тут','Брісінґамен Фрейї']},helheim:{n:'Гельгейм',no:'Helheimr',s:'Царство Мертвих',inh:'Мертві, Гель',desc:'Царство для тих хто помер не в бою. Правителька Гель — донька Локі.',det:['Гель — наполовину жива','Бальдр потрапив сюди після загибелі']},niflheim:{n:'Ніфльгейм',no:'Niflheimr',s:'Світ Туману',inh:'Нідгоґр, змії',desc:'Найстаріший зі світів — первозданний світ льоду і темряви.',det:['Хвергельмір — джерело всіх рік','Нідгоґр гризе корінь Іґґдрасіля']}};
 
 const WM_CFG={
-  asgard:      {f:'asgard.glb',      p:[ 0,    6.5,  0  ], sc:3.5, c:'#e8c060'},
-  alfheim:     {f:'alfheim.glb',     p:[-3.2,  4.8,  1.0], sc:2.8, c:'#ccbbff'},
-  vanaheim:    {f:'vanaheim.glb',    p:[ 3.2,  4.8,  1.0], sc:2.8, c:'#66cc44'},
-  midgard:     {f:'midgard.glb',     p:[ 0,    0.5,  1.8], sc:3.5, c:'#44cc44'},
-  jotunheim:   {f:'jotunheim.glb',   p:[ 2.0,  0.5,  2.2], sc:2.8, c:'#4488cc'},
-  muspelheim:  {f:'muspelheim.glb',  p:[-3.0,  0.5, -0.5], sc:2.8, c:'#cc4422'},
-  svartalfheim:{f:'svartalfheim.glb',p:[-2.2, -4.0,  1.0], sc:2.5, c:'#cc7733'},
-  helheim:     {f:'helheim.glb',     p:[ 0,   -5.5,  0  ], sc:3.0, c:'#8844cc'},
-  niflheim:    {f:'niflheim.glb',    p:[ 2.2, -4.0,  1.0], sc:2.5, c:'#4466aa'}
+  asgard:      {f:'asgard.glb',      p:[ 0.0,  6.2,  0.5], sc:3.2, c:'#e8c060'},
+  alfheim:     {f:'alfheim.glb',     p:[-2.8,  4.5,  1.5], sc:2.6, c:'#ccbbff'},
+  vanaheim:    {f:'vanaheim.glb',    p:[ 2.8,  4.5,  1.5], sc:2.6, c:'#66cc44'},
+  midgard:     {f:'midgard.glb',     p:[ 0.0,  0.8,  2.0], sc:3.0, c:'#44cc44'},
+  jotunheim:   {f:'jotunheim.glb',   p:[ 2.5,  0.5,  1.5], sc:2.6, c:'#4488cc'},
+  muspelheim:  {f:'muspelheim.glb',  p:[-2.5,  0.5,  1.5], sc:2.6, c:'#cc4422'},
+  svartalfheim:{f:'svartalfheim.glb',p:[-2.0, -3.5,  1.5], sc:2.4, c:'#cc7733'},
+  helheim:     {f:'helheim.glb',     p:[ 0.0, -5.0,  0.5], sc:2.8, c:'#8844cc'},
+  niflheim:    {f:'niflheim.glb',    p:[ 2.0, -3.5,  1.5], sc:2.4, c:'#4466aa'}
 };
 
 function wmShowPanel(id){var w=WM_WORLDS[id];if(!w)return;var p=document.getElementById('wm-info-panel');if(!p)return;p.innerHTML='<div style="font-family:Cinzel,serif;font-size:.48rem;letter-spacing:.28em;color:#6a5a3a;text-transform:uppercase;margin-bottom:4px">'+w.inh+' · '+w.no+'</div><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px"><div><div style="font-family:Cinzel,serif;font-size:1.1rem;color:#e0b850;font-weight:600">'+w.n+'</div><div style="font-style:italic;font-size:.8rem;color:#7a6030;margin-top:1px">'+w.s+'</div></div><button onclick="document.getElementById(\'wm-info-panel\').style.display=\'none\'" style="background:none;border:1px solid rgba(180,140,40,.3);color:#7a5a20;font-family:Cinzel,serif;font-size:.48rem;padding:4px 10px;cursor:pointer">✕</button></div><p style="font-size:.9rem;color:#8a7040;line-height:1.65;margin-bottom:5px">'+w.desc+'</p><ul style="list-style:none;padding:0;border-top:1px solid rgba(200,160,60,.12);padding-top:6px">'+w.det.map(function(d){return'<li style="font-size:.85rem;color:#6a5530;line-height:1.55;padding:2px 0 2px 14px;position:relative"><span style="position:absolute;left:0;color:#5a4a28;font-size:.6rem">ᚱ</span>'+d+'</li>';}).join('')+'</ul>';p.style.display='block';}
@@ -327,44 +327,32 @@ function startScene(container,canvas,panel,loader,modelsPath){
     },null,function(e){console.warn(cfg.f+':',e);onLoad();});
   });
 
-  // Controls: LMB = orbit, MMB/wheel = zoom, RMB = pan
-  var drag=false,panning=false,pm={x:0,y:0};
-
+  // Controls: LMB=orbit, RMB=pan, Shift+LMB=pan, scroll=zoom
+  var mouseState={down:false,button:0,x:0,y:0};
   canvas.addEventListener('contextmenu',function(e){e.preventDefault();});
-
   canvas.addEventListener('mousedown',function(e){
-    pm={x:e.clientX,y:e.clientY};
-    if(e.button===2||e.button===1){panning=true;}else{drag=true;}
+    mouseState.down=true; mouseState.button=e.button;
+    mouseState.x=e.clientX; mouseState.y=e.clientY;
     e.preventDefault();
   });
-  window.addEventListener('mouseup',function(e){
-    if(e.button===2||e.button===1){panning=false;}else{drag=false;}
-  });
-
+  window.addEventListener('mouseup',function(){mouseState.down=false;});
   canvas.addEventListener('mousemove',function(e){
-    var dx=e.clientX-pm.x, dy=e.clientY-pm.y;
-    pm={x:e.clientX,y:e.clientY};
-    if(!dx&&!dy)return;
-    if(drag){
+    if(!mouseState.down)return;
+    var dx=e.clientX-mouseState.x, dy=e.clientY-mouseState.y;
+    mouseState.x=e.clientX; mouseState.y=e.clientY;
+    var isPan=(mouseState.button===2||mouseState.button===1||e.shiftKey);
+    if(isPan){
+      var ps=sph.r*0.0012;
+      var cd=new T.Vector3().subVectors(tgt,camera.position).normalize();
+      var ri=new T.Vector3().crossVectors(cd,new T.Vector3(0,1,0)).normalize();
+      var up=new T.Vector3().crossVectors(ri,cd).normalize();
+      tgt.addScaledVector(ri,-dx*ps);
+      tgt.addScaledVector(up,dy*ps);
+    } else {
       sph.theta-=dx*0.008;
       sph.phi=Math.max(0.3,Math.min(2.5,sph.phi-dy*0.008));
-      camUpdate();
     }
-    if(panning){
-      var panSpeed=sph.r*0.001;
-      // right vector = cross(lookDir, worldUp)
-      var lookDir=new T.Vector3(
-        tgt.x-camera.position.x,
-        tgt.y-camera.position.y,
-        tgt.z-camera.position.z
-      ).normalize();
-      var worldUp=new T.Vector3(0,1,0);
-      var right=new T.Vector3().crossVectors(lookDir,worldUp).normalize();
-      var up=new T.Vector3().crossVectors(right,lookDir).normalize();
-      tgt.addScaledVector(right,-dx*panSpeed);
-      tgt.addScaledVector(up,dy*panSpeed);
-      camUpdate();
-    }
+    camUpdate();
   });
   canvas.addEventListener('wheel',function(e){sph.r=Math.max(5,Math.min(38,sph.r+e.deltaY*0.02));camUpdate();e.preventDefault();},{passive:false});
   var lt=null,lpd=0;
