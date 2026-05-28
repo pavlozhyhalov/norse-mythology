@@ -283,7 +283,7 @@ function startScene(container,canvas,panel,loader,modelsPath){
   renderer.shadowMap.enabled=true;renderer.outputEncoding=T.sRGBEncoding;
   var scene=new T.Scene();scene.background=new T.Color(0x06040e);scene.fog=new T.FogExp2(0x06040e,0.035);
   var camera=new T.PerspectiveCamera(50,W/H,0.1,200);
-  var sph={theta:0,phi:1.0,r:12};var tgt=new T.Vector3(0,0,0);
+  var sph={theta:0,phi:1.1,r:16};var tgt=new T.Vector3(0,0.5,0);
   function camUpdate(){camera.position.set(tgt.x+sph.r*Math.sin(sph.phi)*Math.sin(sph.theta),tgt.y+sph.r*Math.cos(sph.phi),tgt.z+sph.r*Math.sin(sph.phi)*Math.cos(sph.theta));camera.lookAt(tgt);}
   camUpdate();
 
@@ -363,9 +363,11 @@ var renderWorldMap=initWorldMap3D;
 var wmOpenPanel=wmShowPanel;
 function tryInitMap(){
   var c=document.getElementById('worldmap-container');
-  if(c){initWorldMap3D();}else{setTimeout(tryInitMap,100);}
+  if(c&&!c.dataset.rendered){initWorldMap3D();}
 }
-if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',tryInitMap);}else{tryInitMap();}
+// main.js calls initWorldMap3D via renderWorldsPage() - no need for extra listeners
+window.initWorldMap3D = initWorldMap3D;
+window.renderWorldMap = initWorldMap3D;
 </script>
 <script src="js/genealogy_render.js"></script>
 <script src="js/main.js"></script>
