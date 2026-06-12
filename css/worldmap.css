@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════
-   WORLD MAP — Nine Worlds SVG map
+   WORLD MAP — SVG Іґґдрасіль (v2, мобільно-дружній)
    ═══════════════════════════════════════════════════════════ */
 
 .worldmap-hint {
@@ -13,44 +13,13 @@
 }
 
 .worldmap-container {
-  background: #08050f;
-  border: 1px solid var(--border, #2a1a3a);
+  background: #06040e;
+  border: 1px solid rgba(60,30,90,.6);
   position: relative;
   overflow: hidden;
+  border-radius: 2px;
 }
 
-#wm-svg-wrap {
-  background: #08050f;
-  width: 100%;
-  overflow: hidden;
-}
-
-#wm-svg-wrap svg {
-  width: 100%;
-  display: block;
-}
-
-/* Zone hover */
-.wmz {
-  cursor: pointer;
-}
-.wmz rect.bg {
-  transition: opacity 0.15s;
-}
-.wmz:hover rect.bg,
-.wmz:active rect.bg {
-  opacity: 1 !important;
-}
-
-/* Info panel */
-#wm-info-panel {
-  display: none;
-  background: var(--bg-card, #0e0c14);
-  border-top: 1px solid rgba(200, 160, 60, 0.2);
-  padding: 14px 16px 18px;
-}
-
-/* Caption below map */
 .worldmap-caption {
   font-family: var(--f-display);
   font-size: 0.62rem;
@@ -59,12 +28,113 @@
   color: var(--text-muted);
   text-align: center;
   margin-top: 0.7rem;
+  margin-bottom: 0.2rem;
 }
+
+/* SVG world nodes */
+.wm-world-node {
+  cursor: pointer;
+}
+.wm-world-node:hover circle:nth-child(3),
+.wm-world-node:focus circle:nth-child(3) {
+  filter: brightness(1.3);
+}
+.wm-world-node:focus { outline: none; }
+.wm-world-node.wm-active circle:nth-child(3) {
+  filter: brightness(1.4);
+}
+
+/* Info panel */
+.wm-panel {
+  display: none;
+  position: sticky;
+  bottom: 0;
+  background: rgba(4,2,12,.98);
+  border-top: 1px solid rgba(180,140,50,.28);
+  padding: 14px 16px 18px;
+  z-index: 10;
+  font-family: Georgia, 'Cormorant Garamond', serif;
+}
+
+.wmp-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 9px;
+}
+
+.wmp-info { flex: 1; min-width: 0; }
+
+.wmp-inh {
+  font-family: var(--f-display);
+  font-size: 0.55rem;
+  letter-spacing: 0.28em;
+  color: rgba(180,140,60,.6);
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.wmp-name {
+  font-family: var(--f-display);
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+}
+
+.wmp-sub {
+  font-style: italic;
+  font-size: 0.82rem;
+  color: rgba(160,120,50,.7);
+}
+
+.wmp-close {
+  background: none;
+  border: 1px solid rgba(180,140,40,.3);
+  color: rgba(160,120,40,.8);
+  font-family: var(--f-display);
+  font-size: 0.5rem;
+  letter-spacing: 0.1em;
+  padding: 5px 12px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+.wmp-close:hover { border-color: rgba(200,160,60,.5); color: rgba(200,160,60,.9); }
+
+.wmp-desc {
+  font-size: 0.9rem;
+  color: rgba(180,150,80,.85);
+  line-height: 1.7;
+  margin-bottom: 12px;
+}
+
+.wmp-actions { display: flex; gap: 8px; }
+
+.wmp-detail-btn {
+  flex: 1;
+  font-family: var(--f-display);
+  font-size: 0.63rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  background: none;
+  border: 1px solid;
+  padding: 9px 0;
+  cursor: pointer;
+  transition: opacity 0.2s, background 0.2s;
+  opacity: 0.85;
+}
+.wmp-detail-btn:hover { opacity: 1; background: rgba(255,255,255,.06); }
 
 @media (max-width: 600px) {
   .worldmap-container {
     margin: 0 -0.85rem;
     border-left: none;
     border-right: none;
+    border-radius: 0;
   }
+  .wmp-name { font-size: 1.05rem; }
+  .wmp-desc { font-size: 0.85rem; }
 }
