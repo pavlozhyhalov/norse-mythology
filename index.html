@@ -221,22 +221,213 @@
 <script src="js/main.js"></script>
 <script>
 // ═══════════════════════════════════════════════════════════
-// WORLDMAP SVG — Іґґдрасіль (2D, mobile-friendly, no WebGL)
+// WORLDMAP — гібрид:
+//   ПК + WebGL → 3D Three.js з GLB-мешами (обертання/зум/пан)
+//   Телефон або збій WebGL → 2D SVG Іґґдрасіль
 // ═══════════════════════════════════════════════════════════
+const WM_WORLDS={asgard:{n:'Асґард',no:'Ásgarðr',s:'Обитель Асів',inh:'Боги-аси',c:'#e8c060',desc:'Небесна фортеця богів-асів на вершині Іґґдрасіля. З\'єднана з Мідґардом веселковим мостом Біфрост.',det:['Вальгалла — зала 540 дверей','Ґлідскьяльф — трон Одіна']},alfheim:{n:'Альфгейм',no:'Álfheimr',s:'Домівка Ельфів',inh:'Світлі ельфи',c:'#ccbbff',desc:'Світ світлих ельфів — прекрасніших за сонце. Подарований Фрейру як зубний подарунок.',det:['Ljósálfar — прекрасніші за сонце','Dökkálfar живуть під землею']},vanaheim:{n:'Ванагейм',no:'Vanaheimr',s:'Домівка Ванів',inh:'Боги-вани',c:'#66cc88',desc:'Прадавній світ богів-ванів, пов\'язаних з морем, родючістю і магією.',det:['Вани — найстаріший пантеон','Принесли асам магію сейд']},midgard:{n:'Мідґард',no:'Miðgarðr',s:'Світ Людей',inh:'Люди',c:'#44cc44',desc:'Світ людей у центрі Всесвіту, створений з тіла першовелета Іміра.',det:['Земля = плоть Іміра','Перші люди Аскр і Ембля']},jotunheim:{n:'Йотунгейм',no:'Jötunheimr',s:'Домівка Велетів',inh:'Йотуни',c:'#4488cc',desc:'Царство йотунів — первісних сил природи. Столиця Утґард.',det:['Утґард-Локі обдурив Тора','Мімірсбрунн — криниця мудрості']},muspelheim:{n:'Муспельгейм',no:'Múspellsheimr',s:'Світ Вогню',inh:'Сурт і сини Муспелля',c:'#dd4422',desc:'Первозданний світ вогню. Охороняється Суртом з мечем яскравішим за сонце.',det:['Іскри стали зірками','Сурт спалить світ у Раґнарьок']},svartalfheim:{n:'Свартальфагейм',no:'Svartálfaheimr',s:'Домівка Гномів',inh:'Дверги-ковалі',c:'#cc7733',desc:'Підземний світ гномів-двергів — найкращих ковалів всіх дев\'яти світів.',det:['Мйольнір і Ґунґнір виковані тут','Брісінґамен Фрейї']},helheim:{n:'Гельгейм',no:'Helheimr',s:'Царство Мертвих',inh:'Мертві, Гель',c:'#8844cc',desc:'Царство для тих хто помер не в бою. Правителька Гель — донька Локі.',det:['Гель — наполовину жива','Бальдр потрапив сюди після загибелі']},niflheim:{n:'Ніфльгейм',no:'Niflheimr',s:'Світ Туману',inh:'Нідгоґр, змії',c:'#4466aa',desc:'Найстаріший зі світів — первозданний світ льоду і темряви.',det:['Хвергельмір — джерело всіх рік','Нідгоґр гризе корінь Іґґдрасіля']}};
 
-var WM_WORLDS = {
-  asgard:      {n:'Асґард',      no:'Ásgarðr',        s:'Обитель Асів',       inh:'Боги-аси',           c:'#e8c060', desc:'Небесна фортеця богів-асів на вершині Іґґдрасіля. З\'єднана з Мідґардом веселковим мостом Біфрост.',      det:['Вальгалла — зала 540 дверей','Ґлідскьяльф — трон Одіна']},
-  alfheim:     {n:'Альфгейм',    no:'Álfheimr',        s:'Домівка Ельфів',     inh:'Світлі ельфи',       c:'#ccbbff', desc:'Світ світлих ельфів — прекрасніших за сонце. Подарований Фрейру як зубний подарунок.',                   det:['Ljósálfar — прекрасніші за сонце','Dökkálfar живуть під землею']},
-  vanaheim:    {n:'Ванагейм',    no:'Vanaheimr',       s:'Домівка Ванів',      inh:'Боги-вани',          c:'#66cc88', desc:'Прадавній світ богів-ванів, пов\'язаних з морем, родючістю і магією.',                                    det:['Вани — найстаріший пантеон','Принесли асам магію сейд']},
-  midgard:     {n:'Мідґард',     no:'Miðgarðr',        s:'Світ Людей',         inh:'Люди',               c:'#44cc44', desc:'Світ людей у центрі Всесвіту, створений з тіла першовелета Іміра.',                                      det:['Земля = плоть Іміра','Перші люди Аскр і Ембля']},
-  jotunheim:   {n:'Йотунгейм',   no:'Jötunheimr',      s:'Домівка Велетів',    inh:'Йотуни',             c:'#4488cc', desc:'Царство йотунів — первісних сил природи. Столиця Утґард.',                                              det:['Утґард-Локі обдурив Тора','Мімірсбрунн — криниця мудрості']},
-  muspelheim:  {n:'Муспельгейм', no:'Múspellsheimr',   s:'Світ Вогню',         inh:'Сурт і сини Муспелля',c:'#dd4422', desc:'Первозданний світ вогню. Охороняється Суртом з мечем яскравішим за сонце.',                            det:['Іскри стали зірками','Сурт спалить світ у Раґнарьок']},
-  svartalfheim:{n:'Свартальфагейм',no:'Svartálfaheimr', s:'Домівка Гномів',    inh:'Дверги-ковалі',      c:'#cc7733', desc:'Підземний світ гномів-двергів — найкращих ковалів всіх дев\'яти світів.',                                det:['Мйольнір і Ґунґнір виковані тут','Брісінґамен Фрейї']},
-  helheim:     {n:'Гельгейм',    no:'Helheimr',        s:'Царство Мертвих',    inh:'Мертві, Гель',       c:'#8844cc', desc:'Царство для тих хто помер не в бою. Правителька Гель — донька Локі.',                                   det:['Гель — наполовину жива','Бальдр потрапив сюди після загибелі']},
-  niflheim:    {n:'Ніфльгейм',   no:'Niflheimr',       s:'Світ Туману',        inh:'Нідгоґр, змії',      c:'#4466aa', desc:'Найстаріший зі світів — первозданний світ льоду і темряви.',                                            det:['Хвергельмір — джерело всіх рік','Нідгоґр гризе корінь Іґґдрасіля']}
+const WM_CFG={
+  asgard:      {f:'asgard.glb',      p:[ 0.0,  7.0,  0.0], sc:3.2, c:'#e8c060'},
+  alfheim:     {f:'alfheim.glb',     p:[-3.5,  5.0,  0.0], sc:2.6, c:'#ccbbff'},
+  vanaheim:    {f:'vanaheim.glb',    p:[ 3.5,  5.0,  0.0], sc:2.6, c:'#66cc44'},
+  midgard:     {f:'midgard.glb',     p:[ 0.0,  1.0,  1.8], sc:3.0, c:'#44cc44'},
+  jotunheim:   {f:'jotunheim.glb',   p:[ 3.0,  0.5,  0.0], sc:2.6, c:'#4488cc'},
+  muspelheim:  {f:'muspelheim.glb',  p:[-3.0,  0.5,  0.0], sc:2.6, c:'#cc4422'},
+  svartalfheim:{f:'svartalfheim.glb',p:[-2.5, -3.5,  0.0], sc:2.4, c:'#cc7733'},
+  helheim:     {f:'helheim.glb',     p:[ 0.0, -5.5,  0.0], sc:2.8, c:'#8844cc'},
+  niflheim:    {f:'niflheim.glb',    p:[ 2.5, -3.5,  0.0], sc:2.4, c:'#4466aa'}
 };
 
-// SVG coordinate positions for each world (viewBox 600×900)
+// ── Панель інформації (спільна для 3D, абсолютна в контейнері) ──
+function wmShowPanel(id){var w=WM_WORLDS[id];if(!w)return;var p=document.getElementById('wm-info-panel');if(!p)return;p.innerHTML='<div style="font-family:Cinzel,serif;font-size:.48rem;letter-spacing:.28em;color:#6a5a3a;text-transform:uppercase;margin-bottom:4px">'+w.inh+' · '+w.no+'</div><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px"><div><div style="font-family:Cinzel,serif;font-size:1.1rem;color:#e0b850;font-weight:600">'+w.n+'</div><div style="font-style:italic;font-size:.8rem;color:#7a6030;margin-top:1px">'+w.s+'</div></div><button onclick="document.getElementById(\'wm-info-panel\').style.display=\'none\'" style="background:none;border:1px solid rgba(180,140,40,.3);color:#7a5a20;font-family:Cinzel,serif;font-size:.48rem;padding:4px 10px;cursor:pointer">✕</button></div><p style="font-size:.9rem;color:#8a7040;line-height:1.65;margin-bottom:5px">'+w.desc+'</p><ul style="list-style:none;padding:0;border-top:1px solid rgba(200,160,60,.12);padding-top:6px;margin-bottom:10px">'+w.det.map(function(d){return'<li style="font-size:.85rem;color:#6a5530;line-height:1.55;padding:2px 0 2px 14px;position:relative"><span style="position:absolute;left:0;color:#5a4a28;font-size:.6rem">ᚱ</span>'+d+'</li>';}).join('')+'</ul><button onclick="openWorldDetail(\''+id+'\')" style="display:block;width:100%;background:none;border:1px solid rgba(224,184,80,.4);color:#e0b850;font-family:Cinzel,serif;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;padding:9px 0;cursor:pointer">Детально →</button>';p.style.display='block';}
+
+// ═══════════════════════════════════════════════════════════
+// 3D ВЕРСІЯ — Three.js + GLB (для ПК)
+// ═══════════════════════════════════════════════════════════
+function initWorldMap3DScene(){
+  var container=document.getElementById('worldmap-container');
+  container.style.cssText='position:relative;width:100%;background:#06040e;border:1px solid #2a1a3a;overflow:hidden;';
+  var h=Math.min(Math.max(window.innerWidth*0.7,320),580);
+  container.style.height=h+'px';
+
+  var canvas=document.createElement('canvas');
+  canvas.style.cssText='width:100%;height:100%;display:block;touch-action:none;';
+  container.appendChild(canvas);
+
+  var panel=document.createElement('div');
+  panel.id='wm-info-panel';
+  panel.style.cssText='display:none;position:absolute;bottom:0;left:0;right:0;background:rgba(4,2,10,.96);border-top:1px solid rgba(200,160,60,.25);padding:12px 16px 14px;z-index:10;max-height:55%;overflow-y:auto;font-family:Georgia,serif;';
+  container.appendChild(panel);
+
+  var loader=document.createElement('div');
+  loader.style.cssText='position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#06040e;z-index:20;transition:opacity .4s;';
+  loader.innerHTML='<div style="font-family:Cinzel,serif;font-size:.6rem;letter-spacing:.3em;color:#4a3a6a;text-transform:uppercase;margin-bottom:12px">Завантаження світів…</div><div style="width:140px;height:1px;background:#1a1228"><div id="wm-bar" style="height:1px;background:#8866bb;width:0%;transition:width .3s"></div></div>';
+  container.appendChild(loader);
+
+  // Detect base URL for models/
+  var loc=window.location.href.split('#')[0];
+  var base=loc.substring(0,loc.lastIndexOf('/')+1);
+  var modelsPath=base+'models/';
+
+  function loadScript(url,cb){var s=document.createElement('script');s.src=url;s.onload=cb;s.onerror=function(){console.error('Load failed:'+url);cb();};document.head.appendChild(s);}
+
+  loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',function(){
+    loadScript('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js',function(){
+      loadScript('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js',function(){
+        if(!window.THREE){wmFallbackToSVG(container);return;}
+        try{
+          startScene(container,canvas,panel,loader,modelsPath);
+        }catch(e){
+          console.error('3D scene failed, falling back to SVG:',e);
+          wmFallbackToSVG(container);
+        }
+      });
+    });
+  });
+}
+
+// Якщо 3D не вдалось — очищаємо контейнер і малюємо SVG
+function wmFallbackToSVG(container){
+  container.innerHTML='';
+  container.removeAttribute('style');
+  container.className='worldmap-container';
+  initWorldMapSVG(container);
+}
+
+function startScene(container,canvas,panel,loader,modelsPath){
+  var T=window.THREE;
+  var W=container.clientWidth,H=container.clientHeight;
+  var renderer=new T.WebGLRenderer({canvas:canvas,antialias:true,alpha:false});
+  renderer.setSize(W,H);renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.shadowMap.enabled=true;renderer.outputEncoding=T.sRGBEncoding;
+  var scene=new T.Scene();scene.background=new T.Color(0x06040e);scene.fog=new T.FogExp2(0x06040e,0.035);
+  var camera=new T.PerspectiveCamera(50,W/H,0.1,200);
+  var sph={theta:0,phi:1.1,r:16};var tgt=new T.Vector3(0,0.5,0);
+  function camUpdate(){camera.position.set(tgt.x+sph.r*Math.sin(sph.phi)*Math.sin(sph.theta),tgt.y+sph.r*Math.cos(sph.phi),tgt.z+sph.r*Math.sin(sph.phi)*Math.cos(sph.theta));camera.lookAt(tgt);}
+  camUpdate();
+
+  scene.add(new T.AmbientLight(0x9988cc,0.7));
+  var dl=new T.DirectionalLight(0xffeedd,1.2);dl.position.set(5,10,5);dl.castShadow=true;scene.add(dl);
+  scene.add(new T.DirectionalLight(0x3322aa,0.35)).position.set(-5,-2,-5);
+  var fireLight=new T.PointLight(0xff4400,0.8,16);fireLight.position.set(-6,-2,-2);scene.add(fireLight);
+
+  // Stars
+  var sv=[];for(var i=0;i<1500;i++)sv.push((Math.random()-.5)*120,(Math.random()-.5)*120,(Math.random()-.5)*120);
+  var sg=new T.BufferGeometry();sg.setAttribute('position',new T.Float32BufferAttribute(sv,3));
+  scene.add(new T.Points(sg,new T.PointsMaterial({color:0xfff8e8,size:0.07,sizeAttenuation:true})));
+
+  var clickables=[],total=10,loaded=0,bar=document.getElementById('wm-bar');
+  function onLoad(){loaded++;if(bar)bar.style.width=(loaded/total*100)+'%';if(loaded>=total){setTimeout(function(){loader.style.opacity='0';setTimeout(function(){loader.style.display='none';},400);},300);}}
+
+  var draco=new T.DRACOLoader();
+  draco.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+  draco.preload();
+  var gltf=new T.GLTFLoader();
+  gltf.setDRACOLoader(draco);
+  // Tree
+  gltf.load(modelsPath+'tree.glb',function(g){
+    var m=g.scene,b=new T.Box3().setFromObject(m),s=b.getSize(new T.Vector3());
+    var sc=13/Math.max(s.x,s.y,s.z);m.scale.setScalar(sc);
+    b.setFromObject(m);m.position.sub(b.getCenter(new T.Vector3()));m.position.y+=1;
+    scene.add(m);onLoad();
+  },null,function(e){console.warn('tree.glb:',e);onLoad();});
+
+  // World meshes
+  Object.keys(WM_CFG).forEach(function(id){
+    var cfg=WM_CFG[id];
+    gltf.load(modelsPath+cfg.f,function(g){
+      var m=g.scene,b=new T.Box3().setFromObject(m),s=b.getSize(new T.Vector3());
+      var sc=cfg.sc/Math.max(s.x,s.y,s.z);m.scale.setScalar(sc);
+      b.setFromObject(m);m.position.sub(b.getCenter(new T.Vector3()));
+      var grp=new T.Group();grp.add(m);grp.position.set(cfg.p[0],cfg.p[1],cfg.p[2]);grp.userData.wid=id;
+      m.traverse(function(c){if(c.isMesh)c.userData.wid=id;});
+      scene.add(grp);clickables.push(grp);onLoad();
+    },null,function(e){console.warn(cfg.f+':',e);onLoad();});
+  });
+
+  // Controls: LMB=orbit, RMB=pan, Shift+LMB=pan, scroll=zoom
+  var mouseState={down:false,button:0,x:0,y:0};
+  canvas.addEventListener('contextmenu',function(e){e.preventDefault();});
+  canvas.addEventListener('mousedown',function(e){
+    mouseState.down=true; mouseState.button=e.button;
+    mouseState.x=e.clientX; mouseState.y=e.clientY;
+    e.preventDefault();
+  });
+  window.addEventListener('mouseup',function(){mouseState.down=false;});
+  canvas.addEventListener('mousemove',function(e){
+    if(!mouseState.down)return;
+    var dx=e.clientX-mouseState.x, dy=e.clientY-mouseState.y;
+    mouseState.x=e.clientX; mouseState.y=e.clientY;
+    var isPan=(mouseState.button===2||mouseState.button===1||e.shiftKey);
+    if(isPan){
+      var ps=sph.r*0.0012;
+      var cd=new T.Vector3().subVectors(tgt,camera.position).normalize();
+      var ri=new T.Vector3().crossVectors(cd,new T.Vector3(0,1,0)).normalize();
+      var up2=new T.Vector3().crossVectors(ri,cd).normalize();
+      tgt.addScaledVector(ri,-dx*ps);
+      tgt.addScaledVector(up2,dy*ps);
+    } else if(mouseState.button===0&&!e.shiftKey){
+      sph.theta-=dx*0.008;
+      sph.phi=Math.max(0.3,Math.min(2.5,sph.phi-dy*0.008));
+    }
+    camUpdate();
+  });
+  canvas.addEventListener('wheel',function(e){sph.r=Math.max(5,Math.min(38,sph.r+e.deltaY*0.02));camUpdate();e.preventDefault();},{passive:false});
+  var lt=null,lpd=0;
+  canvas.addEventListener('touchstart',function(e){if(e.touches.length===1)lt={x:e.touches[0].clientX,y:e.touches[0].clientY};if(e.touches.length===2)lpd=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);e.preventDefault();},{passive:false});
+  var ltCenter={x:0,y:0};
+  canvas.addEventListener('touchmove',function(e){
+    if(e.touches.length===1&&lt){
+      sph.theta-=(e.touches[0].clientX-lt.x)*0.01;
+      sph.phi=Math.max(0.3,Math.min(2.5,sph.phi-(e.touches[0].clientY-lt.y)*0.01));
+      lt={x:e.touches[0].clientX,y:e.touches[0].clientY};
+      camUpdate();
+    }
+    if(e.touches.length===2){
+      var d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+      sph.r=Math.max(5,Math.min(38,sph.r-(d-lpd)*0.05));
+      // Two-finger pan
+      var cx=(e.touches[0].clientX+e.touches[1].clientX)/2;
+      var cy=(e.touches[0].clientY+e.touches[1].clientY)/2;
+      if(ltCenter.x){
+        var right=new T.Vector3();
+        right.crossVectors(camera.getWorldDirection(new T.Vector3()),camera.up).normalize();
+        var panSpeed=sph.r*0.002;
+        tgt.addScaledVector(right,-(cx-ltCenter.x)*panSpeed);
+        tgt.y+=(cy-ltCenter.y)*panSpeed;
+      }
+      ltCenter={x:cx,y:cy};
+      lpd=d;camUpdate();
+    }
+    e.preventDefault();
+  },{passive:false});
+
+  // Click
+  var ray=new T.Raycaster(),mv=new T.Vector2(),clicking=false;
+  canvas.addEventListener('mousedown',function(){clicking=true;});
+  canvas.addEventListener('mousemove',function(){clicking=false;});
+  canvas.addEventListener('mouseup',function(e){
+    if(!clicking)return;
+    var r=canvas.getBoundingClientRect();
+    mv.x=((e.clientX-r.left)/r.width)*2-1;mv.y=-((e.clientY-r.top)/r.height)*2+1;
+    ray.setFromCamera(mv,camera);
+    var meshes=[];clickables.forEach(function(g){g.traverse(function(c){if(c.isMesh)meshes.push(c);});});
+    var hits=ray.intersectObjects(meshes);
+    if(hits.length){var wid=hits[0].object.userData.wid;if(wid)wmShowPanel(wid);}
+  });
+
+  // Resize
+  window.addEventListener('resize',function(){var W2=container.clientWidth,H2=container.clientHeight;camera.aspect=W2/H2;camera.updateProjectionMatrix();renderer.setSize(W2,H2);});
+
+  // Animate
+  var clk=new T.Clock();
+  (function loop(){requestAnimationFrame(loop);camUpdate();fireLight.intensity=0.6+Math.sin(clk.getElapsedTime()*2.5)*0.2;renderer.render(scene,camera);})();
+}
+
+// ═══════════════════════════════════════════════════════════
+// SVG ВЕРСІЯ — 2D Іґґдрасіль (для телефонів / без WebGL)
+// ═══════════════════════════════════════════════════════════
 var WM_POS = {
   asgard:      {x:300, y: 90},
   alfheim:     {x:130, y:180},
@@ -249,23 +440,20 @@ var WM_POS = {
   helheim:     {x:300, y:760}
 };
 
-function wmClosePanel() {
+function wmClosePanelSVG() {
   var p = document.getElementById('wm-panel');
   if (p) p.style.display = 'none';
   document.querySelectorAll('.wm-world-node').forEach(function(n){ n.classList.remove('wm-active'); });
 }
 
-function wmShowPanel(id) {
+function wmShowPanelSVG(id) {
   var w = WM_WORLDS[id];
   if (!w) return;
   var p = document.getElementById('wm-panel');
   if (!p) return;
-
-  // Toggle active state on nodes
   document.querySelectorAll('.wm-world-node').forEach(function(n){
     n.classList.toggle('wm-active', n.dataset.wid === id);
   });
-
   p.innerHTML =
     '<div class="wmp-top">' +
       '<div class="wmp-info">' +
@@ -273,25 +461,20 @@ function wmShowPanel(id) {
         '<div class="wmp-name" style="color:' + w.c + '">' + w.n + '</div>' +
         '<div class="wmp-sub">' + w.s + '</div>' +
       '</div>' +
-      '<button class="wmp-close" onclick="wmClosePanel()">✕ Закрити</button>' +
+      '<button class="wmp-close" onclick="wmClosePanelSVG()">✕ Закрити</button>' +
     '</div>' +
     '<p class="wmp-desc">' + w.desc + '</p>' +
     '<div class="wmp-actions">' +
-      '<button class="wmp-detail-btn" style="color:' + w.c + ';border-color:' + w.c + '40" onclick="openWorldDetail(\'' + id + '\')">' +
-        'Детально →' +
-      '</button>' +
+      '<button class="wmp-detail-btn" style="color:' + w.c + ';border-color:' + w.c + '40" onclick="openWorldDetail(\'' + id + '\')">Детально →</button>' +
     '</div>';
-
   p.style.display = 'block';
 }
 
 function _buildYggdrasilSVG() {
   var W = 600, H = 900;
   var ns = 'http://www.w3.org/2000/svg';
-
   var svg = document.createElementNS(ns, 'svg');
   svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
-  svg.setAttribute('xmlns', ns);
   svg.style.cssText = 'width:100%;height:100%;display:block;';
   svg.setAttribute('role', 'img');
   svg.setAttribute('aria-label', 'Іґґдрасіль — дев\'ять світів');
@@ -302,66 +485,32 @@ function _buildYggdrasilSVG() {
     return e;
   }
 
-  // Background
   var defs = el('defs', {});
-
   var bgGrad = el('radialGradient', {id:'wm-bg', cx:'50%', cy:'40%', r:'65%'});
   bgGrad.appendChild(el('stop', {offset:'0%', 'stop-color':'#0d0820'}));
   bgGrad.appendChild(el('stop', {offset:'100%', 'stop-color':'#06040e'}));
   defs.appendChild(bgGrad);
-
-  // Glow filters for worlds
-  Object.keys(WM_WORLDS).forEach(function(id){
-    var f = el('filter', {id:'glow-'+id, x:'-50%', y:'-50%', width:'200%', height:'200%'});
-    var fe = el('feGaussianBlur', {stdDeviation:'4', result:'blur'});
-    var fm = el('feMerge', {});
-    var fn1 = el('feMergeNode', {in:'blur'});
-    var fn2 = el('feMergeNode', {in:'SourceGraphic'});
-    fm.appendChild(fn1); fm.appendChild(fn2);
-    f.appendChild(fe); f.appendChild(fm);
-    defs.appendChild(f);
-  });
-
   svg.appendChild(defs);
-
-  // Background rect
   svg.appendChild(el('rect', {width:W, height:H, fill:'url(#wm-bg)'}));
 
   // Stars
   for (var s = 0; s < 120; s++) {
-    var sx = Math.random() * W;
-    var sy = Math.random() * H * 0.55;
-    var sr = 0.4 + Math.random() * 1.2;
-    var so = 0.3 + Math.random() * 0.6;
-    svg.appendChild(el('circle', {cx:sx.toFixed(1), cy:sy.toFixed(1), r:sr.toFixed(1), fill:'#fff8e8', opacity:so.toFixed(2)}));
+    svg.appendChild(el('circle', {
+      cx:(Math.random()*W).toFixed(1), cy:(Math.random()*H*0.55).toFixed(1),
+      r:(0.4+Math.random()*1.2).toFixed(1), fill:'#fff8e8',
+      opacity:(0.3+Math.random()*0.6).toFixed(2)
+    }));
   }
 
-  // Aurora bands across top
-  var aurora = el('g', {opacity:'0.12'});
-  [[80,280,'#9944ff'],[120,260,'#44aaff'],[160,240,'#44ffcc']].forEach(function(band){
-    aurora.appendChild(el('ellipse', {cx:'300', cy:band[0].toString(), rx:'280', ry:band[1].toString(), fill:'none', stroke:band[2], 'stroke-width':'60', opacity:'0.5'}));
-  });
-  svg.appendChild(aurora);
-
-  // Trunk — 3-layered for depth
-  var trunkGroup = el('g', {'class':'wm-trunk'});
-  // Shadow
+  // Trunk
+  var trunkGroup = el('g', {});
   trunkGroup.appendChild(el('path', {d:'M 270 820 Q 265 600 285 390 Q 295 250 300 100', stroke:'rgba(0,0,0,0.5)', 'stroke-width':'32', fill:'none', 'stroke-linecap':'round'}));
-  // Mid
   trunkGroup.appendChild(el('path', {d:'M 270 820 Q 265 600 285 390 Q 295 250 300 100', stroke:'#1a2810', 'stroke-width':'24', fill:'none', 'stroke-linecap':'round'}));
-  // Highlight
   trunkGroup.appendChild(el('path', {d:'M 275 800 Q 272 600 288 390 Q 297 252 300 110', stroke:'#2a4018', 'stroke-width':'12', fill:'none', 'stroke-linecap':'round'}));
-  // Bark texture lines
-  [[300,120,310,200],[295,200,305,300],[290,300,300,420],[288,420,298,560],[285,560,295,700]].forEach(function(l){
-    trunkGroup.appendChild(el('line', {x1:l[0],y1:l[1],x2:l[2],y2:l[3], stroke:'rgba(60,80,30,0.4)', 'stroke-width':'2'}));
-  });
   svg.appendChild(trunkGroup);
 
   // Crown foliage
-  var crownGroup = el('g', {'class':'wm-crown'});
-  // Outer glow
-  crownGroup.appendChild(el('ellipse', {cx:'300', cy:'220', rx:'200', ry:'160', fill:'rgba(20,60,10,0.25)'}));
-  // Main layers
+  var crownGroup = el('g', {});
   [
     {cx:300,cy:200,rx:180,ry:140,fill:'#0e2a0a'},
     {cx:300,cy:190,rx:160,ry:120,fill:'#122e0d'},
@@ -369,183 +518,90 @@ function _buildYggdrasilSVG() {
     {cx:360,cy:200,rx:100,ry:90, fill:'#142f0e'},
     {cx:300,cy:170,rx:130,ry:100,fill:'#173510'},
     {cx:300,cy:155,rx:100,ry:80, fill:'#1a3a12'},
-    {cx:260,cy:170,rx:80,  ry:70, fill:'#1c3c13'},
-    {cx:340,cy:170,rx:80,  ry:70, fill:'#1c3c13'},
-    {cx:300,cy:140,rx:70,  ry:60, fill:'#1f4015'}
+    {cx:300,cy:140,rx:70, ry:60, fill:'#1f4015'}
   ].forEach(function(e){ crownGroup.appendChild(el('ellipse', e)); });
-  // Golden glow from Asgard light
-  crownGroup.appendChild(el('ellipse', {cx:'300', cy:'140', rx:'50', ry:'40', fill:'rgba(220,180,60,0.06)'}));
   svg.appendChild(crownGroup);
 
-  // Branches connecting worlds to trunk
-  var branchData = [
-    // [x1, y1, cx, cy, x2, y2, color]
-    [300, 140, 200, 130, 130, 180, '#1f4015'],  // alfheim
-    [300, 140, 400, 130, 470, 180, '#1f4015'],  // vanaheim
-    [300, 390, 195, 400, 110, 420, '#1a3010'],  // muspelheim
-    [300, 390, 405, 400, 490, 420, '#1a3010'],  // jotunheim
-    [285, 640, 215, 630, 150, 640, '#152808'],  // svartalfheim (root)
-    [285, 640, 375, 630, 450, 640, '#152808'],  // niflheim (root)
-    [285, 760, 285, 790, 300, 760, '#0f1e06'],  // helheim (root)
-  ];
-  var branchGroup = el('g', {'class':'wm-branches'});
-  branchData.forEach(function(b){
-    branchGroup.appendChild(el('path', {
-      d:'M '+b[0]+' '+b[1]+' Q '+b[2]+' '+b[3]+' '+b[4]+' '+b[5],
-      stroke:b[6], 'stroke-width':'4', fill:'none', 'stroke-linecap':'round', opacity:'0.8'
-    }));
-  });
-  svg.appendChild(branchGroup);
-
-  // Root lines from trunk bottom
-  var rootGroup = el('g', {'class':'wm-roots'});
+  // Branches/roots
   [
-    [285, 820, 150, 870, '#0f1e06'],
-    [285, 820, 300, 880, '#0f1e06'],
-    [285, 820, 450, 870, '#0f1e06']
-  ].forEach(function(r){
-    rootGroup.appendChild(el('path', {
-      d:'M '+r[0]+' '+r[1]+' Q '+((r[0]+r[2])/2)+' '+r[3]+' '+r[2]+' '+r[3],
-      stroke:r[2], 'stroke-width':'6', fill:'none', 'stroke-linecap':'round'
-    }));
+    [300,140,200,130,130,180,'#1f4015'],[300,140,400,130,470,180,'#1f4015'],
+    [300,390,195,400,110,420,'#1a3010'],[300,390,405,400,490,420,'#1a3010'],
+    [285,640,215,630,150,640,'#152808'],[285,640,375,630,450,640,'#152808'],
+    [285,760,285,790,300,760,'#0f1e06']
+  ].forEach(function(b){
+    svg.appendChild(el('path', {d:'M '+b[0]+' '+b[1]+' Q '+b[2]+' '+b[3]+' '+b[4]+' '+b[5], stroke:b[6], 'stroke-width':'4', fill:'none', 'stroke-linecap':'round', opacity:'0.8'}));
   });
-  svg.appendChild(rootGroup);
-
-  // Bifrost bridge (Asgard → Midgard)
-  var bifrost = el('g', {opacity:'0.35'});
-  [['#ff8844','3'],['#ffcc44','2'],['#44aaff','2']].forEach(function(lane,i){
-    bifrost.appendChild(el('path', {
-      d:'M 300 120 Q 310 250 300 390',
-      stroke:lane[0], 'stroke-width':lane[1], fill:'none',
-      'stroke-dasharray':'8 6',
-      transform:'translate('+(i*3-3)+',0)'
-    }));
-  });
-  svg.appendChild(bifrost);
 
   // World nodes
-  var nodeGroup = el('g', {'class':'wm-nodes'});
-
   Object.keys(WM_POS).forEach(function(id){
-    var pos = WM_POS[id];
-    var world = WM_WORLDS[id];
-    var color = world.c;
-
-    var g = el('g', {
-      'class': 'wm-world-node',
-      'data-wid': id,
-      tabindex: '0',
-      role: 'button',
-      'aria-label': world.n
-    });
-
-    // Outer glow ring
+    var pos = WM_POS[id], world = WM_WORLDS[id], color = world.c;
+    var g = el('g', {'class':'wm-world-node','data-wid':id,tabindex:'0',role:'button','aria-label':world.n});
     g.appendChild(el('circle', {cx:pos.x, cy:pos.y, r:'28', fill:'none', stroke:color, 'stroke-width':'1', opacity:'0.25'}));
-    // Mid ring
     g.appendChild(el('circle', {cx:pos.x, cy:pos.y, r:'20', fill:'rgba(6,4,14,0.85)', stroke:color, 'stroke-width':'1.5', opacity:'0.55'}));
-    // Main orb
     g.appendChild(el('circle', {cx:pos.x, cy:pos.y, r:'14', fill:'rgba(6,4,14,0.9)', stroke:color, 'stroke-width':'2'}));
-    // Inner fill
     g.appendChild(el('circle', {cx:pos.x, cy:pos.y, r:'8', fill:color, opacity:'0.35'}));
-    // Center dot
     g.appendChild(el('circle', {cx:pos.x, cy:pos.y, r:'3', fill:color, opacity:'0.9'}));
 
-    // Label
     var labelY = (pos.y > 700) ? pos.y + 34 : (pos.y < 250) ? pos.y - 28 : pos.y + 32;
-    var labelX = pos.x;
-    if (pos.x < 200) labelX = pos.x - 10;
-    if (pos.x > 400) labelX = pos.x + 10;
-
     var anchor = (pos.x < 200) ? 'end' : (pos.x > 400) ? 'start' : 'middle';
+    var labelX = pos.x + (pos.x < 200 ? -10 : pos.x > 400 ? 10 : 0);
 
-    var nameText = el('text', {
-      x: labelX, y: labelY,
-      'text-anchor': anchor,
-      fill: color,
-      'font-family': 'Cinzel, serif',
-      'font-size': '11',
-      'font-weight': '600',
-      'letter-spacing': '0.5'
-    });
+    var nameText = el('text', {x:labelX, y:labelY, 'text-anchor':anchor, fill:color, 'font-family':'Cinzel, serif', 'font-size':'11', 'font-weight':'600'});
     nameText.textContent = world.n;
     g.appendChild(nameText);
-
-    var subText = el('text', {
-      x: labelX, y: labelY + 14,
-      'text-anchor': anchor,
-      fill: 'rgba(180,160,100,0.55)',
-      'font-family': 'Georgia, serif',
-      'font-size': '8.5',
-      'font-style': 'italic'
-    });
+    var subText = el('text', {x:labelX, y:labelY+14, 'text-anchor':anchor, fill:'rgba(180,160,100,0.55)', 'font-family':'Georgia, serif', 'font-size':'8.5', 'font-style':'italic'});
     subText.textContent = world.inh;
     g.appendChild(subText);
 
-    g.addEventListener('click', function(){ wmShowPanel(id); });
-    g.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); wmShowPanel(id); } });
-
-    nodeGroup.appendChild(g);
-  });
-
-  svg.appendChild(nodeGroup);
-
-  // Cosmological level labels
-  var labelStyle = {'font-family':'Cinzel, serif', 'font-size':'8', 'letter-spacing':'2', fill:'rgba(200,180,100,0.25)', 'text-anchor':'end'};
-  [
-    {x:590, y:100, t:'КРОНА · НЕБЕСА'},
-    {x:590, y:410, t:'СТОВБУР · СЕРЕДИНА'},
-    {x:590, y:660, t:'КОРІННЯ · ПІДЗЕМНЕ'}
-  ].forEach(function(lbl){
-    var lt = el('text', Object.assign({}, labelStyle, {x:lbl.x, y:lbl.y}));
-    lt.textContent = lbl.t;
-    svg.appendChild(lt);
-  });
-
-  // Horizontal separator lines
-  [295, 530].forEach(function(ly){
-    svg.appendChild(el('line', {x1:'20', y1:ly, x2:'580', y2:ly, stroke:'rgba(150,120,60,0.1)', 'stroke-width':'1', 'stroke-dasharray':'4 8'}));
+    g.addEventListener('click', function(){ wmShowPanelSVG(id); });
+    g.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); wmShowPanelSVG(id); } });
+    svg.appendChild(g);
   });
 
   return svg;
 }
 
-function initWorldMap3D() {
-  var container = document.getElementById('worldmap-container');
-  if (!container || container.dataset.rendered) return;
-  container.dataset.rendered = '1';
-
-  // Responsive height
+function initWorldMapSVG(container) {
   var vw = window.innerWidth;
   var h = Math.min(Math.max(vw * 1.5, 480), 820);
   container.style.height = h + 'px';
-
-  // Build SVG
-  var svg = _buildYggdrasilSVG();
-  container.appendChild(svg);
-
-  // Info panel
+  container.appendChild(_buildYggdrasilSVG());
   var panel = document.createElement('div');
   panel.id = 'wm-panel';
   panel.className = 'wm-panel';
   container.appendChild(panel);
-
-  // Keyboard: Escape closes panel
-  document.addEventListener('keydown', function(e){
-    if (e.key === 'Escape') wmClosePanel();
-  });
-
-  // Resize
-  window.addEventListener('resize', function(){
-    var vw2 = window.innerWidth;
-    var h2 = Math.min(Math.max(vw2 * 1.5, 480), 820);
-    container.style.height = h2 + 'px';
-  });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') wmClosePanelSVG(); });
 }
 
-var renderWorldMap = initWorldMap3D;
-var wmOpenPanel = wmShowPanel;
-window.initWorldMap3D = initWorldMap3D;
-window.renderWorldMap = initWorldMap3D;
+// ═══════════════════════════════════════════════════════════
+// ДИСПЕТЧЕР — обираємо 3D чи SVG
+// ═══════════════════════════════════════════════════════════
+function _wmIsMobile(){
+  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 700;
+}
+function _wmWebGLOK(){
+  try{
+    var c=document.createElement('canvas');
+    return !!(window.WebGLRenderingContext&&(c.getContext('webgl')||c.getContext('experimental-webgl')));
+  }catch(e){return false;}
+}
+
+function initWorldMap3D(){
+  var container=document.getElementById('worldmap-container');
+  if(!container||container.dataset.rendered)return;
+  container.dataset.rendered='1';
+
+  if(_wmIsMobile()||!_wmWebGLOK()){
+    initWorldMapSVG(container);   // телефон / без WebGL → легка SVG-версія
+  } else {
+    initWorldMap3DScene();        // ПК → повна 3D-сцена з GLB-моделями
+  }
+}
+
+var renderWorldMap=initWorldMap3D;
+var wmOpenPanel=wmShowPanel;
+window.initWorldMap3D=initWorldMap3D;
+window.renderWorldMap=initWorldMap3D;
 </script>
 
 <script>

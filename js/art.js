@@ -1,22 +1,26 @@
 // ═══════════════════════════════════════════════════════════
 // SVG ART + Real Historical Images
 // Gods: 19th century Romantic paintings (public domain, Wikimedia Commons)
+// Images load via Special:FilePath (no fragile hash URLs)
 // Fallback: stylized woodcut / medieval manuscript SVGs
 // ═══════════════════════════════════════════════════════════
 
 const ART = {};
 
+// Helper: Wikimedia Commons image by exact file name (auto-resolves path)
+function _wmURL(name, width) {
+  return 'https://commons.wikimedia.org/wiki/Special:FilePath/' + encodeURIComponent(name) + '?width=' + (width || 640);
+}
+
 // Helper: historical painting overlay + SVG fallback
 // If image loads → photo shown; if fails → removed, SVG visible
 function _artImg(url, svg) {
-  return '<img src="'+url+'" class="art-photo" alt="" loading="lazy" decoding="async" onerror="this.remove()">'+svg;
+  return '<img src="' + url + '" class="art-photo" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">' + svg;
 }
 
-// ─── ГОЛОВНИЙ ГЕРОЙ (hero section) ──────────────────────
-// Odin the Wanderer by Georg von Rosen, 1886 (public domain)
-ART.heroMjolnir = _artImg(
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Georg_von_Rosen_-_Oden_som_vandringsman%2C_1886_%28Odin%2C_the_Wanderer%29.jpg/300px-Georg_von_Rosen_-_Oden_som_vandringsman%2C_1886_%28Odin%2C_the_Wanderer%29.jpg',
-  `<svg viewBox="0 0 200 220" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
+// ─── ГОЛОВНИЙ ГЕРОЙ (hero section) — SVG fallback ───────
+ART.heroMjolnir = `
+<svg viewBox="0 0 200 220" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
   <defs>
     <pattern id="knotwork1" x="0" y="0" width="14" height="14" patternUnits="userSpaceOnUse">
       <path d="M0 7 Q3.5 0 7 7 Q10.5 14 14 7" stroke="currentColor" stroke-width="0.5" fill="none" opacity="0.5"/>
@@ -38,13 +42,11 @@ ART.heroMjolnir = _artImg(
   <line x1="86" y1="160" x2="114" y2="160" stroke="currentColor" stroke-width="0.8" opacity="0.6"/>
   <line x1="86" y1="180" x2="114" y2="180" stroke="currentColor" stroke-width="0.8" opacity="0.6"/>
   <circle cx="100" cy="200" r="3" stroke="currentColor" stroke-width="1" fill="none"/>
-</svg>`);
+</svg>`;
 
 // ─── ІҐҐДРАСІЛЬ (worlds section icon) ───────────────────
-// Yggdrasil by Friedrich Wilhelm Heine, 1886 (public domain)
-ART.yggdrasil = _artImg(
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/The_Ash_Yggdrasil_%28Heine%29.jpg/200px-The_Ash_Yggdrasil_%28Heine%29.jpg',
-  `<svg viewBox="0 0 200 220" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
+ART.yggdrasil = `
+<svg viewBox="0 0 200 220" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
   <path d="M100 200 Q98 150 100 100 Q102 60 100 30" stroke="currentColor" stroke-width="3" fill="none"/>
   <path d="M95 180 Q92 150 95 120 M105 180 Q108 150 105 120" stroke="currentColor" stroke-width="0.6" fill="none" opacity="0.5"/>
   <path d="M100 35 Q80 30 60 38 Q70 25 90 28" stroke="currentColor" stroke-width="1.2" fill="none"/>
@@ -63,7 +65,7 @@ ART.yggdrasil = _artImg(
   <ellipse cx="100" cy="15" rx="6" ry="3" stroke="currentColor" stroke-width="0.8" fill="none"/>
   <path d="M94 14 L92 12 M106 14 L108 12" stroke="currentColor" stroke-width="0.8" fill="none"/>
   <circle cx="103" cy="100" r="3" stroke="currentColor" stroke-width="0.7" fill="none"/>
-</svg>`);
+</svg>`;
 
 // ─── ЕЙГІСГЬЯЛЬМУР (gods section icon) ──────────────────
 ART.aegishjalmur = `
@@ -210,10 +212,8 @@ ART.tree = `
 </svg>`;
 
 // ─── СТАРА КНИГА (sources section icon) ──────────────────
-// Codex Regius manuscript (Poetic Edda)
-ART.book = _artImg(
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Codex_Regius.jpg/200px-Codex_Regius.jpg',
-  `<svg viewBox="0 0 200 220" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
+ART.book = `
+<svg viewBox="0 0 200 220" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
   <path d="M40 30 L160 30 Q165 30 165 35 L165 190 Q165 195 160 195 L40 195 Q35 195 35 190 L35 35 Q35 30 40 30 Z"
     stroke="currentColor" stroke-width="2" fill="none"/>
   <line x1="55" y1="30" x2="55" y2="195" stroke="currentColor" stroke-width="1.5"/>
@@ -231,7 +231,7 @@ ART.book = _artImg(
     <path d="M140 170 Q145 165 150 170"/>
   </g>
   <rect x="155" y="105" width="10" height="15" stroke="currentColor" stroke-width="1" fill="none"/>
-</svg>`);
+</svg>`;
 
 // ─── ВОГОНЬ (ragnarok / events) ─────────────────────────
 ART.flame = `
@@ -264,15 +264,10 @@ ART.dividerDot = `
   <line x1="60" y1="7" x2="100" y2="7" stroke="currentColor" stroke-width="0.5" opacity="0.4"/>
 </svg>`;
 
-// ─── CARD ILLUSTRATIONS ──────────────────────────────────
-// Gods with real historical paintings + SVG fallback
-
+// ─── CARD ILLUSTRATIONS (SVG fallbacks) ──────────────────
 ART.cards = {
 
-  // ODIN — Georg von Rosen "Odin the Wanderer" (1886), Nationalmuseum Stockholm
-  odin: _artImg(
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Georg_von_Rosen_-_Oden_som_vandringsman%2C_1886_%28Odin%2C_the_Wanderer%29.jpg/400px-Georg_von_Rosen_-_Oden_som_vandringsman%2C_1886_%28Odin%2C_the_Wanderer%29.jpg',
-    `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  odin: `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
     <circle cx="100" cy="70" r="40" stroke="currentColor" stroke-width="1.5" fill="none"/>
     <circle cx="100" cy="70" r="30" stroke="currentColor" stroke-width="0.6" fill="none" opacity="0.4"/>
     <ellipse cx="100" cy="70" rx="8" ry="5" stroke="currentColor" stroke-width="1.5" fill="none"/>
@@ -290,12 +285,9 @@ ART.cards = {
     </g>
     <line x1="100" y1="115" x2="100" y2="145" stroke="currentColor" stroke-width="1.5"/>
     <path d="M100 110 L96 120 L100 122 L104 120 Z" stroke="currentColor" stroke-width="1.2" fill="none"/>
-    </svg>`),
+    </svg>`,
 
-  // THOR — Mårten Eskil Winge "Thor's Fight with the Giants" (1872), Nationalmuseum Stockholm
-  thor: _artImg(
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Marten_Eskil_Winge_-_Tor%27s_Fight_with_the_Giants_-_Google_Art_Project.jpg/400px-Marten_Eskil_Winge_-_Tor%27s_Fight_with_the_Giants_-_Google_Art_Project.jpg',
-    `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  thor: `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect x="60" y="35" width="80" height="35" rx="2" stroke="currentColor" stroke-width="1.8" fill="none"/>
     <line x1="60" y1="45" x2="140" y2="45" stroke="currentColor" stroke-width="0.6" opacity="0.5"/>
     <line x1="60" y1="60" x2="140" y2="60" stroke="currentColor" stroke-width="0.6" opacity="0.5"/>
@@ -305,12 +297,9 @@ ART.cards = {
     <path d="M30 30 L25 50 L33 50 L28 75" stroke="currentColor" stroke-width="2" fill="none"/>
     <path d="M170 30 L175 50 L167 50 L172 75" stroke="currentColor" stroke-width="2" fill="none"/>
     <line x1="40" y1="140" x2="160" y2="140" stroke="currentColor" stroke-width="0.6" opacity="0.5"/>
-    </svg>`),
+    </svg>`,
 
-  // LOKI — Mårten Eskil Winge "Loki" (1890)
-  loki: _artImg(
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Loki_by_Marten_Eskil_Winge.jpg/400px-Loki_by_Marten_Eskil_Winge.jpg',
-    `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  loki: `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M40 130 Q50 110 80 110 Q110 110 120 90 Q130 70 150 70 Q170 70 175 50"
       stroke="currentColor" stroke-width="2" fill="none"/>
     <ellipse cx="40" cy="135" rx="8" ry="5" stroke="currentColor" stroke-width="1.5" fill="none"/>
@@ -324,12 +313,9 @@ ART.cards = {
       <path d="M90 100 Q95 97 100 100"/>
       <path d="M125 85 Q130 82 135 85"/>
     </g>
-    </svg>`),
+    </svg>`,
 
-  // FREYJA — Nils Blommér "Freya Seeking her Husband" (1852), Nationalmuseum Stockholm
-  freyja: _artImg(
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Freyja_Seeking_her_Husband_%28Nils_Blomm%C3%A9r%29.jpg/400px-Freyja_Seeking_her_Husband_%28Nils_Blomm%C3%A9r%29.jpg',
-    `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  freyja: `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M50 50 Q100 90 150 50" stroke="currentColor" stroke-width="1.5" fill="none"/>
     <g fill="none" stroke="currentColor" stroke-width="1">
       <circle cx="60" cy="56" r="3"/><circle cx="75" cy="65" r="3.5"/>
@@ -349,12 +335,9 @@ ART.cards = {
       <path d="M-8 -5 L-10 -10 L-6 -8 Z" stroke="currentColor" stroke-width="1" fill="none"/>
       <path d="M8 -5 L10 -10 L6 -8 Z" stroke="currentColor" stroke-width="1" fill="none"/>
     </g>
-    </svg>`),
+    </svg>`,
 
-  // FREYR — Walter Crane illustration (public domain)
-  freyr: _artImg(
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Walter_Crane_-_Freyr.jpg/400px-Walter_Crane_-_Freyr.jpg',
-    `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  freyr: `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
     <g transform="translate(100,80)">
       <ellipse cx="0" cy="0" rx="35" ry="20" stroke="currentColor" stroke-width="1.5" fill="none"/>
       <ellipse cx="-30" cy="-5" rx="12" ry="10" stroke="currentColor" stroke-width="1.2" fill="none"/>
@@ -371,12 +354,9 @@ ART.cards = {
       <line x1="15" y1="18" x2="15" y2="30" stroke="currentColor" stroke-width="1.2"/>
       <line x1="25" y1="15" x2="25" y2="28" stroke="currentColor" stroke-width="1.2"/>
     </g>
-    </svg>`),
+    </svg>`,
 
-  // FRIGG — Johannes Gehrts "Frigg" (1883)
-  frigg: _artImg(
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Johannes_Gehrts_-_Freyja.jpg/400px-Johannes_Gehrts_-_Freyja.jpg',
-    `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  frigg: `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
     <circle cx="100" cy="80" r="35" stroke="currentColor" stroke-width="1.5" fill="none"/>
     <circle cx="100" cy="80" r="28" stroke="currentColor" stroke-width="0.7" fill="none" opacity="0.5"/>
     <circle cx="100" cy="80" r="4" stroke="currentColor" stroke-width="1.5" fill="none"/>
@@ -390,12 +370,9 @@ ART.cards = {
     <path d="M135 80 Q145 80 145 70 Q145 60 140 60 L140 130" stroke="currentColor" stroke-width="0.8" fill="none" opacity="0.6"/>
     <line x1="140" y1="125" x2="140" y2="145" stroke="currentColor" stroke-width="1.5"/>
     <ellipse cx="140" cy="140" rx="4" ry="2" stroke="currentColor" stroke-width="1" fill="none"/>
-    </svg>`),
+    </svg>`,
 
-  // BALDR — W.G. Collingwood "Baldr's Funeral" (1908)
-  baldr: _artImg(
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Baldr%27s_funeral_%28Collingwood%29.jpg/400px-Baldr%27s_funeral_%28Collingwood%29.jpg',
-    `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  baldr: `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
     <circle cx="100" cy="80" r="22" stroke="currentColor" stroke-width="1.8" fill="none"/>
     <circle cx="100" cy="80" r="15" stroke="currentColor" stroke-width="0.7" fill="none" opacity="0.5"/>
     <g stroke="currentColor" stroke-width="1.5">
@@ -408,12 +385,9 @@ ART.cards = {
       <line x1="65" y1="115" x2="80" y2="100"/>
       <line x1="135" y1="115" x2="120" y2="100"/>
     </g>
-    </svg>`),
+    </svg>`,
 
-  // TYR — Lorenz Frølich illustration (1895, public domain)
-  tyr: _artImg(
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Tyr_by_Lorenz_Frolich.jpg/400px-Tyr_by_Lorenz_Frolich.jpg',
-    `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  tyr: `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M85 50 Q80 45 80 55 L80 80 Q80 90 75 90 Q70 90 70 85 L70 70 Q70 65 65 65 Q60 65 60 70 L60 90 Q60 105 75 105 L100 105 Q115 105 115 90 L115 60 Q115 50 110 50 Q105 50 105 55 L105 75"
       stroke="currentColor" stroke-width="1.5" fill="none"/>
     <path d="M115 70 L150 60 L155 70 L150 80 L115 75 Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
@@ -430,12 +404,9 @@ ART.cards = {
       <line x1="0" y1="-8" x2="-5" y2="-3"/>
       <line x1="0" y1="-8" x2="5" y2="-3"/>
     </g>
-    </svg>`),
+    </svg>`,
 
-  // HEIMDALL — Lorenz Frølich illustration
-  heimdall: _artImg(
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Heimdall_by_Lorenz_Frolich.jpg/400px-Heimdall_by_Lorenz_Frolich.jpg',
-    `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  heimdall: `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M40 130 Q55 120 80 110 Q110 95 145 80 Q165 70 175 50"
       stroke="currentColor" stroke-width="2" fill="none"/>
     <path d="M40 130 Q55 145 80 135 Q110 120 145 105 Q165 95 175 75"
@@ -451,12 +422,9 @@ ART.cards = {
       <path d="M180 45 Q188 50 188 60"/>
       <path d="M185 35 Q198 45 195 60"/>
     </g>
-    </svg>`),
+    </svg>`,
 
-  // IDUNN — Walter Crane "Idun and the Apples"
-  idunn: _artImg(
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Walter_Crane_-_Idun_and_the_Apples.jpg/400px-Walter_Crane_-_Idun_and_the_Apples.jpg',
-    `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  idunn: `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M55 90 L60 140 L140 140 L145 90 Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
     <g stroke="currentColor" stroke-width="0.6" opacity="0.6">
       <line x1="60" y1="100" x2="140" y2="100"/>
@@ -471,9 +439,8 @@ ART.cards = {
     <line x1="120" y1="70" x2="120" y2="64" stroke="currentColor" stroke-width="1"/>
     <path d="M100 60 Q105 56 108 60" stroke="currentColor" stroke-width="1" fill="none"/>
     <path d="M65 90 Q100 50 135 90" stroke="currentColor" stroke-width="1.2" fill="none"/>
-    </svg>`),
+    </svg>`,
 
-  // NJORD
   njord: `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M20 130 Q35 120 50 130 Q65 140 80 130 Q95 120 110 130 Q125 140 140 130 Q155 120 170 130 Q185 140 200 130"
       stroke="currentColor" stroke-width="1.2" fill="none"/>
@@ -489,7 +456,6 @@ ART.cards = {
     <path d="M50 110 Q35 105 30 95 Q40 95 45 105" stroke="currentColor" stroke-width="1.5" fill="none"/>
     </svg>`,
 
-  // GENERIC FALLBACK for gods
   godGeneric: `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M100 30 L60 45 L60 90 Q60 115 100 135 Q140 115 140 90 L140 45 Z"
       stroke="currentColor" stroke-width="1.5" fill="none"/>
@@ -502,7 +468,6 @@ ART.cards = {
     </g>
     </svg>`,
 
-  // CREATURES
   fenrir: `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M50 90 L60 70 L75 60 L100 55 L125 60 L140 70 L150 90 L145 110 L130 120 L100 125 L70 120 L55 110 Z"
       stroke="currentColor" stroke-width="1.8" fill="none"/>
@@ -550,7 +515,6 @@ ART.cards = {
     <path d="M40 110 Q25 115 20 125 Q25 130 35 125" stroke="currentColor" stroke-width="1.2" fill="none"/>
     </svg>`,
 
-  // ARTIFACTS
   mjolnir: `<svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect x="55" y="30" width="90" height="35" rx="2" stroke="currentColor" stroke-width="1.8" fill="none"/>
     <circle cx="100" cy="47" r="10" stroke="currentColor" stroke-width="1" fill="none"/>
@@ -590,5 +554,70 @@ ART.cards = {
     </g>
     </svg>`,
 };
+
+// ═══════════════════════════════════════════════════════════
+// REAL HISTORICAL IMAGES (Wikimedia Commons, public domain)
+// Special:FilePath resolves the file by exact name — no hashes.
+// On load failure the <img> removes itself and the SVG shows.
+// ═══════════════════════════════════════════════════════════
+
+// Section / hero / detail images
+var _SECTION_IMG = {
+  // Hero: Odin the Wanderer — Georg von Rosen, 1886
+  heroMjolnir: 'Georg von Rosen - Oden som vandringsman, 1886 (Odin, the Wanderer).jpg',
+  // Nine Worlds: The Ash Yggdrasil — Friedrich Wilhelm Heine, 1886
+  yggdrasil:   'The Ash Yggdrasil.jpg',
+  // Pantheon: Walhall — Emil Doepler, c. 1905
+  aegishjalmur:'Walhall by Emil Doepler.jpg',
+  // Creatures: Thor and the Midgard Serpent — Emil Doepler, 1905
+  serpent:     'Thor und die Midgardsschlange.jpg',
+  // Runes: Rök runestone, Sweden (photo)
+  runestone:   'Rökstenen.jpg',
+  // Artifacts: drawing of the Mjölnir amulet from Skåne
+  artifact:    'Mjollnir.png',
+  // Chronology / Ragnarök: Battle of the Doomed Gods — F. W. Heine, 1882
+  scroll:      'Kampf der untergehenden Götter.jpg',
+  // Genealogy: Yggdrasil from 17th c. Icelandic manuscript AM 738
+  tree:        'Yggdrasil.jpg',
+  // Sources: Snorri Sturluson — Christian Krohg, 1899
+  book:        'Snorre Sturluson-Christian Krohg.jpg'
+};
+
+// Gods & creatures card images
+var _CARD_IMG = {
+  // Georg von Rosen — Odin the Wanderer (1886)
+  odin:     'Georg von Rosen - Oden som vandringsman, 1886 (Odin, the Wanderer).jpg',
+  // Mårten Eskil Winge — Thor's Fight with the Giants (1872)
+  thor:     "Mårten Eskil Winge - Tor's Fight with the Giants - Google Art Project.jpg",
+  // W. G. Collingwood — Loki Taunts Bragi (1908)
+  loki:     'Loki taunts Bragi.jpg',
+  // Nils Blommér — Freyja Seeking her Husband (1852)
+  freyja:   'Freyja Seeking her Husband (Nils Blommér) - Nationalmuseum - 21072.tif',
+  // Johannes Gehrts — Freyr (1901)
+  freyr:    'Freyr by Johannes Gehrts.jpg',
+  // John Charles Dollman — Frigga Spinning the Clouds (c. 1909)
+  frigg:    'Frigga Spinning the Clouds.jpg',
+  // Elmer Boyd Smith — Each arrow overshot his head (Baldr, 1902)
+  baldr:    'Each arrow overshot his head (1902) by Elmer Boyd Smith.jpg',
+  // John Bauer — Tyr and Fenrir (1911)
+  tyr:      'Tyr and Fenrir-John Bauer.jpg',
+  // Emil Doepler — Heimdall at the rainbow bridge (c. 1905)
+  heimdall: 'Heimdall an der Himmelsbrücke.jpg',
+  // J. Doyle Penrose — Idun and the Apples (1890)
+  idunn:    'Idun and the Apples.jpg',
+  // F. W. Heine — Njörðr and Skaði on the way to Nóatún (1882)
+  njord:    'Njord and Skadi on the way to Noatun.jpg',
+  // Emil Doepler — Odin and Fenris, Freyr and Surt (1905)
+  fenrir:   'Odin und Fenriswolf Freyr und Surt.jpg',
+  // Emil Doepler — Thor and the Midgard Serpent (1905)
+  jormungandr: 'Thor und die Midgardsschlange.jpg'
+};
+
+Object.keys(_SECTION_IMG).forEach(function(k){
+  ART[k] = _artImg(_wmURL(_SECTION_IMG[k]), ART[k]);
+});
+Object.keys(_CARD_IMG).forEach(function(k){
+  ART.cards[k] = _artImg(_wmURL(_CARD_IMG[k]), ART.cards[k]);
+});
 
 if (typeof module !== 'undefined') module.exports = { ART };

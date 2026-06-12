@@ -1539,3 +1539,35 @@ em { font-style: italic; color: var(--text-dim); }
   .logo-text { letter-spacing: 0.14em; }
   .runes-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ═══════════════════════════════════════════════════════
+   REAL HISTORICAL IMAGES — photo overlay supports
+   ═══════════════════════════════════════════════════════ */
+.hc-art,
+.ph-art,
+.footer-art,
+.ragnarok-art {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2px;
+}
+.hc-art .art-photo,
+.ph-art .art-photo,
+.footer-art .art-photo {
+  object-position: center;
+}
+.home-card:hover .hc-art .art-photo {
+  transform: scale(1.08);
+}
+.ph-art .art-photo {
+  border-radius: 50%;
+}
+.ph-art {
+  border-radius: 50%;
+}
+.footer-art .art-photo {
+  filter: grayscale(60%) brightness(0.8);
+}
+.hero-art .art-photo {
+  border-radius: 2px;
+}
