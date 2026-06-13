@@ -86,8 +86,9 @@
         <h4 style="margin-bottom:0.5rem">Три Кореня</h4>
         <div id="ygd-roots"></div>
       </div>
-      <p class="worldmap-hint">Натисни на світ для опису</p>
+      <p class="worldmap-hint">Натисни на світ для опису · Drag to orbit · Scroll to zoom</p>
       <div id="worldmap-container" class="worldmap-container"></div>
+      <div id="wm-info-panel" class="wm-info-panel-outer"></div>
       <p class="worldmap-caption">Map of the Nine Worlds · Іґґдрасіль</p>
     </div>
   </div>
@@ -229,18 +230,42 @@ const WM_WORLDS={asgard:{n:'Асґард',no:'Ásgarðr',s:'Обитель Ас�
 
 const WM_CFG={
   asgard:      {f:'asgard.glb',      p:[ 0.0,  7.0,  0.0], sc:3.2, c:'#e8c060'},
-  alfheim:     {f:'alfheim.glb',     p:[-3.5,  5.0,  0.0], sc:2.6, c:'#ccbbff'},
-  vanaheim:    {f:'vanaheim.glb',    p:[ 3.5,  5.0,  0.0], sc:2.6, c:'#66cc44'},
-  midgard:     {f:'midgard.glb',     p:[ 0.0,  1.0,  1.8], sc:3.0, c:'#44cc44'},
-  jotunheim:   {f:'jotunheim.glb',   p:[ 3.0,  0.5,  0.0], sc:2.6, c:'#4488cc'},
-  muspelheim:  {f:'muspelheim.glb',  p:[-3.0,  0.5,  0.0], sc:2.6, c:'#cc4422'},
-  svartalfheim:{f:'svartalfheim.glb',p:[-2.5, -3.5,  0.0], sc:2.4, c:'#cc7733'},
-  helheim:     {f:'helheim.glb',     p:[ 0.0, -5.5,  0.0], sc:2.8, c:'#8844cc'},
-  niflheim:    {f:'niflheim.glb',    p:[ 2.5, -3.5,  0.0], sc:2.4, c:'#4466aa'}
+  alfheim:     {f:'alfheim.glb',     p:[-3.5,  5.2,  0.0], sc:2.6, c:'#ccbbff'},
+  vanaheim:    {f:'vanaheim.glb',    p:[ 3.5,  5.2,  0.0], sc:2.6, c:'#66cc44'},
+  midgard:     {f:'midgard.glb',     p:[ 0.0,  1.2,  1.8], sc:3.0, c:'#44cc44'},
+  jotunheim:   {f:'jotunheim.glb',   p:[ 4.5, -1.0,  0.0], sc:2.6, c:'#4488cc'},
+  muspelheim:  {f:'muspelheim.glb',  p:[-4.5, -1.0,  0.0], sc:2.6, c:'#cc4422'},
+  svartalfheim:{f:'svartalfheim.glb',p:[-2.8, -3.5,  0.0], sc:2.4, c:'#cc7733'},
+  helheim:     {f:'helheim.glb',     p:[ 0.0, -4.5,  0.0], sc:2.8, c:'#8844cc'},
+  niflheim:    {f:'niflheim.glb',    p:[ 2.8, -3.5,  0.0], sc:2.4, c:'#4466aa'}
 };
 
-// ── Панель інформації (спільна для 3D, абсолютна в контейнері) ──
-function wmShowPanel(id){var w=WM_WORLDS[id];if(!w)return;var p=document.getElementById('wm-info-panel');if(!p)return;p.innerHTML='<div style="font-family:Cinzel,serif;font-size:.48rem;letter-spacing:.28em;color:#6a5a3a;text-transform:uppercase;margin-bottom:4px">'+w.inh+' · '+w.no+'</div><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px"><div><div style="font-family:Cinzel,serif;font-size:1.1rem;color:#e0b850;font-weight:600">'+w.n+'</div><div style="font-style:italic;font-size:.8rem;color:#7a6030;margin-top:1px">'+w.s+'</div></div><button onclick="document.getElementById(\'wm-info-panel\').style.display=\'none\'" style="background:none;border:1px solid rgba(180,140,40,.3);color:#7a5a20;font-family:Cinzel,serif;font-size:.48rem;padding:4px 10px;cursor:pointer">✕</button></div><p style="font-size:.9rem;color:#8a7040;line-height:1.65;margin-bottom:5px">'+w.desc+'</p><ul style="list-style:none;padding:0;border-top:1px solid rgba(200,160,60,.12);padding-top:6px;margin-bottom:10px">'+w.det.map(function(d){return'<li style="font-size:.85rem;color:#6a5530;line-height:1.55;padding:2px 0 2px 14px;position:relative"><span style="position:absolute;left:0;color:#5a4a28;font-size:.6rem">ᚱ</span>'+d+'</li>';}).join('')+'</ul><button onclick="openWorldDetail(\''+id+'\')" style="display:block;width:100%;background:none;border:1px solid rgba(224,184,80,.4);color:#e0b850;font-family:Cinzel,serif;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;padding:9px 0;cursor:pointer">Детально →</button>';p.style.display='block';}
+// ── Панель інформації — з'являється НИЖЧЕ карти ──
+function wmShowPanel(id){
+  var w=WM_WORLDS[id];if(!w)return;
+  var p=document.getElementById('wm-info-panel');if(!p)return;
+  p.className='wm-info-panel-outer wm-info-panel-visible';
+  p.innerHTML=
+    '<div class="wmp-top">'+
+      '<div class="wmp-info">'+
+        '<div class="wmp-inh">'+w.inh+' · '+w.no+'</div>'+
+        '<div class="wmp-name" style="color:'+w.c+'">'+w.n+'</div>'+
+        '<div class="wmp-sub">'+w.s+'</div>'+
+      '</div>'+
+      '<button class="wmp-close" onclick="wmHidePanel()">✕ Закрити</button>'+
+    '</div>'+
+    '<p class="wmp-desc">'+w.desc+'</p>'+
+    '<ul class="wmp-det-list">'+w.det.map(function(d){return'<li><span class="wmp-rune">ᚱ</span>'+d+'</li>';}).join('')+'</ul>'+
+    '<div class="wmp-actions">'+
+      '<button class="wmp-detail-btn" style="color:'+w.c+';border-color:'+w.c+'40" onclick="openWorldDetail(\''+id+'\')">Детально →</button>'+
+    '</div>';
+  p.style.display='block';
+  p.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function wmHidePanel(){
+  var p=document.getElementById('wm-info-panel');
+  if(p){p.style.display='none';p.className='wm-info-panel-outer';}
+}
 
 // ═══════════════════════════════════════════════════════════
 // 3D ВЕРСІЯ — Three.js + GLB (для ПК)
@@ -252,13 +277,8 @@ function initWorldMap3DScene(){
   container.style.height=h+'px';
 
   var canvas=document.createElement('canvas');
-  canvas.style.cssText='width:100%;height:100%;display:block;touch-action:none;';
+  canvas.style.cssText='width:100%;height:100%;display:block;touch-action:none;cursor:grab;';
   container.appendChild(canvas);
-
-  var panel=document.createElement('div');
-  panel.id='wm-info-panel';
-  panel.style.cssText='display:none;position:absolute;bottom:0;left:0;right:0;background:rgba(4,2,10,.96);border-top:1px solid rgba(200,160,60,.25);padding:12px 16px 14px;z-index:10;max-height:55%;overflow-y:auto;font-family:Georgia,serif;';
-  container.appendChild(panel);
 
   var loader=document.createElement('div');
   loader.style.cssText='position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#06040e;z-index:20;transition:opacity .4s;';
@@ -277,7 +297,7 @@ function initWorldMap3DScene(){
       loadScript('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js',function(){
         if(!window.THREE){wmFallbackToSVG(container);return;}
         try{
-          startScene(container,canvas,panel,loader,modelsPath);
+          startScene(container,canvas,loader,modelsPath);
         }catch(e){
           console.error('3D scene failed, falling back to SVG:',e);
           wmFallbackToSVG(container);
@@ -295,7 +315,7 @@ function wmFallbackToSVG(container){
   initWorldMapSVG(container);
 }
 
-function startScene(container,canvas,panel,loader,modelsPath){
+function startScene(container,canvas,loader,modelsPath){
   var T=window.THREE;
   var W=container.clientWidth,H=container.clientHeight;
   var renderer=new T.WebGLRenderer({canvas:canvas,antialias:true,alpha:false});
@@ -441,37 +461,19 @@ var WM_POS = {
 };
 
 function wmClosePanelSVG() {
-  var p = document.getElementById('wm-panel');
-  if (p) p.style.display = 'none';
+  wmHidePanel();
   document.querySelectorAll('.wm-world-node').forEach(function(n){ n.classList.remove('wm-active'); });
 }
 
 function wmShowPanelSVG(id) {
-  var w = WM_WORLDS[id];
-  if (!w) return;
-  var p = document.getElementById('wm-panel');
-  if (!p) return;
   document.querySelectorAll('.wm-world-node').forEach(function(n){
     n.classList.toggle('wm-active', n.dataset.wid === id);
   });
-  p.innerHTML =
-    '<div class="wmp-top">' +
-      '<div class="wmp-info">' +
-        '<div class="wmp-inh">' + w.inh + ' · ' + w.no + '</div>' +
-        '<div class="wmp-name" style="color:' + w.c + '">' + w.n + '</div>' +
-        '<div class="wmp-sub">' + w.s + '</div>' +
-      '</div>' +
-      '<button class="wmp-close" onclick="wmClosePanelSVG()">✕ Закрити</button>' +
-    '</div>' +
-    '<p class="wmp-desc">' + w.desc + '</p>' +
-    '<div class="wmp-actions">' +
-      '<button class="wmp-detail-btn" style="color:' + w.c + ';border-color:' + w.c + '40" onclick="openWorldDetail(\'' + id + '\')">Детально →</button>' +
-    '</div>';
-  p.style.display = 'block';
+  wmShowPanel(id);
 }
 
 function _buildYggdrasilSVG() {
-  var W = 600, H = 900;
+  var W = 600, H = 930;
   var ns = 'http://www.w3.org/2000/svg';
   var svg = document.createElementNS(ns, 'svg');
   svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
@@ -486,75 +488,232 @@ function _buildYggdrasilSVG() {
   }
 
   var defs = el('defs', {});
-  var bgGrad = el('radialGradient', {id:'wm-bg', cx:'50%', cy:'40%', r:'65%'});
-  bgGrad.appendChild(el('stop', {offset:'0%', 'stop-color':'#0d0820'}));
-  bgGrad.appendChild(el('stop', {offset:'100%', 'stop-color':'#06040e'}));
+
+  // Deep space background gradient
+  var bgGrad = el('radialGradient', {id:'wm-bg', cx:'50%', cy:'35%', r:'72%'});
+  bgGrad.appendChild(el('stop', {offset:'0%', 'stop-color':'#110820'}));
+  bgGrad.appendChild(el('stop', {offset:'55%', 'stop-color':'#08051a'}));
+  bgGrad.appendChild(el('stop', {offset:'100%', 'stop-color':'#04030e'}));
   defs.appendChild(bgGrad);
-  svg.appendChild(defs);
-  svg.appendChild(el('rect', {width:W, height:H, fill:'url(#wm-bg)'}));
 
-  // Stars
-  for (var s = 0; s < 120; s++) {
-    svg.appendChild(el('circle', {
-      cx:(Math.random()*W).toFixed(1), cy:(Math.random()*H*0.55).toFixed(1),
-      r:(0.4+Math.random()*1.2).toFixed(1), fill:'#fff8e8',
-      opacity:(0.3+Math.random()*0.6).toFixed(2)
-    }));
-  }
+  // Tree trunk gradient
+  var trunkGrad = el('linearGradient', {id:'wm-trunk', x1:'0', y1:'0', x2:'1', y2:'0'});
+  trunkGrad.appendChild(el('stop', {offset:'0%', 'stop-color':'#0f1e0a'}));
+  trunkGrad.appendChild(el('stop', {offset:'40%', 'stop-color':'#1f3a10'}));
+  trunkGrad.appendChild(el('stop', {offset:'60%', 'stop-color':'#253d14'}));
+  trunkGrad.appendChild(el('stop', {offset:'100%', 'stop-color':'#0f1e0a'}));
+  defs.appendChild(trunkGrad);
 
-  // Trunk
-  var trunkGroup = el('g', {});
-  trunkGroup.appendChild(el('path', {d:'M 270 820 Q 265 600 285 390 Q 295 250 300 100', stroke:'rgba(0,0,0,0.5)', 'stroke-width':'32', fill:'none', 'stroke-linecap':'round'}));
-  trunkGroup.appendChild(el('path', {d:'M 270 820 Q 265 600 285 390 Q 295 250 300 100', stroke:'#1a2810', 'stroke-width':'24', fill:'none', 'stroke-linecap':'round'}));
-  trunkGroup.appendChild(el('path', {d:'M 275 800 Q 272 600 288 390 Q 297 252 300 110', stroke:'#2a4018', 'stroke-width':'12', fill:'none', 'stroke-linecap':'round'}));
-  svg.appendChild(trunkGroup);
+  // Crown gradient
+  var crownGrad = el('radialGradient', {id:'wm-crown', cx:'50%', cy:'60%', r:'55%'});
+  crownGrad.appendChild(el('stop', {offset:'0%', 'stop-color':'#1a4010'}));
+  crownGrad.appendChild(el('stop', {offset:'100%', 'stop-color':'#080f05'}));
+  defs.appendChild(crownGrad);
 
-  // Crown foliage
-  var crownGroup = el('g', {});
-  [
-    {cx:300,cy:200,rx:180,ry:140,fill:'#0e2a0a'},
-    {cx:300,cy:190,rx:160,ry:120,fill:'#122e0d'},
-    {cx:240,cy:200,rx:100,ry:90, fill:'#142f0e'},
-    {cx:360,cy:200,rx:100,ry:90, fill:'#142f0e'},
-    {cx:300,cy:170,rx:130,ry:100,fill:'#173510'},
-    {cx:300,cy:155,rx:100,ry:80, fill:'#1a3a12'},
-    {cx:300,cy:140,rx:70, ry:60, fill:'#1f4015'}
-  ].forEach(function(e){ crownGroup.appendChild(el('ellipse', e)); });
-  svg.appendChild(crownGroup);
-
-  // Branches/roots
-  [
-    [300,140,200,130,130,180,'#1f4015'],[300,140,400,130,470,180,'#1f4015'],
-    [300,390,195,400,110,420,'#1a3010'],[300,390,405,400,490,420,'#1a3010'],
-    [285,640,215,630,150,640,'#152808'],[285,640,375,630,450,640,'#152808'],
-    [285,760,285,790,300,760,'#0f1e06']
-  ].forEach(function(b){
-    svg.appendChild(el('path', {d:'M '+b[0]+' '+b[1]+' Q '+b[2]+' '+b[3]+' '+b[4]+' '+b[5], stroke:b[6], 'stroke-width':'4', fill:'none', 'stroke-linecap':'round', opacity:'0.8'}));
+  // World glow filters per color group
+  var worldIds = Object.keys(WM_POS);
+  worldIds.forEach(function(id) {
+    var w = WM_WORLDS[id];
+    if (!w) return;
+    var f = el('filter', {id:'wm-glow-'+id, x:'-80%', y:'-80%', width:'260%', height:'260%'});
+    var fe = el('feGaussianBlur', {in:'SourceGraphic', stdDeviation:'6', result:'blur'});
+    f.appendChild(fe);
+    defs.appendChild(f);
   });
 
-  // World nodes
-  Object.keys(WM_POS).forEach(function(id){
-    var pos = WM_POS[id], world = WM_WORLDS[id], color = world.c;
+  svg.appendChild(defs);
+
+  // Background
+  svg.appendChild(el('rect', {width:W, height:H, fill:'url(#wm-bg)'}));
+
+  // Atmospheric nebula — soft purple/blue glow in upper half
+  var nebula = el('ellipse', {cx:'300', cy:'280', rx:'260', ry:'200', fill:'none',
+    stroke:'rgba(80,40,140,0.08)', 'stroke-width':'100', filter:'url(#wm-glow-asgard)', opacity:'0.4'});
+  svg.appendChild(nebula);
+  svg.appendChild(el('ellipse', {cx:'300', cy:'500', rx:'200', ry:'300',
+    fill:'rgba(30,15,60,0.15)'}));
+
+  // Stars — denser, varied sizes
+  var rng = function(min,max){return min+Math.random()*(max-min);};
+  for (var s = 0; s < 200; s++) {
+    var sy = rng(0, H * 0.65), sr = rng(0.3, 1.6);
+    svg.appendChild(el('circle', {
+      cx: rng(0, W).toFixed(1),
+      cy: sy.toFixed(1),
+      r: sr.toFixed(1),
+      fill: '#fff8e8',
+      opacity: (0.2 + Math.random()*0.7).toFixed(2)
+    }));
+  }
+  // A few brighter stars
+  for (var bs = 0; bs < 12; bs++) {
+    var bx = rng(20, W-20), by = rng(20, H*0.5);
+    svg.appendChild(el('circle', {cx:bx.toFixed(1), cy:by.toFixed(1), r:'2', fill:'#fffde8', opacity:'0.9'}));
+    svg.appendChild(el('circle', {cx:bx.toFixed(1), cy:by.toFixed(1), r:'4', fill:'#fffde8', opacity:'0.15'}));
+  }
+
+  // ── ROOTS ──────────────────────────────────────────────────
+  // Root system radiating from base of trunk (290,840)
+  var rootPaths = [
+    'M 290 840 Q 200 860 110 890 Q 70 900 40 895',    // far left root
+    'M 290 840 Q 240 870 180 880 Q 140 885 100 875',  // left root
+    'M 290 840 Q 290 875 290 910',                     // down root
+    'M 290 840 Q 340 870 400 880 Q 450 885 490 875',  // right root
+    'M 290 840 Q 380 860 470 890 Q 520 900 555 895'   // far right root
+  ];
+  rootPaths.forEach(function(d, i) {
+    var w = [5, 4, 6, 4, 5][i];
+    svg.appendChild(el('path', {d:d, stroke:'#0c1808', 'stroke-width':(w+2), fill:'none', 'stroke-linecap':'round', opacity:'0.9'}));
+    svg.appendChild(el('path', {d:d, stroke:'#1a3010', 'stroke-width':w, fill:'none', 'stroke-linecap':'round'}));
+    svg.appendChild(el('path', {d:d, stroke:'#2a4818', 'stroke-width':(w-2), fill:'none', 'stroke-linecap':'round', opacity:'0.5'}));
+  });
+
+  // ── TRUNK ──────────────────────────────────────────────────
+  var trunkD = 'M 278 840 Q 272 680 280 520 Q 286 380 292 200 Q 295 140 298 90';
+  svg.appendChild(el('path', {d:trunkD, stroke:'#050e03', 'stroke-width':'44', fill:'none', 'stroke-linecap':'round'}));
+  svg.appendChild(el('path', {d:trunkD, stroke:'url(#wm-trunk)', 'stroke-width':'32', fill:'none', 'stroke-linecap':'round'}));
+  // Bark highlight
+  svg.appendChild(el('path', {d:'M 283 830 Q 278 670 286 510 Q 292 375 297 200 Q 299 145 301 95',
+    stroke:'#3a5820', 'stroke-width':'10', fill:'none', 'stroke-linecap':'round', opacity:'0.35'}));
+  // Bark grain lines
+  for (var g2 = 0; g2 < 8; g2++) {
+    var gy = 200 + g2 * 80;
+    var gx = 282 + (g2 % 2)*4;
+    svg.appendChild(el('path', {d:'M '+(gx-8)+' '+gy+' Q '+(gx)+' '+(gy+5)+' '+(gx+8)+' '+gy,
+      stroke:'rgba(60,80,30,0.2)', 'stroke-width':'1.5', fill:'none', 'stroke-linecap':'round'}));
+  }
+
+  // ── BRANCHES / STRUCTURE ──────────────────────────────────
+  var branches = [
+    // [fromX, fromY, ctrlX, ctrlY, toX, toY, width, opacity]
+    [295,155, 220,145, 130,185, 5,'#1f4015'],   // upper left → alfheim
+    [295,155, 370,145, 470,185, 5,'#1f4015'],   // upper right → vanaheim
+    [293,200, 250,195, 205,210, 3,'#193510'],   // mid-left branch
+    [293,200, 340,195, 380,210, 3,'#193510'],   // mid-right branch
+    [287,450, 195,450, 108,430, 4,'#152808'],   // lower left → muspelheim
+    [287,450, 380,450, 490,430, 4,'#152808'],   // lower right → jotunheim
+    [284,640, 210,635, 148,648, 3,'#10200a'],   // root left → svartalfheim
+    [284,640, 360,635, 454,648, 3,'#10200a'],   // root right → niflheim
+  ];
+  branches.forEach(function(b) {
+    svg.appendChild(el('path', {
+      d: 'M '+b[0]+' '+b[1]+' Q '+b[2]+' '+b[3]+' '+b[4]+' '+b[5],
+      stroke: b[6], 'stroke-width': (b[7]+2), fill:'none', 'stroke-linecap':'round', opacity:'0.8'
+    }));
+    svg.appendChild(el('path', {
+      d: 'M '+b[0]+' '+b[1]+' Q '+b[2]+' '+b[3]+' '+b[4]+' '+b[5],
+      stroke: '#2a5018', 'stroke-width': (b[7]-1.5), fill:'none', 'stroke-linecap':'round', opacity:'0.4'
+    }));
+  });
+
+  // ── CROWN FOLIAGE ─────────────────────────────────────────
+  var foliageLayers = [
+    {cx:298,cy:220,rx:195,ry:155, fill:'#071405'},
+    {cx:298,cy:205,rx:175,ry:135, fill:'#0c1e08'},
+    {cx:230,cy:215,rx:108,ry:88,  fill:'#0f2509'},
+    {cx:366,cy:215,rx:108,ry:88,  fill:'#0f2509'},
+    {cx:298,cy:185,rx:150,ry:110, fill:'#122a0b'},
+    {cx:298,cy:168,rx:120,ry:88,  fill:'#162f0d'},
+    {cx:298,cy:150,rx:90, ry:70,  fill:'#1a3810'},
+    {cx:298,cy:132,rx:65, ry:52,  fill:'#1e4012'},
+    {cx:298,cy:115,rx:42, ry:38,  fill:'#224814'},
+    {cx:298,cy:100,rx:25, ry:25,  fill:'#274d16'},
+    // Edge highlights
+    {cx:180,cy:190,rx:55,ry:40, fill:'#0d2208'},
+    {cx:415,cy:195,rx:55,ry:40, fill:'#0d2208'},
+  ];
+  foliageLayers.forEach(function(f) {
+    svg.appendChild(el('ellipse', f));
+  });
+  // Foliage shimmer dots
+  for (var fd = 0; fd < 30; fd++) {
+    var fa = Math.random()*Math.PI*2;
+    var fr = 40+Math.random()*110;
+    var fcx = 298+fr*Math.cos(fa)*1.5;
+    var fcy = 165+fr*Math.sin(fa)*0.7;
+    svg.appendChild(el('circle', {cx:fcx.toFixed(1),cy:fcy.toFixed(1),r:(0.8+Math.random()*1.5).toFixed(1),fill:'#4a8030',opacity:(0.15+Math.random()*0.25).toFixed(2)}));
+  }
+
+  // ── ORNAMENTAL BORDER ─────────────────────────────────────
+  svg.appendChild(el('rect', {x:'8', y:'8', width:(W-16), height:(H-16),
+    stroke:'rgba(180,140,60,0.12)', 'stroke-width':'1', fill:'none', rx:'2'}));
+  svg.appendChild(el('rect', {x:'14', y:'14', width:(W-28), height:(H-28),
+    stroke:'rgba(180,140,60,0.06)', 'stroke-width':'0.5', fill:'none', rx:'1'}));
+  // Corner ornaments
+  [[22,22],[W-22,22],[22,H-22],[W-22,H-22]].forEach(function(c) {
+    svg.appendChild(el('circle', {cx:c[0], cy:c[1], r:'3', stroke:'rgba(180,140,60,0.3)', 'stroke-width':'0.8', fill:'none'}));
+    svg.appendChild(el('line', {x1:(c[0]-8),y1:c[1],x2:(c[0]+8),y2:c[1],stroke:'rgba(180,140,60,0.2)','stroke-width':'0.5'}));
+    svg.appendChild(el('line', {x1:c[0],y1:(c[1]-8),x2:c[0],y2:(c[1]+8),stroke:'rgba(180,140,60,0.2)','stroke-width':'0.5'}));
+  });
+
+  // ── TITLE ─────────────────────────────────────────────────
+  var titleText = el('text', {x:'300', y:'40', 'text-anchor':'middle',
+    fill:'rgba(200,160,60,0.5)', 'font-family':'Cinzel, serif', 'font-size':'9',
+    'letter-spacing':'6', 'text-transform':'uppercase'});
+  titleText.textContent = 'ІҐҐДРАСІЛЬ · NÍU HEIMAR';
+  svg.appendChild(titleText);
+
+  // ── WORLD NODES ───────────────────────────────────────────
+  Object.keys(WM_POS).forEach(function(id) {
+    var pos = WM_POS[id], world = WM_WORLDS[id], col = world.c;
     var g = el('g', {'class':'wm-world-node','data-wid':id,tabindex:'0',role:'button','aria-label':world.n});
-    g.appendChild(el('circle', {cx:pos.x, cy:pos.y, r:'28', fill:'none', stroke:color, 'stroke-width':'1', opacity:'0.25'}));
-    g.appendChild(el('circle', {cx:pos.x, cy:pos.y, r:'20', fill:'rgba(6,4,14,0.85)', stroke:color, 'stroke-width':'1.5', opacity:'0.55'}));
-    g.appendChild(el('circle', {cx:pos.x, cy:pos.y, r:'14', fill:'rgba(6,4,14,0.9)', stroke:color, 'stroke-width':'2'}));
-    g.appendChild(el('circle', {cx:pos.x, cy:pos.y, r:'8', fill:color, opacity:'0.35'}));
-    g.appendChild(el('circle', {cx:pos.x, cy:pos.y, r:'3', fill:color, opacity:'0.9'}));
 
-    var labelY = (pos.y > 700) ? pos.y + 34 : (pos.y < 250) ? pos.y - 28 : pos.y + 32;
-    var anchor = (pos.x < 200) ? 'end' : (pos.x > 400) ? 'start' : 'middle';
-    var labelX = pos.x + (pos.x < 200 ? -10 : pos.x > 400 ? 10 : 0);
+    // Outer atmospheric glow
+    g.appendChild(el('circle', {cx:pos.x, cy:pos.y, r:'40', fill:col, opacity:'0.04'}));
+    g.appendChild(el('circle', {cx:pos.x, cy:pos.y, r:'32', fill:'none', stroke:col, 'stroke-width':'0.5', opacity:'0.15'}));
+    g.appendChild(el('circle', {cx:pos.x, cy:pos.y, r:'26', fill:'none', stroke:col, 'stroke-width':'0.8', opacity:'0.2'}));
 
-    var nameText = el('text', {x:labelX, y:labelY, 'text-anchor':anchor, fill:color, 'font-family':'Cinzel, serif', 'font-size':'11', 'font-weight':'600'});
-    nameText.textContent = world.n;
-    g.appendChild(nameText);
-    var subText = el('text', {x:labelX, y:labelY+14, 'text-anchor':anchor, fill:'rgba(180,160,100,0.55)', 'font-family':'Georgia, serif', 'font-size':'8.5', 'font-style':'italic'});
-    subText.textContent = world.inh;
-    g.appendChild(subText);
+    // Main orb
+    g.appendChild(el('circle', {cx:pos.x, cy:pos.y, r:'20', fill:'rgba(6,3,16,0.92)', stroke:col, 'stroke-width':'1.5', opacity:'0.7'}));
+    g.appendChild(el('circle', {cx:pos.x, cy:pos.y, r:'16', fill:'rgba(6,3,16,0.95)', stroke:col, 'stroke-width':'2', opacity:'0.85'}));
 
-    g.addEventListener('click', function(){ wmShowPanelSVG(id); });
-    g.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); wmShowPanelSVG(id); } });
+    // Inner glow fill
+    g.appendChild(el('circle', {cx:pos.x, cy:pos.y, r:'10', fill:col, opacity:'0.18'}));
+    g.appendChild(el('circle', {cx:pos.x, cy:pos.y, r:'5',  fill:col, opacity:'0.45'}));
+    g.appendChild(el('circle', {cx:pos.x, cy:pos.y, r:'2',  fill:col, opacity:'0.9'}));
+
+    // Highlight (upper-left)
+    g.appendChild(el('circle', {cx:(pos.x-4), cy:(pos.y-5), r:'3', fill:'rgba(255,255,255,0.12)'}));
+
+    // Rune tick marks around orb
+    for (var rm = 0; rm < 8; rm++) {
+      var ra = rm * Math.PI / 4;
+      var r1 = 22, r2 = 18;
+      if (rm % 2 !== 0) { r1 = 21; r2 = 19; }
+      g.appendChild(el('line', {
+        x1:(pos.x+r1*Math.cos(ra)).toFixed(1), y1:(pos.y+r1*Math.sin(ra)).toFixed(1),
+        x2:(pos.x+r2*Math.cos(ra)).toFixed(1), y2:(pos.y+r2*Math.sin(ra)).toFixed(1),
+        stroke:col, 'stroke-width':'0.8', opacity:'0.35'
+      }));
+    }
+
+    // Label positioning
+    var isTop = pos.y < 250;
+    var isBot = pos.y > 720;
+    var isLeft = pos.x < 220;
+    var isRight = pos.x > 380;
+    var anchor = isLeft ? 'end' : isRight ? 'start' : 'middle';
+    var lx = pos.x + (isLeft ? -28 : isRight ? 28 : 0);
+    var ly = isTop ? pos.y - 28 : isBot ? pos.y + 34 : (isLeft || isRight) ? pos.y + 4 : pos.y + 32;
+
+    var nameEl = el('text', {x:lx, y:ly, 'text-anchor':anchor, fill:col,
+      'font-family':'Cinzel, serif', 'font-size':'12', 'font-weight':'600', 'letter-spacing':'0.04em'});
+    nameEl.textContent = world.n;
+    g.appendChild(nameEl);
+
+    var subEl = el('text', {x:lx, y:(ly+15), 'text-anchor':anchor,
+      fill:'rgba(200,170,100,0.5)', 'font-family':'Georgia, serif', 'font-size':'9', 'font-style':'italic'});
+    subEl.textContent = world.inh;
+    g.appendChild(subEl);
+
+    // Old Norse name
+    var noEl = el('text', {x:lx, y:(ly+27), 'text-anchor':anchor,
+      fill:'rgba(160,130,80,0.3)', 'font-family':'Georgia, serif', 'font-size':'8', 'font-style':'italic'});
+    noEl.textContent = world.no;
+    g.appendChild(noEl);
+
+    g.addEventListener('click', function() { wmShowPanelSVG(id); });
+    g.addEventListener('keydown', function(e) { if(e.key==='Enter'||e.key===' '){e.preventDefault();wmShowPanelSVG(id);} });
     svg.appendChild(g);
   });
 
@@ -563,13 +722,9 @@ function _buildYggdrasilSVG() {
 
 function initWorldMapSVG(container) {
   var vw = window.innerWidth;
-  var h = Math.min(Math.max(vw * 1.5, 480), 820);
+  var h = Math.min(Math.max(vw * 1.6, 520), 860);
   container.style.height = h + 'px';
   container.appendChild(_buildYggdrasilSVG());
-  var panel = document.createElement('div');
-  panel.id = 'wm-panel';
-  panel.className = 'wm-panel';
-  container.appendChild(panel);
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape') wmClosePanelSVG(); });
 }
 
